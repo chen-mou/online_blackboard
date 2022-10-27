@@ -11,7 +11,7 @@ export default async function request(config: AxiosRequestConfig) {
       return res.data
     },
     err => {
-      console.error(err)
+      //todo 单独处理 token 过期
       return err
     }
   )
@@ -22,6 +22,10 @@ export default async function request(config: AxiosRequestConfig) {
       data.append(key, config.data[key])
     }
     config.data = data
+  }
+
+  config.headers = {
+    token: `Bearer ${localStorage.getItem('token')}`
   }
 
   return (await instance(config)) as any

@@ -1,7 +1,6 @@
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 import { useUserStore } from "../../../store/user";
-import { ElMessage } from "element-plus";
 
 export default defineComponent({
   name: "UserLogin",
@@ -18,17 +17,22 @@ export default defineComponent({
   methods: {
     login() {
       this.userStore.login(this.username, this.password, (failData: any) => {
-        this.$message({
-          message: `登陆失败！${failData.msg}`,
-          type: 'error',
-          grouping: true,
-        })
+        this.promptMessage(failData.msg)
       })
     },
     register() {
-      this.userStore.register(this.username,this.password, ())
-    }
-  }
+      this.userStore.register(this.username, this.password, (failData: any) => {
+        this.promptMessage(failData.msg)
+      })
+    },
+    promptMessage(msg: string) {
+      this.$message({
+        message: `登陆失败！${msg}`,
+        type: 'error',
+        grouping: true,
+      })
+    },
+  },
 })
 </script>
 
