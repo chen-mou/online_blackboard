@@ -1,14 +1,19 @@
 package com.obb.online_blackboard.controller;
 
 import com.obb.online_blackboard.entity.UserDataEntity;
+import com.obb.online_blackboard.entity.UserEntity;
 import com.obb.online_blackboard.service.UserService;
+import org.springframework.validation.Errors;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import tool.result.Result;
 import tool.util.JWT;
+import tool.util.ParamError;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 import java.util.HashMap;
 
 /**
@@ -25,20 +30,29 @@ public class UserController {
     UserService userService;
 
     @PostMapping("/login")
-    public Result login(String username, String password){
-        UserDataEntity data = userService.login(username, password);
+    public Result login(@Validated UserEntity user, Errors errors){
+        ParamError.handlerError(errors);
+        UserDataEntity data = userService.login(user.getUsername(), user.getPassword());
         String token = JWT.encode(null);
         return Result.success("登录成功", new HashMap<>(){
             {
-                put("token", token)
+                put("token", token);
                 put("user_data", data);
             }
         });
     }
 
     @PostMapping("/register")
-    public Result register(String username, String password){
-
+    public Result register(@Validated UserEntity user, Errors errors){
+        ParamError.handlerError(errors);
+        UserDataEntity data = userService.register(user.getUsername(), user.getPassword());
+        String token = JWT.encode(null);
+        return Result.success("登录成功", new HashMap<>(){
+            {
+                put("token", token);
+                put("user_data", data);
+            }
+        });
     }
 
 }

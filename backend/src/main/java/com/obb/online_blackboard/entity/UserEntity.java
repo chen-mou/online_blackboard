@@ -2,6 +2,11 @@ package com.obb.online_blackboard.entity;
 
 import com.obb.online_blackboard.entity.base.Date;
 import lombok.Data;
+import org.hibernate.validator.constraints.Length;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  * @author 陈桢梁
@@ -15,8 +20,14 @@ public class UserEntity extends Date {
 
     private long id;
 
+    @NotNull
+    @NotBlank
+    @Length(min = 8, max = 16)
     private String username;
 
+    @NotNull
+    @NotBlank
+    @Length(min = 8, max = 16)
     private String password;
 
     private UserDataEntity data;
