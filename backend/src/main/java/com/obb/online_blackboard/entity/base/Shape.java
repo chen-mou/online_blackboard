@@ -12,8 +12,8 @@ public abstract class Shape extends Date{
 
     String color;
 
-    int start;
+    int x;
 
-    int end;
+    int y;
 
 }
