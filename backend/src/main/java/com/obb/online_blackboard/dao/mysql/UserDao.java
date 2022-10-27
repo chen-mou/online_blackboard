@@ -13,7 +13,7 @@ import org.apache.ibatis.annotations.*;
 @Mapper
 public interface UserDao {
 
-    @Insert("insert into user(id, username, password,ctime) value(#{id}, #{username}, #{password})")
+    @Insert("insert into user(id, username, password, ctime) value(#{id}, #{username}, #{password}, #{ctime})")
     int create(UserEntity user);
 
     @Select("select name, password from user where username = #{name}")
@@ -21,5 +21,8 @@ public interface UserDao {
 
     @Select("select nickname from user_data where user_id = #{userId}")
     UserDataEntity getById(long userId);
+
+    @Insert("insert into user_data value(#{id}, #{userId}, #{nickname})")
+    int createData(UserDataEntity userData);
 
 }

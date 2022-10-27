@@ -11,8 +11,8 @@ import lombok.Data;
 @Data
 public class Date {
 
-    public Date ctime;
+    public java.util.Date ctime;
 
-    public Date mtime;
+    public java.util.Date mtime;
 
 }
