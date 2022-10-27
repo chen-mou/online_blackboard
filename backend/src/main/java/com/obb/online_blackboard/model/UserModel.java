@@ -4,6 +4,7 @@ import com.obb.online_blackboard.dao.mysql.UserDao;
 import com.obb.online_blackboard.entity.UserDataEntity;
 import com.obb.online_blackboard.entity.UserEntity;
 import org.springframework.data.annotation.Transient;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 import tool.util.id.Id;
 import tool.util.lock.LockUtil;
@@ -26,25 +27,31 @@ public class UserModel {
     @Resource
     UserDao userDao;
 
-    private final String USER_KEY = "USER:";
+    @Resource
+    RedisTemplate<String, Object> redis;
 
-    private final String LOCK_KEY = "USER_LOCK:";
+    public static final String USER_KEY = "USER:";
+
+    public static final String LOCK_KEY = "USER_LOCK:";
 
     public UserEntity getUserByName(String username){
-        return lock.getLock(USER_KEY + ":" + username,
-                LOCK_KEY + ":" + username,
-                () -> userDao.getByName(username), 3);
+        UserEntity user = userDao.getByName(username);
+        redis.opsForValue().set(USER_KEY + user.getId(), user);
+        return user;
     }
 
     public UserDataEntity getDataById(long userId){
-        return userDao.getById(userId);
+        return userDao.getByUserId(userId);
     }
 
     @Transient
     public void createUser(UserEntity user){
+        long userId = Id.getId("User");
         user.setCtime(new Date());
-        user.setId(Id.getId("User"));
-        userDao.createData(new UserDataEntity());
+        user.setId(userId);
+        UserDataEntity data = new UserDataEntity();
+        data.setUserId(userId);
+        userDao.createData(data);
         userDao.create(user);
     }
 

@@ -18,4 +18,6 @@ public class UserDataEntity extends Date {
 
     private String nickname;
 
+    private int isAnonymous;
+
 }

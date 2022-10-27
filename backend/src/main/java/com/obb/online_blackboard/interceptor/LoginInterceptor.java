@@ -2,12 +2,18 @@ package com.obb.online_blackboard.interceptor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.obb.online_blackboard.config.Context;
+import com.obb.online_blackboard.dao.mysql.UserDao;
+import com.obb.online_blackboard.entity.UserEntity;
+import com.obb.online_blackboard.model.UserModel;
 import org.springframework.context.ApplicationContext;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import tool.annotation.NotNeedLogin;
 import tool.annotation.Permission;
 import tool.result.Result;
+import tool.util.JWT;
+import tool.util.lock.LockUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -47,6 +53,16 @@ public class LoginInterceptor implements HandlerInterceptor {
                 authBan(response, "未登录");
                 return false;
             } else{
+                Map<String, String> data = JWT.decode(token);
+                long userId = Long.parseLong(data.get("userId"));
+                LockUtil<UserEntity> lockUtil = app.getBean(LockUtil.class);
+                UserEntity user = lockUtil.getLock(UserModel.USER_KEY + userId,
+                        UserModel.LOCK_KEY + userId,
+                        () -> app.getBean(UserDao.class).getById(userId), 3);
+                if(user == null){
+                    return false;
+                }
+                request.setAttribute("CurrentUser", user);
 //                if(permission.type().equals("auth")){
 //                    String auth = permission.auth();
 //                    String scope = permission.scope();

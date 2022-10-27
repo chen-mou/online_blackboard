@@ -24,12 +24,12 @@ public class LockUtil<T> {
     private RedisTemplate<String, Object> template;
 
 
+
     public T getLock(String key, String lockKey, Getter<T> getter, int timeout){
         T t = (T) template.opsForValue().get(key);
         if(t != null){
             return t;
         }
-        System.out.println(lockKey);
         RLock lock = client.getLock(lockKey);
         boolean get = lock.tryLock();
         if (!get) {
@@ -38,19 +38,24 @@ public class LockUtil<T> {
                 if (!get) {
                     throw new OperationException(503, "服务器繁忙");
                 }
+                lock.unlock();
+                return (T) template.opsForValue().get(key);
             } catch (InterruptedException e) {
                 throw new RuntimeException("中断错误");
             }
         }
         t = getter.get();
+        setRedis(t, key);
+        lock.unlock();
+        return t;
+    }
+
+    private void setRedis(T t, String key){
         if(t != null){
             template.opsForValue().set(key, t, 20, TimeUnit.MINUTES);
         }else{
             template.opsForValue().set(key, t, 1, TimeUnit.MINUTES);
         }
-        lock.unlock();
-        return t;
-
     }
 
 }

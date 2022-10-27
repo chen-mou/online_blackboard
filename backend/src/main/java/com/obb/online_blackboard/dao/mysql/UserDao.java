@@ -20,7 +20,10 @@ public interface UserDao {
     UserEntity getByName(String name);
 
     @Select("select nickname from user_data where user_id = #{userId}")
-    UserDataEntity getById(long userId);
+    UserDataEntity getByUserId(long userId);
+
+    @Select("select * from user where id = #{id}")
+    UserEntity getById(long id);
 
     @Insert("insert into user_data value(#{id}, #{userId}, #{nickname})")
     int createData(UserDataEntity userData);

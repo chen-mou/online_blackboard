@@ -8,6 +8,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import tool.annotation.NotNeedLogin;
 import tool.result.Result;
 import tool.util.JWT;
 import tool.util.ParamError;
@@ -30,10 +31,15 @@ public class UserController {
     UserService userService;
 
     @PostMapping("/login")
+    @NotNeedLogin
     public Result login(@Validated UserEntity user, Errors errors){
         ParamError.handlerError(errors);
         UserDataEntity data = userService.login(user.getUsername(), user.getPassword());
-        String token = JWT.encode(null);
+        String token = JWT.encode(new HashMap<>(){
+            {
+                put("userId", String.valueOf(data.getUserId()));
+            }
+        });
         return Result.success("登录成功", new HashMap<>(){
             {
                 put("token", token);
@@ -43,10 +49,15 @@ public class UserController {
     }
 
     @PostMapping("/register")
+    @NotNeedLogin
     public Result register(@Validated UserEntity user, Errors errors){
         ParamError.handlerError(errors);
         UserDataEntity data = userService.register(user.getUsername(), user.getPassword());
-        String token = JWT.encode(null);
+        String token = JWT.encode(new HashMap<>(){
+            {
+                put("userId", String.valueOf(data.getUserId()));
+            }
+        });
         return Result.success("登录成功", new HashMap<>(){
             {
                 put("token", token);
