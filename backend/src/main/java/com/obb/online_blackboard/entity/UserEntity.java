@@ -13,6 +13,13 @@ import lombok.Data;
 @Data
 public class UserEntity extends Date {
 
+    private long id;
+
+    private String username;
+
+    private String password;
+
+    private UserDataEntity data;
 
 
 }

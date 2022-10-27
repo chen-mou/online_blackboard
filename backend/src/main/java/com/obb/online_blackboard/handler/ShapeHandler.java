@@ -1,5 +1,6 @@
 package com.obb.online_blackboard.handler;
 
+import com.obb.online_blackboard.entity.UserEntity;
 import com.obb.online_blackboard.entity.base.Shape;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;

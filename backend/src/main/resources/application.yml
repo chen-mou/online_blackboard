@@ -1,0 +1,18 @@
+server:
+  port: 18888
+
+spring:
+  application:
+    name: online_blackboard
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: U/kklUMxoX31LSie15kM+A==
+    password: nUVSDE/dpoDMUCt44cSJJF0RYIPnoLxmldXgV88A/x4=
+    url: jdbc:mysql://47.112.184.57:3308/blackboard
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+
+  redis:
+    host: 47.112.184.57
