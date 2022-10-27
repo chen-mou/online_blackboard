@@ -1,16 +1,21 @@
 import { io } from "socket.io-client";
 
-const socket = io('/ws', { autoConnect: true })
 
-socket.on('connect', () => {
-  console.log(socket.id)
-})
-
-export function useWs(eventName: string, callback: (data: unknown) => void) {
+export function useWs(eventName: string, userId: string, callback: (data: unknown) => void) {
+  const socket = io('/ws', {
+    autoConnect: true,
+    extraHeaders: { userId },
+  })
+  socket.on('connect', () => {
+    console.log(socket.id)
+  })
   socket.on(eventName, callback)
   return {
     emit(data: unknown) {
       socket.emit(eventName, data)
+    },
+    close() {
+      socket.close()
     },
   }
 }
