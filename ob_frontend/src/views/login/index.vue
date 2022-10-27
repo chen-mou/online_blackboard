@@ -41,7 +41,7 @@ export default defineComponent({
     <el-input v-model="username" placeholder="输入账号" clearable></el-input>
     <el-input v-model="password" type="password" placeholder="输入密码" show-password clearable></el-input>
     <div style="float: right">
-      <el-button>去注册</el-button>
+      <el-button @click="register">去注册</el-button>
       <el-button type="primary" @click="login">登录</el-button>
     </div>
 

@@ -12,7 +12,7 @@ export default async function request(config: AxiosRequestConfig) {
     },
     err => {
       //todo 单独处理 token 过期
-      return err
+      return err.response.data
     }
   )
 

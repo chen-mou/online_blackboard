@@ -4,34 +4,43 @@ import request from "@/utils/request";
 export const useUserStore = defineStore('user', {
     state: () => ({
       hasLogin: false,
+      userId: 0,
       nickname: '鲲鲲',
     }),
     actions: {
-      async login(username: string, password: string, onfail: (...args: any[]) => void): Promise<unknown> {
-        const userData = await request({
+      async login(username: string, password: string, onfail: (...args: any[]) => void): Promise<void> {
+        const data = await request({
+          method: 'post',
           url: '/user/login',
           data: { username, password }
         })
-        if (userData.code != 200) {
-          onfail(userData)
-          return null
+        console.log(data)
+        if (data.code != 200) {
+          onfail(data)
+          return
         }
-        this.hasLogin = true
-        this.nickname = userData.data.data.nickname
-        //todo jwt 解析 token
-        localStorage.setItem('token', '')
-        return userData.data.id
+        this._loginSuccess(data)
       },
-      async register(username: string, password: string, onfail: (...args: any[]) => void): Promise<unknown> {
-        const userData = await request({
+      async register(username: string, password: string, onfail: (...args: any[]) => void): Promise<void> {
+        const data = await request({
+          method: 'post',
           url: '/user/register',
           data: { username, password }
         })
-        //todo
-        return
+        if (data.code != 200) {
+          onfail(data)
+          return
+        }
+        this._loginSuccess(data)
       },
       async logout() {
         return
+      },
+      _loginSuccess(data: any) {
+        this.hasLogin = true
+        this.nickname = data.data.user_data.nickname
+        this.userId = data.data.user_data.userId
+        localStorage.setItem('token', data.data.token)
       }
     },
     getters: {},
