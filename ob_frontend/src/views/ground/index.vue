@@ -1,17 +1,18 @@
-<script>
+<script lang="ts">
 import { useUserStore } from "../../../store/user";
 import { useRouter } from "vue-router";
+import { defineComponent } from "vue";
 
-export default {
+export default defineComponent({
   name: "BlackboardGround",
   setup() {
     const userStore = useUserStore()
-    console.log(userStore.login)
-    if (!userStore.login) {
+    console.log(userStore.hasLogin)
+    if (!userStore.hasLogin) {
       useRouter().replace('/login')
     }
   }
-}
+})
 </script>
 
 <template>

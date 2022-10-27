@@ -1,6 +1,6 @@
 import axios, { AxiosRequestConfig } from 'axios'
 
-export default function request(config: AxiosRequestConfig) {
+export default async function request(config: AxiosRequestConfig) {
   const instance = axios.create({
     baseURL: '/api',
     timeout: 5000,
@@ -12,6 +12,7 @@ export default function request(config: AxiosRequestConfig) {
     },
     err => {
       console.error(err)
+      return err
     }
   )
 
@@ -23,5 +24,5 @@ export default function request(config: AxiosRequestConfig) {
     config.data = data
   }
 
-  return instance(config)
+  return (await instance(config)) as any
 }
