@@ -6,6 +6,7 @@ import com.obb.online_blackboard.entity.UserEntity;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import tool.util.id.Id;
 import tool.util.lock.LockUtil;
 
@@ -44,7 +45,7 @@ public class UserModel {
         return userDao.getByUserId(userId);
     }
 
-    @Transient
+    @Transactional(rollbackFor = {Exception.class})
     public void createUser(UserEntity user){
         long userId = Id.getId("User");
         user.setCtime(new Date());

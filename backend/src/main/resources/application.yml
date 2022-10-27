@@ -16,3 +16,7 @@ spring:
 
   redis:
     host: 47.112.184.57
+
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true

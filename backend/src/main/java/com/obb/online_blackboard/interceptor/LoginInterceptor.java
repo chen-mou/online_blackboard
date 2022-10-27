@@ -60,6 +60,7 @@ public class LoginInterceptor implements HandlerInterceptor {
                         UserModel.LOCK_KEY + userId,
                         () -> app.getBean(UserDao.class).getById(userId), 3);
                 if(user == null){
+                    authBan(response, "token有误");
                     return false;
                 }
                 request.setAttribute("CurrentUser", user);

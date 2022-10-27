@@ -1,7 +1,19 @@
 package com.obb.online_blackboard.controller;
 
+import com.obb.online_blackboard.entity.RoomEntity;
+import com.obb.online_blackboard.entity.RoomSettingEntity;
+import com.obb.online_blackboard.entity.UserEntity;
+import com.obb.online_blackboard.service.RoomService;
+import org.springframework.validation.Errors;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import tool.annotation.UserInfo;
+import tool.result.Result;
+import tool.util.ParamError;
+
+import javax.annotation.Resource;
 
 /**
  * @author 陈桢梁
@@ -13,4 +25,24 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/room")
 public class RoomController {
+
+    @Resource
+    RoomService roomService;
+    @PostMapping("/create")
+    public Result createRoom(@Validated RoomSettingEntity setting,
+                             @UserInfo UserEntity user,
+                             Errors errors){
+        ParamError.handlerError(errors);
+        RoomEntity room = roomService.createRoom(setting, user.getId());
+        return Result.success("创建成功", room);
+    }
+
+    @PostMapping("/join")
+    public Result joinRoom(@UserInfo UserEntity user,
+                           String roomId,
+                           int isAnonymous){
+        RoomEntity room = roomService.joinRoom(roomId, user.getId(), isAnonymous);
+        return Result.success("加入成功", room);
+    }
+
 }

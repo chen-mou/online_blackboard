@@ -5,6 +5,7 @@ import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -18,14 +19,23 @@ import java.util.List;
 public class RoomEntity {
 
     @Id
-    private String roomId;
+    private String id;
 
     private long creatorId;
 
-    private List<Long> participants;
+    private String creatorName;
+
+    private List<UserDataEntity> participants;
 
     List<Long> sheets;
 
     List<SheetEntity> sheetEntities;
+
+    RoomSettingEntity setting;
+
+    public RoomEntity(){
+        participants = new ArrayList<>();
+        sheets = new ArrayList<>();
+    }
 
 }

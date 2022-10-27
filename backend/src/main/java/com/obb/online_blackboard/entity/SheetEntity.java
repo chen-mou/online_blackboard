@@ -5,6 +5,7 @@ import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 
@@ -24,5 +25,9 @@ public class SheetEntity {
     private String name;
 
     private Map<Long, Stack<Shape>> useStack;
+
+    public SheetEntity(){
+        useStack = new HashMap<>();
+    }
 
 }

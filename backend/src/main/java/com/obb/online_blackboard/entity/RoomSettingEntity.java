@@ -5,6 +5,10 @@ import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+
 /**
  * @author 陈桢梁
  * @desc RoomEntity.java
@@ -20,12 +24,20 @@ public class RoomSettingEntity extends Date {
 
     private String roomId;
 
-    private String creatorName;
+    private long creatorId;
 
+    @Max(value = 1)
+    @Min(value = 0)
     private int isShare;
 
+    @Max(value = 1)
+    @Min(value = 0)
     private int allowAnonymous;
 
+    @NotNull
+    private Date startTime;
+
+    @NotNull
     private Date endTime;
 
 }
