@@ -39,21 +39,21 @@ public class UserModel {
 
     public static final String LOCK_KEY = "USER_LOCK:";
 
-    public UserEntity getUserByName(String username){
+    public UserEntity getUserByName(String username) {
         UserEntity user = userDao.getByName(username);
-        if(user == null){
+        if (user == null) {
             return null;
         }
         redis.opsForValue().set(USER_KEY + user.getId(), user);
         return user;
     }
 
-    public UserDataEntity getDataById(long userId){
+    public UserDataEntity getDataById(long userId) {
         return userDao.getByUserId(userId);
     }
 
     @Transactional(rollbackFor = {Exception.class})
-    public void createUser(UserEntity user){
+    public void createUser(UserEntity user) {
         long userId = id.getId("User");
         user.setCtime(new Date());
         user.setId(userId);
@@ -64,5 +64,9 @@ public class UserModel {
         userDao.create(user);
     }
 
+    @Transactional(rollbackFor = {Exception.class})
+    public void updateNickname(String newName) {
+        userDao.updateNickname(newName);
+    }
 
 }
