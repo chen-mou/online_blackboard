@@ -3,7 +3,7 @@ import request from "@/utils/request";
 
 export const useUserStore = defineStore('user', {
     state: () => ({
-      hasLogin: false,
+      hasLogin: true,
       userId: 0,
       nickname: '鲲鲲',
     }),
@@ -33,15 +33,20 @@ export const useUserStore = defineStore('user', {
         }
         this._loginSuccess(data)
       },
-      async logout() {
-        return
-      },
       _loginSuccess(data: any) {
         this.hasLogin = true
         this.nickname = data.data.user_data.nickname
         this.userId = data.data.user_data.userId
         localStorage.setItem('token', data.data.token)
-      }
+      },
+      async updateNickName(newNickname: string, onfail: (data: any) => void) {
+
+        return
+      },
+      async logout() {
+        return
+      },
+
     },
     getters: {},
   }

@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
-import { Document, Setting, } from '@element-plus/icons-vue'
-import { useUserStore } from "../store/user";
+import { useUserStore } from "./store/user";
 
 const isCollapse = ref(true)
 const userStore = useUserStore()
@@ -23,9 +22,15 @@ const userStore = useUserStore()
     </div>
     <el-menu-item index="/">
       <el-icon>
-        <document/>
+        <House/>
       </el-icon>
-      <template #title>发现</template>
+      <template #title>主页</template>
+    </el-menu-item>
+    <el-menu-item index="/canvas">
+      <el-icon>
+        <Edit/>
+      </el-icon>
+      <template #title>白板</template>
     </el-menu-item>
     <el-menu-item index="/user">
       <el-icon>
@@ -59,6 +64,9 @@ const userStore = useUserStore()
   width: calc(100vw - 64px);
   height: 100vh;
   overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .welcome {

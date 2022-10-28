@@ -1,6 +1,6 @@
 <script lang="ts">
 import { defineComponent, ref } from "vue";
-import { useUserStore } from "../../../store/user";
+import { useUserStore } from "@/store/user";
 
 export default defineComponent({
   name: "UserLogin",
@@ -15,15 +15,17 @@ export default defineComponent({
     }
   },
   methods: {
-    login() {
-      this.userStore.login(this.username, this.password, (failData: any) => {
+    async login() {
+      await this.userStore.login(this.username, this.password, (failData: any) => {
         this.promptMessage(failData.msg)
       })
+      this.password = ''
     },
-    register() {
-      this.userStore.register(this.username, this.password, (failData: any) => {
+    async register() {
+      await this.userStore.register(this.username, this.password, (failData: any) => {
         this.promptMessage(failData.msg)
       })
+      this.password = ''
     },
     promptMessage(msg: string) {
       this.$message({
@@ -44,7 +46,6 @@ export default defineComponent({
       <el-button @click="register">去注册</el-button>
       <el-button type="primary" @click="login">登录</el-button>
     </div>
-
   </div>
 </template>
 
@@ -53,9 +54,6 @@ export default defineComponent({
   border: 1px solid lightgray;
   width: 500px;
   padding: 30px;
-  position: absolute;
-  left: calc(50vw - 350px);
-  top: 30vh;
   border-radius: 30px;
   box-shadow: 0 0 20px 0 lightgray;
 }
