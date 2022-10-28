@@ -1,14 +1,12 @@
 package com.obb.online_blackboard.service;
 
-import com.obb.online_blackboard.dao.mysql.UserDao;
 import com.obb.online_blackboard.entity.UserDataEntity;
 import com.obb.online_blackboard.entity.UserEntity;
 import com.obb.online_blackboard.exception.OperationException;
 import com.obb.online_blackboard.model.UserModel;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import tool.encrypt.MD5;
-import tool.util.lock.Getter;
-import tool.util.lock.LockUtil;
 
 import javax.annotation.Resource;
 
@@ -23,6 +21,9 @@ public class UserService {
 
     @Resource
     UserModel userModel;
+
+    @Resource
+    RedisTemplate<String, Object> redis;
 
     private final int SALT_COUNT = 5;
 
@@ -49,6 +50,18 @@ public class UserService {
         user.setPassword(password);
         userModel.createUser(user);
         return userModel.getDataById(user.getId());
+    }
+
+    public void logout(long userId){
+        String token = (String)redis.opsForValue().get("token:" + userId);
+        if(token == null){
+            throw new OperationException(404, "你已经登出了");
+        }
+        redis.delete("token:" + userId);
+    }
+
+    public UserDataEntity getUserInfo(long userId){
+        return userModel.getDataById(userId);
     }
 
 }

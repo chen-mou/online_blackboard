@@ -11,5 +11,5 @@ import org.springframework.data.repository.CrudRepository;
  */
 public interface RoomDao extends CrudRepository<RoomEntity, String> {
 
-    RoomEntity getRoomEntityByRoomId(String roomId);
+    RoomEntity getRoomEntityById(String roomId);
 }

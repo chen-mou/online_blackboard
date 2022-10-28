@@ -5,13 +5,16 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.JWTVerifier;
+import com.obb.online_blackboard.config.Context;
 import com.obb.online_blackboard.exception.OperationException;
 import org.apache.commons.lang3.time.DateUtils;
+import org.springframework.data.redis.core.RedisTemplate;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author 陈桢梁
@@ -25,6 +28,11 @@ public class JWT {
 
     private static String ISSUER = "BLACKBOARD_ISSUER";
 
+    /**
+     * 获取token
+     * @param date token中的数据必须要有userId
+     * @return
+     */
     public static String encode(Map<String, String> date){
         try {
             Algorithm algorithm = Algorithm.HMAC256(SECRET);
@@ -33,7 +41,11 @@ public class JWT {
                     //设置过期时间为1天
                     .withExpiresAt(DateUtils.addDays(new Date(), 1));
             date.forEach(builder::withClaim);
-            return builder.sign(algorithm);
+
+            String token = builder.sign(algorithm);
+            RedisTemplate redis = (RedisTemplate) Context.getContext().getBean("redisTemplate");
+            redis.opsForValue().set("token:" + date.get("userId"), token, 1, TimeUnit.DAYS);
+            return token;
         } catch (IllegalArgumentException  e) {
             throw new OperationException(500, "生成token失败");
         }

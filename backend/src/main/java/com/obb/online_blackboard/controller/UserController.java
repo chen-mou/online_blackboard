@@ -5,11 +5,9 @@ import com.obb.online_blackboard.entity.UserEntity;
 import com.obb.online_blackboard.service.UserService;
 import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import tool.annotation.NotNeedLogin;
+import tool.annotation.UserInfo;
 import tool.result.Result;
 import tool.util.JWT;
 import tool.util.ParamError;
@@ -65,6 +63,17 @@ public class UserController {
                 put("user_data", data);
             }
         });
+    }
+
+    @PostMapping("/logout")
+    public Result logout(@UserInfo UserEntity user){
+        userService.logout(user.getId());
+        return Result.success("登出成功", null);
+    }
+
+    @GetMapping("/info")
+    public Result getUserInfo(@UserInfo UserEntity user){
+        return Result.success("获取成功", userService.getUserInfo(user.getId()));
     }
 
 }

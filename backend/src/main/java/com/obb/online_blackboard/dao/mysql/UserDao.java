@@ -19,7 +19,7 @@ public interface UserDao {
     @Select("select id, username, password from user where username = #{name}")
     UserEntity getByName(String name);
 
-    @Select("select nickname from user_data where user_id = #{userId}")
+    @Select("select user_id, nickname from user_data where user_id = #{userId}")
     UserDataEntity getByUserId(long userId);
 
     @Select("select * from user where id = #{id}")

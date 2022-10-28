@@ -16,10 +16,8 @@ import javax.validation.constraints.NotNull;
  * @logs[0] 2022-10-27 15:27 陈桢梁 创建了RoomEntity.java文件
  */
 @Data
-@RedisHash("room_setting")
 public class RoomSettingEntity extends Date {
 
-    @Id
     private String id;
 
     private String roomId;
@@ -35,9 +33,9 @@ public class RoomSettingEntity extends Date {
     private int allowAnonymous;
 
     @NotNull
-    private Date startTime;
+    private java.util.Date startTime;
 
     @NotNull
-    private Date endTime;
+    private java.util.Date endTime;
 
 }

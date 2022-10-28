@@ -20,17 +20,17 @@ public class Id {
     @Resource
     RedisTemplate<String, Object> redis;
 
-    @Value("{spring.application.name}")
+    @Value("${spring.application.name}")
     String name;
 
-    public int getId(String name){
+    public long getId(String name){
         String key = this.name + "-" + name + "-id";
-        Long id = redis.opsForValue().increment(key, 12);
-        if(id == null){
-            id = Long.valueOf(1000000);
+        long id = redis.opsForValue().increment(key, 12);
+        if(id == 12){
+            id = 1000000L;
             redis.opsForValue().set(key, id);
         }
-        return id.intValue();
+        return id;
     }
 
 }

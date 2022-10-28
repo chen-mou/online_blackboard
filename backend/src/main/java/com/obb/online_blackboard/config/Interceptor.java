@@ -1,5 +1,6 @@
 package com.obb.online_blackboard.config;
 
+import com.obb.online_blackboard.handler.JsonKeyHandler;
 import com.obb.online_blackboard.handler.ShapeHandler;
 import com.obb.online_blackboard.handler.UserInfoHandler;
 import com.obb.online_blackboard.interceptor.CrossInterceptor;
@@ -31,5 +32,6 @@ public class Interceptor implements WebMvcConfigurer {
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.add(new UserInfoHandler());
         resolvers.add(new ShapeHandler());
+        resolvers.add(new JsonKeyHandler());
     }
 }

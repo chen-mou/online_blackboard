@@ -1,12 +1,12 @@
 package com.obb.online_blackboard.model;
 
 import com.obb.online_blackboard.dao.redis.RoomDao;
-import com.obb.online_blackboard.dao.redis.RoomSettingDao;
+import com.obb.online_blackboard.dao.mysql.RoomSettingDao;
 import com.obb.online_blackboard.entity.RoomEntity;
 import com.obb.online_blackboard.entity.RoomSettingEntity;
-import com.obb.online_blackboard.service.RoomService;
 import org.springframework.stereotype.Repository;
 import tool.util.id.Id;
+import tool.util.lock.LockUtil;
 
 import javax.annotation.Resource;
 
@@ -27,6 +27,14 @@ public class RoomModel {
 
     @Resource
     Id id;
+
+    @Resource
+    LockUtil<RoomSettingEntity> lock;
+
+    private final String SETTING_KEY = "setting_key:";
+
+    private final String SETTING_LOCK = "setting_lock:";
+
     public String createRoom(RoomEntity room){
         room.setId(String.valueOf(id.getId("room")));
         roomDao.save(room);
@@ -41,16 +49,18 @@ public class RoomModel {
         setting.setId(String.valueOf(id.getId("setting")));
         setting.setCreatorId(userId);
         setting.setRoomId(roomId);
-        roomSettingDao.save(setting);
+        roomSettingDao.createSetting(setting);
         return setting.getId();
     }
 
     public RoomEntity getRoomById(String roomId){
-        return roomDao.getRoomEntityByRoomId(roomId);
+        return roomDao.getRoomEntityById(roomId);
     }
 
     public RoomSettingEntity getRoomSettingByRoomId(String roomId){
-        return roomSettingDao.getRoomSettingEntityByRoomId(roomId);
+        return lock.getLock(SETTING_KEY + roomId,
+                SETTING_LOCK + roomId,
+                () -> roomSettingDao.getByRoomId(Long.parseLong(roomId)),3);
     }
 
 }

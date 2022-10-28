@@ -3,6 +3,7 @@ package com.obb.online_blackboard.entity;
 import com.obb.online_blackboard.entity.base.Shape;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.redis.core.RedisHash;
 
 import java.util.ArrayList;
@@ -25,12 +26,15 @@ public class RoomEntity {
 
     private String creatorName;
 
+    private String name;
+
     private List<UserDataEntity> participants;
 
     List<Long> sheets;
 
     List<SheetEntity> sheetEntities;
 
+    @Transient
     RoomSettingEntity setting;
 
     public RoomEntity(){
