@@ -24,6 +24,9 @@ export default defineComponent({
         })
       })
       this.newName = ''
+    },
+    async logout() {
+      this.userStore.logout()
     }
   }
 })
@@ -33,9 +36,10 @@ export default defineComponent({
   <div class="container">
     <p>个人信息</p>
     <el-input v-model="newName" placeholder="请输入新的昵称"/>
-    <div class="buttons">
-      <el-button type="primary">修改昵称</el-button>
+    <div style="float: right">
+      <el-button type="primary" @click="updateNickname">修改昵称</el-button>
     </div>
+    <el-button type="danger" style="margin-top: 50px" @click="logout">登出</el-button>
   </div>
 </template>
 
@@ -49,9 +53,5 @@ export default defineComponent({
 
 .container > *:not(:nth-child(1)) {
   margin-top: 10px;
-}
-
-.buttons {
-  float: right;
 }
 </style>
