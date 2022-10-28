@@ -1,5 +1,6 @@
 package com.obb.online_blackboard.model;
 
+import com.obb.online_blackboard.dao.mysql.RoomDbDao;
 import com.obb.online_blackboard.dao.redis.RoomDao;
 import com.obb.online_blackboard.dao.mysql.RoomSettingDao;
 import com.obb.online_blackboard.entity.RoomEntity;
@@ -26,6 +27,9 @@ public class RoomModel {
     RoomSettingDao roomSettingDao;
 
     @Resource
+    RoomDbDao roomDbDao;
+
+    @Resource
     Id id;
 
     @Resource
@@ -37,7 +41,12 @@ public class RoomModel {
 
     public String createRoom(RoomEntity room){
         room.setId(String.valueOf(id.getId("room")));
-        roomDao.save(room);
+        room.setStatus("no_start");
+        String name = room.getName();
+        if(name == null || name.equals("")){
+            room.setName(room.getCreatorName() + "的会议");
+        }
+        roomDbDao.insert(room);
         return room.getId();
     }
 
@@ -54,7 +63,11 @@ public class RoomModel {
     }
 
     public RoomEntity getRoomById(String roomId){
-        return roomDao.getRoomEntityById(roomId);
+        RoomEntity r = roomDao.getRoomEntityById(roomId);
+        if(r == null){
+            r = roomDbDao.getRoomById(Long.parseLong(roomId));
+        }
+        return r;
     }
 
     public RoomSettingEntity getRoomSettingByRoomId(String roomId){

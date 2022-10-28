@@ -40,12 +40,11 @@ public class RoomService {
     public RoomEntity createRoom(RoomSettingEntity setting, long userId){
         RoomEntity room = new RoomEntity();
         UserDataEntity user = userModel.getDataById(userId);
-        //默认画板
-        long sheetId = sheetModel.createSheet("sheet-1");
         room.setCreatorId(userId);
         room.setCreatorName(user.getNickname());
-        room.getSheets().add(sheetId);
+        //创建并获取房间ID
         String roomId = roomModel.createRoom(room);
+
         roomModel.createSetting(setting, userId, roomId);
         room.setSetting(setting);
         return room;
@@ -55,6 +54,9 @@ public class RoomService {
         RoomEntity r = roomModel.getRoomById(roomId);
         if(r == null) {
             throw new OperationException(404, "目标房间不存在");
+        }
+        if(r.getStatus().equals("end")){
+            throw new OperationException(404, "会议已经结束了");
         }
         RoomSettingEntity setting = roomModel.getRoomSettingByRoomId(roomId);
         if(setting.getAllowAnonymous() == 0 && isAnonymous == 1){

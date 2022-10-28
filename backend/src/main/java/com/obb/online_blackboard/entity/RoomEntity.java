@@ -5,9 +5,11 @@ import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.redis.core.RedisHash;
+import org.springframework.data.redis.core.TimeToLive;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author 陈桢梁
@@ -28,7 +30,15 @@ public class RoomEntity {
 
     private String name;
 
+    private int loaded;
+
     private List<UserDataEntity> participants;
+
+    @Transient
+    private String status;
+
+    @TimeToLive(unit = TimeUnit.MILLISECONDS)
+    private long timeout;
 
     List<Long> sheets;
 
@@ -36,6 +46,7 @@ public class RoomEntity {
 
     @Transient
     RoomSettingEntity setting;
+
 
     public RoomEntity(){
         participants = new ArrayList<>();
