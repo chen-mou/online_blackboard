@@ -82,7 +82,7 @@ export default defineComponent({
   width: 300px;
   height: 100%;
   padding: 30px;
-  transition: 0.5s;
+  transition: 0.3s ease-out;
 }
 
 .container > .pack {
