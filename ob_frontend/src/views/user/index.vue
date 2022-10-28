@@ -23,10 +23,11 @@ export default defineComponent({
           message: `修改失败！${data.msg}`
         })
       })
-      this.newName = ''
+      this.newName = this.userStore.nickname
     },
     async logout() {
       this.userStore.logout()
+      this.$router.replace('/login')
     }
   }
 })

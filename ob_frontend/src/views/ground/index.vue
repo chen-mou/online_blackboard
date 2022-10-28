@@ -8,13 +8,6 @@ export default defineComponent({
   name: "BlackboardGround",
   setup() {
     const userStore = useUserStore()
-    if (!userStore.hasLogin) {
-      useRouter().replace('/login')
-      ElMessage({
-        message: '请先登录',
-        type: 'info',
-      })
-    }
 
     const newName = ref(userStore.nickname)
     const whiteboardCode = ref('')
@@ -24,6 +17,21 @@ export default defineComponent({
       newName,
       whiteboardCode,
       packEnter,
+      userStore,
+    }
+  },
+  mounted() {
+    if (!this.userStore.hasLogin) {
+      this.userStore.getUserData().then((res) => {
+        if (!res) {
+          this.$router.replace('/login')
+          ElMessage({
+            message: '请先登录',
+            type: 'info',
+          })
+        }
+        this.newName = this.userStore.nickname
+      })
     }
   },
   methods: {

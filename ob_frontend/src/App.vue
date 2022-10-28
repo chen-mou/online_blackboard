@@ -8,6 +8,7 @@ const userStore = useUserStore()
 
 <template>
   <el-menu
+    v-if="userStore.hasLogin"
     default-active="2"
     class="menu"
     :collapse="isCollapse"
@@ -46,13 +47,12 @@ const userStore = useUserStore()
 
 <style>
 .menu:not(.el-menu--collapse) {
-  width: 130px;
+  width: 200px;
   min-height: 400px;
 }
 
 .menu {
   z-index: 100;
-  border: 1px solid blue;
   height: 100vh;
 }
 
@@ -70,9 +70,9 @@ const userStore = useUserStore()
 }
 
 .welcome {
-  text-align: center;
   margin-top: 10px;
   margin-bottom: 10px;
+  margin-left: 15px;
   overflow: hidden;
   white-space: nowrap;
 }

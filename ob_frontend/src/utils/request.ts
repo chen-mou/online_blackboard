@@ -11,21 +11,15 @@ export default async function request(config: AxiosRequestConfig) {
       return res.data
     },
     err => {
-      //todo 单独处理 token 过期
       return err.response.data
     }
   )
 
-  if (config.data != null) {
-    const data = new FormData
-    for (const key of Object.keys(config.data)) {
-      data.append(key, config.data[key])
-    }
-    config.data = data
-  }
+  config.data = JSON.stringify(config.data)
 
   config.headers = {
-    token: `Bearer ${localStorage.getItem('token')}`
+    token: localStorage.getItem('token'),
+    'Content-Type': 'application/json;charset=utf8',
   }
 
   return (await instance(config)) as any

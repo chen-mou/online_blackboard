@@ -1,9 +1,10 @@
 import { defineStore } from "pinia";
 import request from "@/utils/request";
+import axios from "axios";
 
 export const useUserStore = defineStore('user', {
     state: () => ({
-      hasLogin: true,
+      hasLogin: false,
       userId: 0,
       nickname: '鲲鲲',
     }),
@@ -33,20 +34,51 @@ export const useUserStore = defineStore('user', {
         }
         this._loginSuccess(data)
       },
-      _loginSuccess(data: any) {
+      _loginSuccess(data: any, hasToken = true) {
         this.hasLogin = true
-        this.nickname = data.data.user_data.nickname
-        this.userId = data.data.user_data.userId
-        localStorage.setItem('token', data.data.token)
+        if (hasToken) {
+          this.nickname = data.data.user_data.nickname
+          this.userId = data.data.user_data.userId
+          localStorage.setItem('token', data.data.token)
+          return
+        }
+        this.nickname = data.data.nickname
+        this.userId = data.data.userId
       },
       async updateNickName(newNickname: string, onfail: (data: any) => void) {
-
+        const data = await request({
+          method: 'post',
+          url: '/user/nickname',
+          data: { nickname: newNickname },
+        })
+        if (data.code != 200) {
+          onfail(data)
+          return
+        }
+        this.nickname = newNickname
         return
+      },
+      async getUserData() {
+        const data = await request({
+          method: 'get',
+          url: '/user/info',
+        })
+        if (data.code != 200) {
+          return false
+        }
+        this._loginSuccess(data, false)
+        return true
       },
       async logout() {
-        return
+        await request({
+          method: 'post',
+          url: '/user/logout',
+        })
+        this.hasLogin = false
+        this.nickname = '鲲鲲'
+        this.userId = 0
+        localStorage.removeItem('token')
       },
-
     },
     getters: {},
   }
