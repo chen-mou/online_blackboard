@@ -20,6 +20,10 @@ export default defineComponent({
       hideName: false,
       orderTime: false,
       roomName: '',
+      fromDate: '',
+      fromTime: '',
+      toDate: '',
+      toTime: '',
     }
   },
   mounted() {
@@ -45,14 +49,10 @@ export default defineComponent({
       return
     },
   },
-  computed: {
-    startTime() {
-      return 0
-    },
-    endTime() {
-      return 0
-    },
-
+  watch: {
+    toTime() {
+      console.log(this.fromDate,this.fromTime,'>>',this.toDate,this.toTime)
+    }
   }
 })
 </script>
@@ -83,12 +83,12 @@ export default defineComponent({
         <el-input placeholder="你的昵称" v-model="newName" :disabled="!hideName"/>
         <div v-show="orderTime">
           从
-          <input type="date" class="date-picker"/>
-          <input type="time" class="date-picker"/>
+          <input type="date" class="date-picker" v-model="fromDate"/>
+          <input type="time" class="date-picker" v-model="fromTime"/>
           <br/>
           到
-          <input type="date" class="date-picker"/>
-          <input type="time" class="date-picker"/>
+          <input type="date" class="date-picker" v-model="toDate"/>
+          <input type="time" class="date-picker" v-model="toTime"/>
         </div>
         <p class="buttons">
           <el-checkbox label="预约时间" v-model="orderTime"/>
