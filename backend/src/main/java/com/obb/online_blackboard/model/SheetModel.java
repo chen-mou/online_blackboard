@@ -19,9 +19,12 @@ public class SheetModel {
     @Resource
     SheetDao sheetDao;
 
+    @Resource
+    Id id;
+
     public long createSheet(String name){
         SheetEntity sheetEntity = new SheetEntity();
-        sheetEntity.setId(Id.getId("sheet"));
+        sheetEntity.setId(id.getId("sheet"));
         sheetEntity.setName(name);
         sheetDao.save(sheetEntity);
         return sheetEntity.getId();

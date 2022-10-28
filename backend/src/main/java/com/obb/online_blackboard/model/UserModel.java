@@ -7,6 +7,7 @@ import org.springframework.data.annotation.Transient;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import tool.encrypt.MD5;
 import tool.util.id.Id;
 import tool.util.lock.LockUtil;
 
@@ -31,12 +32,18 @@ public class UserModel {
     @Resource
     RedisTemplate<String, Object> redis;
 
+    @Resource
+    Id id;
+
     public static final String USER_KEY = "USER:";
 
     public static final String LOCK_KEY = "USER_LOCK:";
 
     public UserEntity getUserByName(String username){
         UserEntity user = userDao.getByName(username);
+        if(user == null){
+            return null;
+        }
         redis.opsForValue().set(USER_KEY + user.getId(), user);
         return user;
     }
@@ -47,11 +54,12 @@ public class UserModel {
 
     @Transactional(rollbackFor = {Exception.class})
     public void createUser(UserEntity user){
-        long userId = Id.getId("User");
+        long userId = id.getId("User");
         user.setCtime(new Date());
         user.setId(userId);
         UserDataEntity data = new UserDataEntity();
         data.setUserId(userId);
+        data.setNickname("初始名字" + MD5.salt(String.valueOf(userId)).substring(24));
         userDao.createData(data);
         userDao.create(user);
     }

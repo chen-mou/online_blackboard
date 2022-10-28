@@ -25,8 +25,10 @@ public class RoomModel {
     @Resource
     RoomSettingDao roomSettingDao;
 
+    @Resource
+    Id id;
     public String createRoom(RoomEntity room){
-        room.setId(String.valueOf(Id.getId("room")));
+        room.setId(String.valueOf(id.getId("room")));
         roomDao.save(room);
         return room.getId();
     }
@@ -36,7 +38,7 @@ public class RoomModel {
     }
 
     public String createSetting(RoomSettingEntity setting, long userId, String roomId){
-        setting.setId(String.valueOf(Id.getId("setting")));
+        setting.setId(String.valueOf(id.getId("setting")));
         setting.setCreatorId(userId);
         setting.setRoomId(roomId);
         roomSettingDao.save(setting);

@@ -1,8 +1,10 @@
 package com.obb.online_blackboard;
 
+import com.obb.online_blackboard.config.Context;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.redis.core.RedisTemplate;
 
 @SpringBootApplication(scanBasePackages = {"tool", "com.obb.online_blackboard"})
 public class OnlineBlackboardApplication {

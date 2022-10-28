@@ -1,6 +1,7 @@
 package tool.encrypt;
 
 import org.apache.tomcat.util.security.MD5Encoder;
+import org.springframework.util.DigestUtils;
 
 import java.nio.charset.StandardCharsets;
 
@@ -15,7 +16,7 @@ public class MD5 {
     private static final String salt = "MD5_SALT";
 
     public static String salt(String text){
-        return MD5Encoder.encode(text.getBytes(StandardCharsets.UTF_8));
+        return DigestUtils.md5DigestAsHex(text.getBytes(StandardCharsets.UTF_8));
     }
 
     public static String salt(String text, int count){
