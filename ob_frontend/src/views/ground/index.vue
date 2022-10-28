@@ -7,22 +7,19 @@ export default defineComponent({
   name: "BlackboardGround",
   setup() {
     const userStore = useUserStore()
-
-    const newName = ref(userStore.nickname)
-    const whiteboardCode = ref('')
     const packEnter = ref<'enter' | 'create'>('enter')
-    const hideName = ref(false)
-    const orderTime = ref(false)
-    const roomName = ref('')
-
     return {
-      newName,
-      whiteboardCode,
-      packEnter,
       userStore,
-      hideName,
-      orderTime,
-      roomName,
+      packEnter,
+    }
+  },
+  data() {
+    return {
+      newName: '',
+      whiteboardCode: '',
+      hideName: false,
+      orderTime: false,
+      roomName: '',
     }
   },
   mounted() {
@@ -38,6 +35,7 @@ export default defineComponent({
         this.newName = this.userStore.nickname
       })
     }
+    this.newName = this.userStore.nickname
   },
   methods: {
     joinRoom() {
@@ -46,6 +44,15 @@ export default defineComponent({
     createRoom() {
       return
     },
+  },
+  computed: {
+    startTime() {
+      return 0
+    },
+    endTime() {
+      return 0
+    },
+
   }
 })
 </script>
