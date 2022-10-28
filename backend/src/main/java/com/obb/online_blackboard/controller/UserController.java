@@ -31,15 +31,15 @@ public class UserController {
 
     @PostMapping("/login")
     @NotNeedLogin
-    public Result login(@RequestBody @Validated UserEntity user, Errors errors){
+    public Result login(@RequestBody @Validated UserEntity user, Errors errors) {
         ParamError.handlerError(errors);
         UserDataEntity data = userService.login(user.getUsername(), user.getPassword());
-        String token = JWT.encode(new HashMap<>(){
+        String token = JWT.encode(new HashMap<>() {
             {
                 put("userId", String.valueOf(data.getUserId()));
             }
         });
-        return Result.success("登录成功", new HashMap<>(){
+        return Result.success("登录成功", new HashMap<>() {
             {
                 put("token", token);
                 put("user_data", data);
@@ -49,15 +49,15 @@ public class UserController {
 
     @PostMapping("/register")
     @NotNeedLogin
-    public Result register(@RequestBody @Validated UserEntity user, Errors errors){
+    public Result register(@RequestBody @Validated UserEntity user, Errors errors) {
         ParamError.handlerError(errors);
         UserDataEntity data = userService.register(user.getUsername(), user.getPassword());
-        String token = JWT.encode(new HashMap<>(){
+        String token = JWT.encode(new HashMap<>() {
             {
                 put("userId", String.valueOf(data.getUserId()));
             }
         });
-        return Result.success("注册成功", new HashMap<>(){
+        return Result.success("注册成功", new HashMap<>() {
             {
                 put("token", token);
                 put("user_data", data);
@@ -66,14 +66,19 @@ public class UserController {
     }
 
     @PostMapping("/logout")
-    public Result logout(@UserInfo UserEntity user){
+    public Result logout(@UserInfo UserEntity user) {
         userService.logout(user.getId());
         return Result.success("登出成功", null);
     }
 
     @GetMapping("/info")
-    public Result getUserInfo(@UserInfo UserEntity user){
+    public Result getUserInfo(@UserInfo UserEntity user) {
         return Result.success("获取成功", userService.getUserInfo(user.getId()));
     }
 
+    @PostMapping("/nickname")
+    public Result updateNickname(@RequestBody UserDataEntity userData) {
+        userService.updateNickname(userData.getNickname());
+        return Result.success("修改成功", null);
+    }
 }
