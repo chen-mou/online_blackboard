@@ -1,6 +1,6 @@
 import axios, { AxiosRequestConfig } from 'axios'
 
-export default function request(config: AxiosRequestConfig) {
+export default async function request(config: AxiosRequestConfig) {
   const instance = axios.create({
     baseURL: '/api',
     timeout: 5000,
@@ -11,7 +11,8 @@ export default function request(config: AxiosRequestConfig) {
       return res.data
     },
     err => {
-      console.error(err)
+      //todo 单独处理 token 过期
+      return err.response.data
     }
   )
 
@@ -23,5 +24,9 @@ export default function request(config: AxiosRequestConfig) {
     config.data = data
   }
 
-  return instance(config)
+  config.headers = {
+    token: `Bearer ${localStorage.getItem('token')}`
+  }
+
+  return (await instance(config)) as any
 }
