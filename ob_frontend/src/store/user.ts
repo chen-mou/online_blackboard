@@ -45,7 +45,7 @@ export const useUserStore = defineStore('user', {
         this.nickname = data.data.nickname
         this.userId = data.data.userId
       },
-      async updateNickName(newNickname: string, onfail: (data: any) => void) {
+      async updateNickName(newNickname: string, onfail: (data: any) => void, onsuccess: () => void) {
         const data = await request({
           method: 'post',
           url: '/user/nickname',
@@ -56,6 +56,7 @@ export const useUserStore = defineStore('user', {
           return
         }
         this.nickname = newNickname
+        onsuccess()
         return
       },
       async getUserData() {

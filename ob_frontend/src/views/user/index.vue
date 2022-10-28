@@ -17,12 +17,18 @@ export default defineComponent({
       if (this.newName === this.userStore.nickname) {
         return
       }
-      await this.userStore.updateNickName(this.newName, (data) => {
-        this.$message({
-          type: 'error',
-          message: `修改失败！${data.msg}`
+      await this.userStore.updateNickName(this.newName,
+        (data) => {
+          this.$message({
+            type: 'error',
+            message: `修改失败！${data.msg}`
+          })
+        }, () => {
+          this.$message({
+            type: 'success',
+            message: '修改成功！',
+          })
         })
-      })
       this.newName = this.userStore.nickname
     },
     async logout() {

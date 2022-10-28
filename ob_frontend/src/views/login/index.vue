@@ -45,6 +45,10 @@ export default defineComponent({
       if (this.$route.fullPath != '/login') {
         return
       }
+      this.$message({
+        type: 'success',
+        message: '登录成功',
+      })
       this.$router.replace('/')
     }
   }
