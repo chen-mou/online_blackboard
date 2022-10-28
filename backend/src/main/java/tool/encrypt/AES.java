@@ -43,6 +43,7 @@ public class AES {
             byte[] encrypted1 = new Base64().decode(text);
             byte[] original = cipher.doFinal(encrypted1);
             String originalString = new String(original, StandardCharsets.UTF_8);
+            originalString = originalString.split("\\|")[0];
             return originalString;
         } catch (Exception ex) {
             throw new RuntimeException(ex);
