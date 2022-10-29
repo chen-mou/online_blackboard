@@ -34,11 +34,12 @@ public class RoomEntity {
 
     private List<UserDataEntity> participants;
 
-    @Transient
     private String status;
 
     @TimeToLive(unit = TimeUnit.MILLISECONDS)
     private long timeout;
+
+    private long nowSheet;
 
     List<Long> sheets;
 

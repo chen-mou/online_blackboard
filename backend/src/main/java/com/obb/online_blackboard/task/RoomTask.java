@@ -5,6 +5,7 @@ import com.obb.online_blackboard.dao.mysql.RoomSettingDao;
 import com.obb.online_blackboard.dao.redis.RoomDao;
 import com.obb.online_blackboard.entity.RoomEntity;
 import com.obb.online_blackboard.entity.RoomSettingEntity;
+import com.obb.online_blackboard.entity.SheetEntity;
 import com.obb.online_blackboard.model.SheetModel;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -47,11 +48,11 @@ public class RoomTask {
             return;
         }
         rooms.forEach((item) -> {
-            long sheetId = sheetModel.createSheet("sheet-1");
+            SheetEntity sheet= sheetModel.createSheet("sheet-1");
             RoomSettingEntity setting = item.getSetting();
             //会议结束后房间保留三个小时，前一个小时可以编辑，后一个小时会不能编辑
             item.setTimeout(setting.getEndTime().getTime() - setting.getStartTime().getTime() + 3 * 60 * 60 * 1000);
-            item.getSheets().add(sheetId);
+            item.getSheets().add(sheet.getId());
             item.setStatus("meeting");
             item.setLoaded(1);
         });

@@ -1,6 +1,7 @@
 package com.obb.online_blackboard.dao.redis;
 
 import com.obb.online_blackboard.entity.SheetEntity;
+import com.obb.online_blackboard.model.SheetModel;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -16,5 +17,7 @@ import java.util.List;
 public interface SheetDao extends CrudRepository<SheetEntity, Long> {
 
     List<SheetEntity> getSheetEntitiesByIdIn(List<Long> id);
+
+    SheetEntity getSheetEntityById(long Id);
 
 }

@@ -22,12 +22,16 @@ public class SheetModel {
     @Resource
     Id id;
 
-    public long createSheet(String name){
+    public SheetEntity createSheet(String name){
         SheetEntity sheetEntity = new SheetEntity();
         sheetEntity.setId(id.getId("sheet"));
         sheetEntity.setName(name);
         sheetDao.save(sheetEntity);
-        return sheetEntity.getId();
+        return sheetEntity;
+    }
+
+    public SheetEntity getSheetById(long id){
+        return sheetDao.getSheetEntityById(id);
     }
 
 }

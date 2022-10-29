@@ -4,10 +4,12 @@ import com.obb.online_blackboard.dao.mysql.UserDao;
 import com.obb.online_blackboard.entity.RoomEntity;
 import com.obb.online_blackboard.entity.RoomSettingEntity;
 import com.obb.online_blackboard.entity.UserDataEntity;
+import com.obb.online_blackboard.entity.base.Shape;
 import com.obb.online_blackboard.exception.OperationException;
 import com.obb.online_blackboard.model.RoomModel;
 import com.obb.online_blackboard.model.SheetModel;
 import com.obb.online_blackboard.model.UserModel;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tool.util.id.Id;
@@ -35,6 +37,9 @@ public class RoomService {
 
     @Resource
     UserDao userDao;
+
+    @Resource
+    SimpMessagingTemplate template;
 
     @Transactional
     public RoomEntity createRoom(RoomSettingEntity setting, long userId){
@@ -71,4 +76,9 @@ public class RoomService {
         roomModel.saveRoom(r);
         return r;
     }
+
+    public void draw(long userId, Shape shape){
+//        template.convertAndSend();
+    }
+
 }
