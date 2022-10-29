@@ -1,6 +1,7 @@
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 import { useUserStore } from "@/store/user";
+import { useRoute, useRouter } from "vue-router";
 
 export default defineComponent({
   name: "UserLogin",
@@ -8,10 +9,11 @@ export default defineComponent({
     const username = ref('')
     const password = ref('')
     const userStore = useUserStore()
+
     return {
       username,
       password,
-      userStore
+      userStore,
     }
   },
   methods: {
@@ -35,6 +37,21 @@ export default defineComponent({
       })
     },
   },
+  watch: {
+    'userStore.hasLogin'(newValue: boolean) {
+      if (!newValue) {
+        return
+      }
+      if (this.$route.fullPath != '/login') {
+        return
+      }
+      this.$message({
+        type: 'success',
+        message: '登录成功',
+      })
+      this.$router.replace('/')
+    }
+  }
 })
 </script>
 
