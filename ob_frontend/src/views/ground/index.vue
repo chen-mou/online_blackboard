@@ -30,11 +30,13 @@ export default defineComponent({
     if (!this.userStore.hasLogin) {
       this.userStore.getUserData().then((res) => {
         if (!res) {
-          this.$router.replace('/login')
+          console.log('to login')
           ElMessage({
             message: '请先登录',
             type: 'info',
           })
+          this.$router.replace('/login')
+          return
         }
         this.newName = this.userStore.nickname
       })
