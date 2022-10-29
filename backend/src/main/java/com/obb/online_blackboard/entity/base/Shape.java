@@ -31,6 +31,8 @@ public abstract class Shape extends Date{
 
     protected int y;
 
+    protected double lineWidth;
+
     public Shape(Shape s){
         this.type = s.type;
         this.sheetId = s.sheetId;
@@ -38,10 +40,15 @@ public abstract class Shape extends Date{
         this.index = s.index;
         this.x = s.x;
         this.y = s.y;
+        this.lineWidth = s.lineWidth;
     }
 
-    public abstract void setLineWidth(int lineWidth);
+    public void setLineWidth(double lineWidth){
+        this.lineWidth = lineWidth;
+    }
 
-    public abstract void setColor(String color);
+    public void setColor(String color){
+        this.color = color;
+    }
 
 }

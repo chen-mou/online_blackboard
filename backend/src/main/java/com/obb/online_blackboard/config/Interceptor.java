@@ -31,7 +31,6 @@ public class Interceptor implements WebMvcConfigurer {
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         resolvers.add(new UserInfoHandler());
-        resolvers.add(new ShapeHandler());
         resolvers.add(new JsonKeyHandler());
     }
 }

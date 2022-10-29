@@ -12,6 +12,7 @@ import com.obb.online_blackboard.model.UserModel;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tool.util.MessageUtil;
 import tool.util.id.Id;
 
 import javax.annotation.Resource;
@@ -39,7 +40,7 @@ public class RoomService {
     UserDao userDao;
 
     @Resource
-    SimpMessagingTemplate template;
+    MessageUtil msg;
 
     @Transactional
     public RoomEntity createRoom(RoomSettingEntity setting, long userId){
@@ -67,6 +68,11 @@ public class RoomService {
         if(setting.getAllowAnonymous() == 0 && isAnonymous == 1){
             throw new OperationException(403, "目标房间不能匿名");
         }
+        for(UserDataEntity user : r.getParticipants()){
+            if(user.getId() == userId){
+                return r;
+            }
+        }
         UserDataEntity user = userDao.getByUserId(userId);
         user.setIsAnonymous(isAnonymous);
         if(isAnonymous == 1){
@@ -74,6 +80,7 @@ public class RoomService {
         }
         r.getParticipants().add(user);
         roomModel.saveRoom(r);
+        msg.sendParticipants(r.getParticipants(), "/userJoin", user);
         return r;
     }
 

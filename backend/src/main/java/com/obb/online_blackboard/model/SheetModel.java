@@ -1,5 +1,6 @@
 package com.obb.online_blackboard.model;
 
+import com.obb.online_blackboard.dao.mysql.SheetIdDao;
 import com.obb.online_blackboard.dao.redis.SheetDao;
 import com.obb.online_blackboard.entity.SheetEntity;
 import org.springframework.stereotype.Repository;
@@ -20,12 +21,16 @@ public class SheetModel {
     SheetDao sheetDao;
 
     @Resource
+    SheetIdDao sheetIdDao;
+
+    @Resource
     Id id;
 
     public SheetEntity createSheet(String name){
         SheetEntity sheetEntity = new SheetEntity();
         sheetEntity.setId(id.getId("sheet"));
         sheetEntity.setName(name);
+        sheetIdDao.updateId(sheetEntity.getId());
         sheetDao.save(sheetEntity);
         return sheetEntity;
     }

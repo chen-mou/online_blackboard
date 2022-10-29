@@ -13,6 +13,6 @@ import org.apache.ibatis.annotations.Select;
 public interface IdGenerator {
 
     @Select("select id from ${table} order by id limit 1")
-    long getId(String table);
+    Long getId(String table);
 
 }

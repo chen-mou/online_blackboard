@@ -2,6 +2,7 @@ package com.obb.online_blackboard.service;
 
 import com.obb.online_blackboard.entity.RoomEntity;
 import com.obb.online_blackboard.entity.SheetEntity;
+import com.obb.online_blackboard.entity.base.Shape;
 import com.obb.online_blackboard.exception.OperationException;
 import com.obb.online_blackboard.model.RoomModel;
 import com.obb.online_blackboard.model.SheetModel;
@@ -41,6 +42,25 @@ public class SheetService {
         messageUtil.sendParticipants(room.getParticipants(), "/addSheet", sheet);
         roomModel.saveRoom(room);
         return sheet;
+    }
+
+    public void Draw(long userId, Shape shape, String roomId, long sheetId){
+        RoomEntity room = roomModel.getRoomById(roomId);
+        if(!room.getSheets().contains(sheetId)){
+            throw new OperationException(404, "画布不存在");
+        }
+        if(!room.equals("meeting")){
+            throw new OperationException(403, "会议已结束或者未没开始");
+        }
+        if(room.getSetting().getIsShare() == 0 && room.getCreatorId() != userId){
+            throw new OperationException(403, "你没有编辑权限");
+        }
+        SheetEntity sheet = sheetModel.getSheetById(sheetId);
+        sheet.addStack(userId, shape.getId());
+    }
+
+    public void set(){
+
     }
 
 }

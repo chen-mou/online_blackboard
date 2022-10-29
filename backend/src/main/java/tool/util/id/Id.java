@@ -33,22 +33,22 @@ public class Id {
     String name;
 
     @Autowired()
-    public Id(IdGenerator key) {
+    public Id(IdGenerator key){
         this.key = key;
     }
 
-    public long getId(String name) {
+    private final long MIN_ID = 1000000;
+
+    public long getId(String name){
         String key = this.name + "-" + name + "-id";
-        Object o = redis.opsForValue().get(key);
-        Long id = null;
-        if (o == null) {
+        Integer id = (Integer) redis.opsForValue().get(key);
+        if(id == null){
             RLock lock = client.getLock(name);
             lock.lock(3, TimeUnit.SECONDS);
-            id = this.key.getId(name) + 12;
+            Long maxId = this.key.getId(name);
+            id = (int)(maxId == null ? MIN_ID : maxId) + 12;
             redis.opsForValue().set(key, id);
             lock.unlock();
-        } else {
-            id = Long.valueOf((Integer) o);
         }
         return id;
     }

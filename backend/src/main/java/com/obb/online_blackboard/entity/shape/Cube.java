@@ -16,8 +16,6 @@ public class Cube extends Shape {
 
     private int height;
 
-    private int lineWidth;
-
     public Cube(Shape shape){
         super(shape);
         if(shape.getType().equals("Cube")){
@@ -27,15 +25,6 @@ public class Cube extends Shape {
         }
     }
 
-    @Override
-    public void setLineWidth(int lineWidth) {
-        this.lineWidth = lineWidth;
-    }
-
-    @Override
-    public void setColor(String color) {
-
-    }
 
 
 }

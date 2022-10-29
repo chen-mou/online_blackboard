@@ -1,19 +1,10 @@
 package com.obb.online_blackboard.handler;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.obb.online_blackboard.entity.UserEntity;
 import com.obb.online_blackboard.entity.base.Shape;
-import com.obb.online_blackboard.entity.shape.Cube;
 import com.obb.online_blackboard.exception.OperationException;
 import org.springframework.core.MethodParameter;
-import org.springframework.web.bind.support.WebDataBinderFactory;
-import org.springframework.web.context.request.NativeWebRequest;
-import org.springframework.web.method.support.HandlerMethodArgumentResolver;
-import org.springframework.web.method.support.ModelAndViewContainer;
-
-import javax.servlet.http.HttpServletRequest;
-import java.nio.charset.StandardCharsets;
-import java.util.stream.Collectors;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.handler.invocation.HandlerMethodArgumentResolver;
 
 /**
  * @author 陈桢梁
@@ -29,18 +20,18 @@ public class ShapeHandler implements HandlerMethodArgumentResolver {
     }
 
     @Override
-    public Object resolveArgument(MethodParameter parameter,
-                                  ModelAndViewContainer mavContainer,
-                                  NativeWebRequest webRequest,
-                                  WebDataBinderFactory binderFactory) throws Exception {
-        HttpServletRequest req = (HttpServletRequest) webRequest.getNativeRequest();
-        String json = req.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
-        ObjectMapper om = new ObjectMapper();
-        Shape s = om.readValue(json.getBytes(StandardCharsets.UTF_8), Shape.class);
-        switch(s.getType()){
-            case "Cube":
-                return new Cube(s);
+    public Object resolveArgument(MethodParameter parameter, Message<?> message) throws Exception {
+        Object payload = message.getPayload();
+        if (payload instanceof Shape) {
+            Shape shape = (Shape) payload;
+            try {
+                Class clazz = Class.forName("com.obb.online_blackboard.entity.shape." + shape.getType());
+                return clazz.getDeclaredConstructor(Shape.class).newInstance(shape);
+            }catch (ClassNotFoundException e){
+                throw new OperationException(500, "类型参数有误");
+            }
         }
-        throw new OperationException(500, "绘图类型有误");
+        return null;
     }
+
 }

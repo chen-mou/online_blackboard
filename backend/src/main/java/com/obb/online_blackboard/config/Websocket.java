@@ -1,6 +1,7 @@
 package com.obb.online_blackboard.config;
 
 import com.obb.online_blackboard.handler.JsonKeyHandler;
+import com.obb.online_blackboard.handler.JsonMessageHandler;
 import com.obb.online_blackboard.handler.ShapeHandler;
 import com.obb.online_blackboard.interceptor.HandInterceptor;
 import com.obb.online_blackboard.interceptor.PrincipalInterceptor;
@@ -56,8 +57,8 @@ public class Websocket implements WebSocketMessageBrokerConfigurer {
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
         WebSocketMessageBrokerConfigurer.super.addArgumentResolvers(argumentResolvers);
-        argumentResolvers.add((HandlerMethodArgumentResolver) new ShapeHandler());
-        argumentResolvers.add((HandlerMethodArgumentResolver) new JsonKeyHandler());
+        argumentResolvers.add(new ShapeHandler());
+        argumentResolvers.add(new JsonMessageHandler());
     }
 
     @Override

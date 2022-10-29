@@ -8,7 +8,9 @@ import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.TimeToLive;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -41,7 +43,7 @@ public class RoomEntity {
 
     private long nowSheet;
 
-    List<Long> sheets;
+    Set<Long> sheets;
 
     List<SheetEntity> sheetEntities;
 
@@ -51,7 +53,7 @@ public class RoomEntity {
 
     public RoomEntity(){
         participants = new ArrayList<>();
-        sheets = new ArrayList<>();
+        sheets = new HashSet<>();
     }
 
 }

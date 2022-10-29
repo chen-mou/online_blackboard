@@ -13,6 +13,7 @@ import tool.annotation.UserInfo;
 import tool.result.Result;
 
 import javax.annotation.Resource;
+import java.security.Principal;
 
 /**
  * @author 陈桢梁
@@ -27,15 +28,18 @@ public class SheetController {
     SheetService sheetService;
 
     @MessageMapping("/create")
-    public void create(@UserInfo UserEntity user, @JsonKey String name, @JsonKey String roomId){
-        sheetService.createSheet(roomId, name, user.getId());
+    public void create(Principal principal, @JsonKey String name, @JsonKey String roomId){
+        sheetService.createSheet(roomId, name, Long.parseLong(principal.getName()));
     }
 
     @MessageMapping("/draw")
-    public void draw(@UserInfo UserEntity user, Shape s){
+    public void draw(Principal p, Shape s){
 
     }
 
     @MessageMapping("/set")
+    public void setShape(Principal p, Shape s) {
+
+    }
 
 }
