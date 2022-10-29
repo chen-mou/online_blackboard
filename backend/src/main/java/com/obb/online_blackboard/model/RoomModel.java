@@ -55,7 +55,7 @@ public class RoomModel {
     }
 
     public String createSetting(RoomSettingEntity setting, long userId, String roomId){
-        setting.setId(String.valueOf(id.getId("setting")));
+        setting.setId(String.valueOf(id.getId("room_setting")));
         setting.setCreatorId(userId);
         setting.setRoomId(roomId);
         roomSettingDao.createSetting(setting);

@@ -1,5 +1,6 @@
 package com.obb.online_blackboard.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.obb.online_blackboard.entity.base.Date;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
@@ -33,9 +34,11 @@ public class RoomSettingEntity extends Date {
     private int allowAnonymous;
 
     @NotNull
+    @JsonFormat(locale = "zh",timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm")
     private java.util.Date startTime;
 
     @NotNull
+    @JsonFormat(locale = "zh",timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm")
     private java.util.Date endTime;
 
 }

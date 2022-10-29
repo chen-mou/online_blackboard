@@ -36,6 +36,7 @@ public class RoomController {
                              Errors errors){
         ParamError.handlerError(errors);
         RoomEntity room = roomService.createRoom(setting, user.getId());
+        System.out.println("成功");
         return Result.success("创建成功", room);
     }
 
