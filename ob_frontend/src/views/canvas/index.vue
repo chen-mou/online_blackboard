@@ -1,13 +1,20 @@
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent,onMounted } from "vue";
 import { useUserStore } from "@/store/user";
-
+import Canvas from "@/utils/Canvas/canvas";
+import NavBar from './components/NavBar.vue'
 export default defineComponent({
+  components: { NavBar },
   name: "BlackboardCanvas",
   setup() {
     const userStore = useUserStore()
+    onMounted(()=>{
+    const canvas = new Canvas({canvas:"canvas"})
+    console.log(canvas)
+  })
+
     return {
-      userStore
+      userStore,
     }
   },
   watch: {
@@ -21,14 +28,23 @@ export default defineComponent({
     }
   }
 })
+
 </script>
-
 <template>
-  <div>
-    canvas
+  <div class="main">
+    <nav-bar></nav-bar>
+    <canvas id="canvas"></canvas>
   </div>
-</template>
+</template> 
 
-<style scoped>
+<style scoped lang="less">
+.main {
+  height: 100%;
+  width: 100%;
 
+  #canvas {
+    height: 90vh;
+    width: 100%
+  }
+}
 </style>

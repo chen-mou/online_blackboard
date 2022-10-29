@@ -1,19 +1,21 @@
 <template>
-<div>
-    
-</div>
+    <div class="NavBar">
+        <span>
+
+            NavBar
+        </span>
+    </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-export default defineComponent({
-    name:"NavBar"
-})
+<script lang="ts" setup>
+
 
 </script>
 
 
-<style>
- 
-
+<style lang="less" scoped>
+.NavBar {
+    height: 10vh;
+    width: 100%;
+}
 </style>

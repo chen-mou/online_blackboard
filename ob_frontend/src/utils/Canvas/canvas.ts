@@ -13,7 +13,7 @@ type ExtractStringKey<A> = Diff<
 
 type styleNameType = ExtractStringKey<CanvasRenderingContext2D>
 
-class canvas {
+class Canvas {
   options: any
   canvas: HTMLCanvasElement
   height: number
@@ -40,8 +40,7 @@ class canvas {
       throw Error('请传入canvas元素对于的Id')
     }
     this.canvas =
-      (document.getElementById(canvas) as HTMLCanvasElement) ||
-      (canvas as HTMLCanvasElement) // 画布
+      (document.getElementById(canvas) as HTMLCanvasElement)
     this.height = height // 画布的宽高
     this.width = width
     this.target = document.getElementById(target) as HTMLElement
@@ -60,4 +59,4 @@ class canvas {
   }
 }
 
-export default canvas
+export default Canvas

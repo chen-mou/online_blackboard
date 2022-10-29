@@ -26,16 +26,16 @@ const router = createRouter({
   routes
 })
 
-router.beforeEach(async (to, from) => {
-  if (
-    // 检查用户是否已登录
-    !useUserStore().hasLogin &&
-    to.name !== 'ground' &&
-    to.name !== 'login'
-  ) {
-    // 将用户重定向到登录页面
-    return { name: 'ground' }
-  }
-})
+// router.beforeEach(async (to, from) => {
+//   if (
+//     // 检查用户是否已登录
+//     !useUserStore().hasLogin &&
+//     to.name !== 'ground' &&
+//     to.name !== 'login'
+//   ) {
+//     // 将用户重定向到登录页面
+//     return { name: 'ground' }
+//   }
+// })
 
 export default router
