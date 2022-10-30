@@ -6,6 +6,7 @@ import com.obb.online_blackboard.entity.base.Shape;
 import com.obb.online_blackboard.exception.OperationException;
 import com.obb.online_blackboard.model.RoomModel;
 import com.obb.online_blackboard.model.SheetModel;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import tool.util.MessageUtil;
 
@@ -27,7 +28,7 @@ public class SheetService {
     RoomModel roomModel;
 
     @Resource
-    MessageUtil messageUtil;
+    SimpMessagingTemplate template;
 
     public SheetEntity createSheet(String roomId, String name, long userId){
         RoomEntity room = roomModel.getRoomById(roomId);
@@ -39,7 +40,7 @@ public class SheetService {
         }
         SheetEntity sheet = sheetModel.createSheet(name);
         room.getSheets().add(sheet.getId());
-        messageUtil.sendParticipants(room.getParticipants(), "/addSheet", sheet);
+        template.convertAndSend("/" + room.getId() + "/create_sheet", sheet);
         roomModel.saveRoom(room);
         return sheet;
     }

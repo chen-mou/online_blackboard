@@ -4,6 +4,7 @@ import com.obb.online_blackboard.handler.JsonKeyHandler;
 import com.obb.online_blackboard.handler.JsonMessageHandler;
 import com.obb.online_blackboard.handler.ShapeHandler;
 import com.obb.online_blackboard.interceptor.HandInterceptor;
+import com.obb.online_blackboard.interceptor.MessageInterceptor;
 import com.obb.online_blackboard.interceptor.PrincipalInterceptor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,27 +32,26 @@ import java.util.List;
 @EnableWebSocketMessageBroker
 public class Websocket implements WebSocketMessageBrokerConfigurer {
 
-    HandInterceptor handInterceptor;
 
     PrincipalInterceptor principalInterceptor;
 
     @Autowired
-    public Websocket(HandInterceptor handInterceptor, PrincipalInterceptor principalInterceptor){
-        this.handInterceptor = handInterceptor;
+    public Websocket(PrincipalInterceptor principalInterceptor){
         this.principalInterceptor = principalInterceptor;
     }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/connect")
-                .setAllowedOrigins("*")
-                .addInterceptors(handInterceptor)
-                .setHandshakeHandler(principalInterceptor)
+                .setAllowedOriginPatterns("*")
+//                .addInterceptors(new HandInterceptor())
+//                .setHandshakeHandler(principalInterceptor)
                 .withSockJS();
     }
 
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
+        registration.interceptors(new MessageInterceptor());
     }
 
     @Override
@@ -64,7 +64,7 @@ public class Websocket implements WebSocketMessageBrokerConfigurer {
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         WebSocketMessageBrokerConfigurer.super.configureMessageBroker(registry);
-        registry.enableSimpleBroker("/queue","/test");
+        registry.enableSimpleBroker("/room");
         registry.setUserDestinationPrefix("/user").setApplicationDestinationPrefixes("/app");
 
     }

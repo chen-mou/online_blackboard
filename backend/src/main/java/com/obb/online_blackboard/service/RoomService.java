@@ -1,6 +1,7 @@
 package com.obb.online_blackboard.service;
 
 import com.obb.online_blackboard.dao.mysql.UserDao;
+import com.obb.online_blackboard.dao.redis.RoomDao;
 import com.obb.online_blackboard.entity.RoomEntity;
 import com.obb.online_blackboard.entity.RoomSettingEntity;
 import com.obb.online_blackboard.entity.UserDataEntity;
@@ -40,7 +41,7 @@ public class RoomService {
     UserDao userDao;
 
     @Resource
-    MessageUtil msg;
+    SimpMessagingTemplate template;
 
     @Transactional
     public RoomEntity createRoom(RoomSettingEntity setting, long userId){
@@ -61,8 +62,8 @@ public class RoomService {
         if(r == null) {
             throw new OperationException(404, "目标房间不存在");
         }
-        if(r.getStatus().equals("end")){
-            throw new OperationException(404, "会议已经结束了");
+        if(!r.getStatus().equals("meeting")){
+            throw new OperationException(404, "会议未开始或已经结束了");
         }
         RoomSettingEntity setting = roomModel.getRoomSettingByRoomId(roomId);
         if(setting.getAllowAnonymous() == 0 && isAnonymous == 1){
@@ -80,12 +81,21 @@ public class RoomService {
         }
         r.getParticipants().add(user);
         roomModel.saveRoom(r);
-        msg.sendParticipants(r.getParticipants(), "/userJoin", user);
+        template.convertAndSend("/" + roomId + "/user_join", user);
         return r;
     }
 
-    public void draw(long userId, Shape shape){
-//        template.convertAndSend();
+    public void over(String roomId, long userId){
+        RoomEntity room = roomModel.getRoomById(roomId);
+        if(!room.getStatus().equals("meeting")){
+            throw new OperationException(404, "会议未开始或已经结束");
+        }
+        if(room.getCreatorId() != userId){
+            throw new OperationException(403, "没有结束会议的权限");
+        }
+        roomModel.delRoom(roomId);
+        template.convertAndSend("/" + roomId + "/over", true);
     }
+
 
 }

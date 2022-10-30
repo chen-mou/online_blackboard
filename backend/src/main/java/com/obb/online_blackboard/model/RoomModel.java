@@ -10,6 +10,7 @@ import tool.util.id.Id;
 import tool.util.lock.LockUtil;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 
 /**
  * @author 陈桢梁
@@ -74,6 +75,18 @@ public class RoomModel {
         return lock.getLock(SETTING_KEY + roomId,
                 SETTING_LOCK + roomId,
                 () -> roomSettingDao.getByRoomId(Long.parseLong(roomId)),3);
+    }
+
+    public void delRoom(String roomId){
+        RoomEntity room = new RoomEntity();
+        room.setId(roomId);
+        room.setStatus("over");
+        roomDao.deleteById(roomId);
+        roomDbDao.update(new ArrayList<>(){
+            {
+                add(room);
+            }
+        });
     }
 
 }

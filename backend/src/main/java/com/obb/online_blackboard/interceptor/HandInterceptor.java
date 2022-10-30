@@ -36,7 +36,7 @@ import java.util.Map;
  * @date 2021-12-06 20:45
  * @logs[0] 2021-12-06 20:45 陈桢梁 创建了HeadInterceptor.java文件
  */
-@Component
+
 public class HandInterceptor implements HandshakeInterceptor {
 
     private ApplicationContext app = Context.getContext();
@@ -51,7 +51,7 @@ public class HandInterceptor implements HandshakeInterceptor {
     }
 
     private long vif(HttpHeaders header){
-        List<String> tokens = header.get("token");
+        List<String> tokens = header.get("Authorization");
         if(tokens == null){
             return -1;
         }
