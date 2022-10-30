@@ -1,0 +1,16 @@
+FROM maven:latest as builder
+
+COPY . /project
+
+WORKDIR /project
+
+RUN mvn clean package -Dmaven.test.skip=true
+
+# 拉取运行环境，这个镜像打包出的镜像比较小，如需要可换成oracle的jre
+FROM fabric8/java-alpine-openjdk11-jre
+
+COPY --from=builder /project/target/online_blackboard-1.0.jar /
+
+ENTRYPOINT ["java","-jar","/online_blackboard-1.0.jar"]
+
+EXPOSE 18888

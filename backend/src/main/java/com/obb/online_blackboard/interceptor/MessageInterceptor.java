@@ -10,6 +10,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHeaders;
+import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
@@ -20,6 +21,7 @@ import tool.util.JWT;
 
 import javax.servlet.http.HttpServletResponse;
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,8 +34,8 @@ import java.util.Map;
 public class MessageInterceptor implements ChannelInterceptor {
 
 
-    private void sendError(MessageChannel channel,int code, String msg){
-        channel.send(new Message<Result>() {
+    private void sendError(MessageHeaders headers, MessageChannel channel, int code, String msg){
+        channel.send(new Message<>() {
             @Override
             public Result getPayload() {
                 return Result.fail(code, msg);
@@ -41,40 +43,50 @@ public class MessageInterceptor implements ChannelInterceptor {
 
             @Override
             public MessageHeaders getHeaders() {
-                return null;
+                return new MessageHeaders(new HashMap<>() {
+                    {
+                        headers.forEach((key, value) -> {
+                            if (key.equals("simpMessageType")) {
+                                put(key, SimpMessageType.CONNECT_ACK);
+                                return;
+                            }
+                            if (key.equals("stompCommand")) {
+                                put(key, StompCommand.ERROR);
+                                return;
+                            }
+                            put(key, value);
+                        });
+                    }
+                });
             }
         });
     }
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
-        try {
-            StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
-            if (accessor != null && StompCommand.CONNECT.equals(accessor.getCommand())) {
-                List<String> tokens = accessor.getNativeHeader("Authorization");
-                RoomService r = Context.getContext().getBean(RoomService.class);
-                if (tokens == null) {
-                    sendError(channel, 403, "未登录");
-                    return null;
-                }
-                String token = tokens.get(0);
-                Map<String, String> data = JWT.decode(token);
-                if (!data.containsKey("userId")) {
-                    sendError(channel, 403, "token有误");
-                    return null;
-                }
-                String userId = data.get("userId");
-                List<String> roomId = accessor.getNativeHeader("Room-Id");
-                List<String> isAnonymous = accessor.getNativeHeader("Is-Anonymous");
-                accessor.setUser(() -> userId);
-                r.joinRoom(roomId.get(0), Long.parseLong(userId), Integer.parseInt(isAnonymous.get(0)));
-                return message;
+        StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
+        if (accessor != null && StompCommand.CONNECT.equals(accessor.getCommand())) {
+            List<String> tokens = accessor.getNativeHeader("Authorization");
+            RoomService r = Context.getContext().getBean(RoomService.class);
+            if (tokens == null) {
+//                sendError(accessor.getMessageHeaders(), channel, 403, "未登录");
+                throw new OperationException(403, "未登录");
             }
+            String token = tokens.get(0);
+            Map<String, String> data = JWT.decode(token);
+            if (!data.containsKey("userId")) {
+//                sendError(accessor.getMessageHeaders(), channel, 403, "token有误");
+                throw new OperationException(403, "token有误");
+            }
+            String userId = data.get("userId");
+            List<String> roomId = accessor.getNativeHeader("Room-Id");
+            List<String> isAnonymous = accessor.getNativeHeader("Is-Anonymous");
+            accessor.setUser(() -> userId);
+            r.joinRoom(roomId.get(0), Long.parseLong(userId), Integer.parseInt(isAnonymous.get(0)));
             return message;
-        }catch (OperationException e){
-            sendError(channel, e.getCode(), e.getMsg());
-            return null;
         }
+        return message;
+
     }
 
 

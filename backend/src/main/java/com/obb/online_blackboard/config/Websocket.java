@@ -18,6 +18,7 @@ import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
 import java.util.List;
+import java.util.Stack;
 
 
 /**
@@ -66,6 +67,16 @@ public class Websocket implements WebSocketMessageBrokerConfigurer {
         WebSocketMessageBrokerConfigurer.super.configureMessageBroker(registry);
         registry.enableSimpleBroker("/room");
         registry.setUserDestinationPrefix("/user").setApplicationDestinationPrefixes("/app");
+        registry.enableStompBrokerRelay("/topic/","/queue/","exchange")
+                .setRelayHost("47.112.184.57")   //地址
+                .setRelayPort(61613)     //端口
+                .setClientLogin("czl")  // 账号密码
+                .setClientPasscode("CZLczl@20010821")
+                .setSystemLogin("czl")
+                .setSystemPasscode("CZLczl@20010821")
+                .setVirtualHost("/websocket");
 
     }
+
+
 }
