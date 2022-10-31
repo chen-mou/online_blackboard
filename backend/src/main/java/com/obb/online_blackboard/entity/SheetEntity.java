@@ -23,6 +23,8 @@ public class SheetEntity {
 
     private String name;
 
+    private String roomId;
+
     //操作栈,只最多保存三十个操作
     private Map<Long, ArrayList<Long>> useStack;
 

@@ -13,6 +13,7 @@ import com.obb.online_blackboard.model.UserModel;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tool.result.Message;
 import tool.util.MessageUtil;
 import tool.util.id.Id;
 
@@ -81,7 +82,7 @@ public class RoomService {
         }
         r.getParticipants().add(user);
         roomModel.saveRoom(r);
-        template.convertAndSend("/" + roomId + "/user_join", user);
+        template.convertAndSend("/" + roomId, Message.def("user_join", user));
         return r;
     }
 
@@ -94,7 +95,7 @@ public class RoomService {
             throw new OperationException(403, "没有结束会议的权限");
         }
         roomModel.delRoom(roomId);
-        template.convertAndSend("/" + roomId + "/over", true);
+        template.convertAndSend("/" + roomId, Message.def("over", null));
     }
 
 

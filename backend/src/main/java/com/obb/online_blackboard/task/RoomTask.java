@@ -53,10 +53,11 @@ public class RoomTask {
             //会议结束后房间保留三个小时，前一个小时可以编辑，后一个小时会不能编辑
             item.setTimeout(setting.getEndTime().getTime() - setting.getStartTime().getTime() + 3 * 60 * 60 * 1000);
             item.getSheets().add(sheet.getId());
+            item.setNowSheet(sheet.getId());
             item.setStatus("meeting");
             item.setLoaded(1);
         });
-        roomDbDao.update(rooms);
+        roomDbDao.updateAll(rooms, 1, "meeting");
         roomDao.saveAll(rooms);
     }
 

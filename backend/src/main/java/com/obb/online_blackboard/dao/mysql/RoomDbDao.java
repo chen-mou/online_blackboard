@@ -24,17 +24,25 @@ public interface RoomDbDao {
     RoomEntity getRoomById(long room);
 
     @Update("<script>" +
-                "update room set" +
-                    "<if test = 'loaded != null'>loaded = #{loaded},</if>" +
-                    "<if test = 'name != null'>name = #{name},</if>" +
-                    "<if test = 'status != null'>status = #{status},</if>" +
-                    "creator_name = creator_name" +
+                "update room set " +
+                    "loaded = #{loaded}, " +
+                    "status = #{status} " +
                     "where id in(" +
                         "<foreach collection='rooms' item='item' separator=','>" +
                             "#{item.id}" +
                         "</foreach>" +
                     ")" +
             "</script>")
-    void update(@Param("rooms") List<RoomEntity> rooms);
+    void updateAll(@Param("rooms") List<RoomEntity> rooms, int loaded, String status);
+
+    @Update("<script>" +
+            "update room set " +
+            "<if test = 'loaded != null'>loaded = #{loaded},</if> " +
+            "<if test = 'name != null'>name = #{name},</if> " +
+            "<if test = 'status != null'>status = #{status},</if> " +
+            "creator_name = creator_name " +
+            "where id = #{id}" +
+            "</script>")
+    void update(RoomEntity room);
 
 }

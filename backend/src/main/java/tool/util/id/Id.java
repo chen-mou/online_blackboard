@@ -1,7 +1,9 @@
 package tool.util.id;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.obb.online_blackboard.dao.mysql.IdGenerator;
+import com.obb.online_blackboard.exception.OperationException;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +29,7 @@ public class Id {
     RedisTemplate<String, Object> redis;
 
     @Resource
-    LockUtil<Integer> lock;
+    RedissonClient redissonClient;
 
     IdGenerator key;
 
@@ -43,12 +45,31 @@ public class Id {
 
     public long getId(String name){
         String key = this.name + "-" + name + "-id";
-        Integer id = lock.getLock(key, name + "id_lock",
-                () -> {
-            long i = this.key.getId(name) + 12;
-            this.key.updateId(name, i);
-            return Math.toIntExact(i);
-                }, 3);
+        Object val = redis.opsForValue().get(key);
+        long id;
+        if(val == null){
+            RLock lock = redissonClient.getLock(name + "_id_lock");
+            boolean tr = lock.tryLock();
+            if(!tr) {
+                try {
+                    tr = lock.tryLock(3, TimeUnit.SECONDS);
+                    if(!tr){
+                        throw new OperationException(500, "服务器繁忙");
+                    }
+                    id = (Integer) redis.opsForValue().get(key);
+                }catch (InterruptedException e){
+                    throw new OperationException(500, "中断错误" + e.getMessage());
+                }
+            }else{
+                long dbId = this.key.getId(name);
+                id = Math.toIntExact(dbId + 12);
+                this.key.updateId(name, id);
+                redis.opsForValue().set(key, id);
+            }
+            lock.unlock();
+        }else{
+            id = (Integer)val;
+        }
         return id;
     }
 

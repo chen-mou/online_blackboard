@@ -43,6 +43,9 @@ public class RoomEntity {
 
     private long nowSheet;
 
+    @Transient
+    private SheetEntity nowSheetEntity;
+
     Set<Long> sheets;
 
     List<SheetEntity> sheetEntities;

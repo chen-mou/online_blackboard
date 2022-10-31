@@ -16,7 +16,7 @@ public interface IdGenerator {
     @Select("select value from redis_model_id where name = #{table}")
     Long getId(String table);
 
-    @Update("update  redis_model_id set id = #{id} where name = #{table}")
+    @Update("update  redis_model_id set value = #{id} where name = #{table}")
     void updateId(String table, long id);
 
 }

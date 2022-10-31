@@ -3,10 +3,14 @@ package com.obb.online_blackboard.model;
 import com.obb.online_blackboard.dao.mysql.SheetIdDao;
 import com.obb.online_blackboard.dao.redis.SheetDao;
 import com.obb.online_blackboard.entity.SheetEntity;
+import com.obb.online_blackboard.entity.base.Shape;
 import org.springframework.stereotype.Repository;
 import tool.util.id.Id;
 
 import javax.annotation.Resource;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author 陈桢梁
@@ -22,6 +26,9 @@ public class SheetModel {
 
 //    @Resource
 //    SheetIdDao sheetIdDao;
+
+    @Resource
+    ShapeModel shapeModel;
 
     @Resource
     Id id;
@@ -40,7 +47,14 @@ public class SheetModel {
     }
 
     public SheetEntity getSheetById(long id){
-        return sheetDao.getSheetEntityById(id);
+        SheetEntity sheet = sheetDao.getSheetEntityById(id);
+        List<Shape> shapes = shapeModel.getShapeBySheetId(id);;
+        sheet.setShapeEntities(shapes);
+        return sheet;
+    }
+
+    public List<SheetEntity> getSheetsByRoomId(String roomId){
+        return sheetDao.getSheetEntitiesByRoomId(roomId);
     }
 
 }

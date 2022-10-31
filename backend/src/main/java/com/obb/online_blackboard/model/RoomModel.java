@@ -5,12 +5,15 @@ import com.obb.online_blackboard.dao.redis.RoomDao;
 import com.obb.online_blackboard.dao.mysql.RoomSettingDao;
 import com.obb.online_blackboard.entity.RoomEntity;
 import com.obb.online_blackboard.entity.RoomSettingEntity;
+import com.obb.online_blackboard.entity.SheetEntity;
 import org.springframework.stereotype.Repository;
 import tool.util.id.Id;
 import tool.util.lock.LockUtil;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author 陈桢梁
@@ -35,6 +38,9 @@ public class RoomModel {
 
     @Resource
     LockUtil<RoomSettingEntity> lock;
+
+    @Resource
+    SheetModel sheetModel;
 
     private final String SETTING_KEY = "setting_key:";
 
@@ -67,6 +73,9 @@ public class RoomModel {
         RoomEntity r = roomDao.getRoomEntityById(roomId);
         if(r == null){
             r = roomDbDao.getRoomById(Long.parseLong(roomId));
+        }else{
+            SheetEntity nowSheet = sheetModel.getSheetById(r.getNowSheet());
+            r.setNowSheetEntity(nowSheet);
         }
         return r;
     }
@@ -82,11 +91,7 @@ public class RoomModel {
         room.setId(roomId);
         room.setStatus("over");
         roomDao.deleteById(roomId);
-        roomDbDao.update(new ArrayList<>(){
-            {
-                add(room);
-            }
-        });
+        roomDbDao.update(room);
     }
 
     public void updateRoomSetting(RoomSettingEntity setting, long roomId){

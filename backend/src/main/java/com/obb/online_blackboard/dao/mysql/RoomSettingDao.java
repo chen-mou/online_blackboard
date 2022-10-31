@@ -24,10 +24,16 @@ public interface RoomSettingDao {
     RoomSettingEntity getByRoomId(long roomId);
 
 
-    @Select("select * from room r " +
+    @Select("select r.* from room r " +
             "left join room_setting rs " +
             "on rs.room_id = r.id " +
             "where rs.start_time > #{time} " +
             "and r.loaded = 0")
+    @Results({
+            @Result(column = "id", property = "setting",
+                    many = @Many(select = "com.obb.online_blackboard.dao.mysql.RoomSettingDao.getByRoomId")),
+            @Result(column = "id", property = "id")
+
+    })
     List<RoomEntity> preloadRoom(Date time);
 }

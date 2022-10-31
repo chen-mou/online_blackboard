@@ -35,7 +35,7 @@ public class ShapeModel {
         shapeDao.save(shape);
     }
 
-    public List<Shape> getShapeBySheetIds(long sheetId){
+    public List<Shape> getShapeBySheetId(long sheetId){
         return shapeDao.getShapesBySheetId(sheetId);
     }
 
