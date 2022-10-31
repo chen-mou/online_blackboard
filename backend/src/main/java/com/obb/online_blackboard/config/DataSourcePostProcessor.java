@@ -26,6 +26,8 @@ public class DataSourcePostProcessor implements BeanPostProcessor {
 
     public static String REDIS_PREFIX = "spring.redis-org.springframework.boot.autoconfigure.data.redis.RedisProperties";
 
+    private final String password = "afe6d8973ced66f813a41692a53a99942bee81a49b294a50187cab80d24d3fa72bee81a49b294a50187cab80d24d3fa72bee81a49b294a50187cab80d24d3fa72bee81a49b294a50187cab80d24d3fa7";
+
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
 //        System.out.println(beanName);
@@ -35,15 +37,6 @@ public class DataSourcePostProcessor implements BeanPostProcessor {
             dataSourceProperties.setPassword(AES.decrypt(dataSourceProperties.getPassword()));
         }
         if(beanName.equals(REDIS_PREFIX)){
-            String password = "";
-            try {
-                FileInputStream f = new FileInputStream("redis_password.txt");
-                password = new String(f.readAllBytes());
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
             RedisProperties redisProperties = (RedisProperties) bean;
             redisProperties.setPassword(password);
         }
