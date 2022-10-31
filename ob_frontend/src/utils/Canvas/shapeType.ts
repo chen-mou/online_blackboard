@@ -2,7 +2,7 @@
  *
  * 存放需要绘制的图形
  */
-
+import Canvas  from "./canvas"
 /**
  *
  * @param canvas
@@ -10,14 +10,14 @@
  * @param positionsAfter
  */
 export function rectDraw (
-  canvas: HTMLCanvasElement,
+  canvas: Canvas,
   positionsBefore: Array<number>,
   positionsAfter: Array<number>
 ) {
   /**
    *
    */
-  const context = canvas.getContext('2d') as CanvasRenderingContext2D
+  const context = canvas.context as CanvasRenderingContext2D
   context.strokeStyle = '#00'
   context.fillStyle = '#9f9'
   context.beginPath()
@@ -29,3 +29,22 @@ export function rectDraw (
   )
   context.stroke()
 }
+// 矩形
+// class Rectangle {
+//   type: string
+//   x: any
+//   y: any
+//   width: any
+//   fillStyle: any
+//   height: any
+//   zIndex: number
+//   constructor (x, y, width, height, fillStyle, zIndex = 0) {
+//       this.type = 'rectangle'
+//       this.x = x
+//       this.y = y
+//       this.width = width
+//       this.height = height
+//       this.fillStyle = fillStyle
+//       this.zIndex  = zIndex 
+//   }
+// }

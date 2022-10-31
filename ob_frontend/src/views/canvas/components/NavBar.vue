@@ -1,21 +1,39 @@
 <template>
     <div class="NavBar">
-        <span>
+        <pen></pen>
+        <shape></shape>
 
-            NavBar
-        </span>
+        <div>
+            color
+        </div>
+        <div>
+            operation
+        </div>
     </div>
 </template>
 
-<script lang="ts" setup>
-
+<script lang="ts" >
+import shape from "./shape.vue"
+import pen from "./pen.vue"
+import  {defineComponent} from "vue"
+export default defineComponent({
+    name:"NavBar",
+    components:{
+        shape,
+        pen
+    }
+})
 
 </script>
 
 
 <style lang="less" scoped>
 .NavBar {
-    height: 10vh;
+    height: 15vh;
     width: 100%;
+    border-bottom: 2px solid rgb(217, 211, 211);
+    display: flex;
+    justify-content: space-evenly;
+    gap: 0;
 }
 </style>

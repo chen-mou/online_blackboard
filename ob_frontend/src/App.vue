@@ -70,7 +70,7 @@ const userStore = useUserStore()
 }
 
 .welcome {
-  margin-top: 10px;
+  padding-top: 10px;
   margin-bottom: 10px;
   margin-left: 15px;
   overflow: hidden;

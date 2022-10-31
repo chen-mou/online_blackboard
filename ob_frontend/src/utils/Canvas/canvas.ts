@@ -13,7 +13,7 @@ type ExtractStringKey<A> = Diff<
 
 type styleNameType = ExtractStringKey<CanvasRenderingContext2D>
 
-class Canvas {
+class Canvas  {
   options: any
   canvas: HTMLCanvasElement
   height: number
@@ -48,6 +48,9 @@ class Canvas {
     this.after = after
     this.data = data
     this.layers = [] // 画布的层
+    if(!this.canvas){
+        throw Error( `创建canvas失败,this.canvas=${this.canvas}`)
+    }
     this.context = this.canvas.getContext('2d') as CanvasRenderingContext2D // 画布的上下文
   }
 
@@ -57,6 +60,8 @@ class Canvas {
   ) {
     (this.context[styleName] as string) = styleValue
   }
+
+
 }
 
 export default Canvas
