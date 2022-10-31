@@ -6,9 +6,7 @@
         <div>
             color
         </div>
-        <div>
-            operation
-        </div>
+        <operationVue></operationVue>
     </div>
 </template>
 
@@ -21,12 +19,15 @@ export default defineComponent({
     components:{
         shape,
         pen
+
     }
 })
 
 </script>
 
-
+<script lang="ts" setup>
+import operationVue from "./operation.vue";
+</script>
 <style lang="less" scoped>
 .NavBar {
     height: 15vh;

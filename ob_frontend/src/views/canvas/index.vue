@@ -17,80 +17,77 @@ export default defineComponent({
     }
   }
 })
-
-
 </script>
 
 <script setup lang="ts">
 import NavBar from './components/NavBar.vue'
 import { rectDraw } from '@/utils/Canvas/shapeType'
-import { onMounted, ref ,reactive} from 'vue'
+import { onMounted, ref, reactive, provide } from 'vue'
 import { getElPagePos } from '../../utils/Canvas/math'
 
-const IsDrawing=ref<Boolean>(false)
-const rectDrawPositon=reactive<Array<rect>>([])
-type rect ={
-  x:number
-  y:number
-  w:number
-  h:number
+const IsDrawing = ref<Boolean>(false)
+const rectDrawPositon = reactive<Array<rect>>([])
+type rect = {
+  x: number
+  y: number
+  w: number
+  h: number
 }
+const canvasRef = ref(null)
+const canvasProvide=ref<Canvas>()
 onMounted(() => {
   const canvas = new Canvas({
     canvas: 'canvas'
   })
+  canvasProvide.value=canvas
+
   const { x, y } = getElPagePos(document.getElementById('canvas') as any)
   const beforePosition = ref<Array<number>>([0, 0])
-  /**
-   * 添加监听事件
-   */
   canvas.canvas.addEventListener('mousedown', e => {
     /**
      * 创建点
      */
-    console.log([e.pageX - x, e.pageY - y])
     beforePosition.value = [e.pageX - x, e.pageY - y]
-    IsDrawing.value=true
+    IsDrawing.value = true
   })
   canvas.canvas.addEventListener('mousemove', e => {
     if (IsDrawing.value) {
-        /**
-         * 清空之后全部重新绘制
-         */
-
-        canvas.context.clearRect(0,0,800,800)
-        for(let i=0;i<rectDrawPositon.length;i++)
-        {
-          rectDraw(canvas,[ rectDrawPositon[i].x,rectDrawPositon[i].y], [
-          rectDrawPositon[i].w,rectDrawPositon[i].h
-        ])
-        }
-        console.log([e.pageX - x, e.pageY - y])
-        rectDraw(canvas, beforePosition.value, [
-          e.pageX - x - beforePosition.value[0],
-          e.pageY - y - beforePosition.value[1]
-        ])
+      /**
+       * 清空之后全部重新绘制
+       */
+      canvas.context.clearRect(0, 0, 1600, 1600)
+      for (let i = 0; i < canvas.data.length; i++) {
+        rectDraw(
+          canvas,
+          [canvas.data[i].x, canvas.data[i].y],
+          [canvas.data[i].w, canvas.data[i].h]
+        )
+      }
+      rectDraw(canvas, beforePosition.value, [
+        e.pageX - x - beforePosition.value[0],
+        e.pageY - y - beforePosition.value[1]
+      ])
     }
-
   })
-  canvas.canvas.addEventListener("mouseup", e => {
-      console.log([e.pageX - x, e.pageY - y])
-            rectDraw(canvas, beforePosition.value, [
-          e.pageX - x - beforePosition.value[0],
-          e.pageY - y - beforePosition.value[1]
-        ])
-        /**
-         * 储存标记点
-         */
-         rectDrawPositon.push({
-          x:beforePosition.value[0],
-          y:beforePosition.value[1],
-          w:e.pageX - x - beforePosition.value[0],
-          h:e.pageY - y - beforePosition.value[1],
-         })
-        IsDrawing.value=false
+  canvas.canvas.addEventListener('mouseup', e => {
+    console.log([e.pageX - x, e.pageY - y])
+    rectDraw(canvas, beforePosition.value, [
+      e.pageX - x - beforePosition.value[0],
+      e.pageY - y - beforePosition.value[1]
+    ])
+    /**
+     * 储存标记点
+     */
+    canvas.data.push({
+      x: beforePosition.value[0],
+      y: beforePosition.value[1],
+      w: e.pageX - x - beforePosition.value[0],
+      h: e.pageY - y - beforePosition.value[1]
     })
+    IsDrawing.value = false
+  })
 })
+  provide("canvas__",canvasProvide)
 
 const userStore = useUserStore()
 /**
@@ -100,7 +97,7 @@ const userStore = useUserStore()
 <template>
   <div class="main">
     <nav-bar></nav-bar>
-    <canvas id="canvas" width="800" height="800"></canvas>
+    <canvas id="canvas" ref="canvasRef" width="1600" height="800"></canvas>
   </div>
 </template>
 

@@ -23,7 +23,7 @@ class Canvas  {
   after: any
   layers: any
   context: CanvasRenderingContext2D
-  data = []
+  data : Array<any>
   constructor (options: Object) {
     this.options = options
     const {
@@ -40,7 +40,7 @@ class Canvas  {
       throw Error('请传入canvas元素对于的Id')
     }
     this.canvas =
-      (document.getElementById(canvas) as HTMLCanvasElement)
+      (document.getElementById(canvas) as HTMLCanvasElement) || canvas as HTMLCanvasElement
     this.height = height // 画布的宽高
     this.width = width
     this.target = document.getElementById(target) as HTMLElement
