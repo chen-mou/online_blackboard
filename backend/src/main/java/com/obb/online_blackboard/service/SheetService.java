@@ -5,12 +5,16 @@ import com.obb.online_blackboard.entity.SheetEntity;
 import com.obb.online_blackboard.entity.base.Shape;
 import com.obb.online_blackboard.exception.OperationException;
 import com.obb.online_blackboard.model.RoomModel;
+import com.obb.online_blackboard.model.ShapeModel;
 import com.obb.online_blackboard.model.SheetModel;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import tool.util.MessageUtil;
 
 import javax.annotation.Resource;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author 陈桢梁
@@ -30,6 +34,25 @@ public class SheetService {
     @Resource
     SimpMessagingTemplate template;
 
+    @Resource
+    ShapeModel shapeModel;
+
+    @Resource
+    RedissonClient redissonClient;
+
+    private void verifyCreator(long userId, String roomId, long sheetId){
+        RoomEntity room = roomModel.getRoomById(roomId);
+        if(!room.getSheets().contains(sheetId)){
+            throw new OperationException(404, "画布不存在");
+        }
+        if(!room.equals("meeting")){
+            throw new OperationException(403, "会议已结束或者未没开始");
+        }
+        if(room.getSetting().getIsShare() == 0 && room.getCreatorId() != userId){
+            throw new OperationException(403, "你没有编辑权限");
+        }
+    }
+
     public SheetEntity createSheet(String roomId, String name, long userId){
         RoomEntity room = roomModel.getRoomById(roomId);
         if(room.getCreatorId() != userId){
@@ -46,21 +69,28 @@ public class SheetService {
     }
 
     public void Draw(long userId, Shape shape, String roomId, long sheetId){
-        RoomEntity room = roomModel.getRoomById(roomId);
-        if(!room.getSheets().contains(sheetId)){
-            throw new OperationException(404, "画布不存在");
-        }
-        if(!room.equals("meeting")){
-            throw new OperationException(403, "会议已结束或者未没开始");
-        }
-        if(room.getSetting().getIsShare() == 0 && room.getCreatorId() != userId){
-            throw new OperationException(403, "你没有编辑权限");
-        }
+        verifyCreator(userId, roomId, sheetId);
         SheetEntity sheet = sheetModel.getSheetById(sheetId);
+        shapeModel.createShape(shape);
         sheet.addStack(userId, shape.getId());
+        template.convertAndSend("/" + roomId + "/draw", shape);
+        sheetModel.save(sheet);
     }
 
-    public void set(){
+    public void rollback(long userId, String roomId, long sheetId){
+        verifyCreator(userId, roomId, sheetId);
+        RLock r = redissonClient.getLock("SHEET_ROLLBACK_" + sheetId);
+        r.lock(3, TimeUnit.SECONDS);
+        SheetEntity sheet = sheetModel.getSheetById(sheetId);
+        long id = sheet.rollback(userId);
+        sheetModel.save(sheet);
+        r.unlock();
+        template.convertAndSend("/" + roomId + "/rollback", id);
+    }
+
+    public void redo(){}
+
+    public void set(long userId, Shape shape, String roomId ){
 
     }
 

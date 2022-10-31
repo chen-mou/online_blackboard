@@ -8,9 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
+import tool.util.lock.LockUtil;
 
 import javax.annotation.Resource;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
 
 /**
  * @author 陈桢梁
@@ -25,7 +27,7 @@ public class Id {
     RedisTemplate<String, Object> redis;
 
     @Resource
-    RedissonClient client;
+    LockUtil<Integer> lock;
 
     IdGenerator key;
 
@@ -37,19 +39,16 @@ public class Id {
         this.key = key;
     }
 
-    private final long MIN_ID = 1000000;
+//    private final long MIN_ID = 1000000;
 
     public long getId(String name){
         String key = this.name + "-" + name + "-id";
-        Integer id = (Integer) redis.opsForValue().get(key);
-        if(id == null){
-            RLock lock = client.getLock(name);
-            lock.lock(3, TimeUnit.SECONDS);
-            Long maxId = this.key.getId(name);
-            id = (int)(maxId == null ? MIN_ID : maxId) + 12;
-            redis.opsForValue().set(key, id);
-            lock.unlock();
-        }
+        Integer id = lock.getLock(key, name + "id_lock",
+                () -> {
+            long i = this.key.getId(name) + 12;
+            this.key.updateId(name, i);
+            return Math.toIntExact(i);
+                }, 3);
         return id;
     }
 

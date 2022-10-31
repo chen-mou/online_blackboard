@@ -4,6 +4,8 @@ import com.obb.online_blackboard.entity.base.Shape;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * @author 陈桢梁
  * @desc ShapeDap.java
@@ -15,5 +17,8 @@ public interface ShapeDao extends CrudRepository<Shape, Long> {
 
     
     Shape getShapeById(long id);
+
+
+    List<Shape> getShapesBySheetId(long sheetId);
 
 }

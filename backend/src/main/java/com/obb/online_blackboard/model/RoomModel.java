@@ -89,4 +89,8 @@ public class RoomModel {
         });
     }
 
+    public void updateRoomSetting(RoomSettingEntity setting, long roomId){
+
+    }
+
 }

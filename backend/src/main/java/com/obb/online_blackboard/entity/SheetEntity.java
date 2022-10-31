@@ -3,6 +3,7 @@ package com.obb.online_blackboard.entity;
 import com.obb.online_blackboard.entity.base.Shape;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.redis.core.RedisHash;
 
 import java.util.*;
@@ -27,6 +28,10 @@ public class SheetEntity {
 
     private Set<Long> shapes;
 
+
+    @Transient
+    private List<Shape> shapeEntities;
+
     //用户撤销的指针用于回退和重做
     private Map<Long, Integer> userIndex;
 
@@ -46,6 +51,18 @@ public class SheetEntity {
         list.subList(index, list.size()).clear();
         userIndex.put(userId, index + 1);
         list.add(shape);
+    }
+
+    public long rollback(long userId){
+        int index = userIndex.get(userId);
+        long shapeId = useStack.get(userId).get(index);
+        userIndex.put(userId, index - 1);
+        shapes.remove(shapeId);
+        return shapeId;
+    }
+
+    public Shape redo(long userId){
+        return null;
     }
 
 }

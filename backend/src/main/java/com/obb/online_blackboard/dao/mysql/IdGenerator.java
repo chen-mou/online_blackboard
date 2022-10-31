@@ -2,6 +2,7 @@ package com.obb.online_blackboard.dao.mysql;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 /**
  * @author 陈桢梁
@@ -12,7 +13,10 @@ import org.apache.ibatis.annotations.Select;
 @Mapper
 public interface IdGenerator {
 
-    @Select("select id from ${table} order by id limit 1")
+    @Select("select value from redis_model_id where name = #{table}")
     Long getId(String table);
+
+    @Update("update  redis_model_id set id = #{id} where name = #{table}")
+    void updateId(String table, long id);
 
 }

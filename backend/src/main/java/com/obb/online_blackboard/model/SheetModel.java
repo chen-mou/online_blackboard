@@ -20,8 +20,8 @@ public class SheetModel {
     @Resource
     SheetDao sheetDao;
 
-    @Resource
-    SheetIdDao sheetIdDao;
+//    @Resource
+//    SheetIdDao sheetIdDao;
 
     @Resource
     Id id;
@@ -30,9 +30,13 @@ public class SheetModel {
         SheetEntity sheetEntity = new SheetEntity();
         sheetEntity.setId(id.getId("sheet"));
         sheetEntity.setName(name);
-        sheetIdDao.updateId(sheetEntity.getId());
+//        sheetIdDao.updateId(sheetEntity.getId());
         sheetDao.save(sheetEntity);
         return sheetEntity;
+    }
+
+    public void save(SheetEntity sheetEntity){
+        sheetDao.save(sheetEntity);
     }
 
     public SheetEntity getSheetById(long id){
