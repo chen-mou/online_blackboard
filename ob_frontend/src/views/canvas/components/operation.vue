@@ -20,7 +20,7 @@ let canvas =ref()
 onMounted( ()=>{
     
 const canvasInjetct =inject("canvas__") as any
-canvas=canvasInjetct
+    canvas=canvasInjetct
     console.log(canvas.value)
 })
 
@@ -31,11 +31,8 @@ const cleanCanvas=()=>{
     if(canvas.value){
         canvas.value.data=[]
         canvas.value?.context.clearRect(0,0,1600,1600)
-    }else{
-        throw Error("wait ................")
     }
     }
-
 /**
  * 导出图片
  */

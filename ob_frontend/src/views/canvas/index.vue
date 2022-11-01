@@ -21,20 +21,14 @@ export default defineComponent({
 
 <script setup lang="ts">
 import NavBar from './components/NavBar.vue'
-import { rectDraw } from '@/utils/Canvas/shapeType'
 import { onMounted, ref, reactive, provide } from 'vue'
 import { getElPagePos } from '../../utils/Canvas/math'
-
+import ShapeMap from '@/utils/Canvas'
 const IsDrawing = ref<Boolean>(false)
-const rectDrawPositon = reactive<Array<rect>>([])
-type rect = {
-  x: number
-  y: number
-  w: number
-  h: number
-}
 const canvasRef = ref(null)
 const canvasProvide=ref<Canvas>()
+const beforePosition = ref<Array<number>>([0, 0])
+const AfterPosition = ref<Array<number>>([0, 0])
 onMounted(() => {
   const canvas = new Canvas({
     canvas: 'canvas'
@@ -42,12 +36,13 @@ onMounted(() => {
   canvasProvide.value=canvas
 
   const { x, y } = getElPagePos(document.getElementById('canvas') as any)
-  const beforePosition = ref<Array<number>>([0, 0])
+
   canvas.canvas.addEventListener('mousedown', e => {
     /**
-     * 创建点
+     * 传入相应的坐标
      */
     beforePosition.value = [e.pageX - x, e.pageY - y]
+    canvas.DrawClass.BeforePosition=beforePosition.value
     IsDrawing.value = true
   })
   canvas.canvas.addEventListener('mousemove', e => {
@@ -57,32 +52,29 @@ onMounted(() => {
        */
       canvas.context.clearRect(0, 0, 1600, 1600)
       for (let i = 0; i < canvas.data.length; i++) {
-        rectDraw(
-          canvas,
-          [canvas.data[i].x, canvas.data[i].y],
-          [canvas.data[i].w, canvas.data[i].h]
-        )
+        console.log(canvas.data[i])
+        ShapeMap.get(canvas.data[i].type)!.BeforePosition=canvas.data[i].BeforePosition
+        ShapeMap.get(canvas.data[i].type)!.AfterPosition=canvas.data[i].AfterPosition
+        ShapeMap.get(canvas.data[i].type)?.draw(canvas)
       }
-      rectDraw(canvas, beforePosition.value, [
-        e.pageX - x - beforePosition.value[0],
-        e.pageY - y - beforePosition.value[1]
-      ])
+      AfterPosition.value = [e.pageX - x, e.pageY - y] 
+      canvas.DrawClass.BeforePosition= beforePosition.value
+      canvas.DrawClass.AfterPosition= AfterPosition.value 
+  
+      canvas.DrawClass.draw(canvas)
     }
   })
   canvas.canvas.addEventListener('mouseup', e => {
-    console.log([e.pageX - x, e.pageY - y])
-    rectDraw(canvas, beforePosition.value, [
-      e.pageX - x - beforePosition.value[0],
-      e.pageY - y - beforePosition.value[1]
-    ])
+    AfterPosition.value = [e.pageX - x, e.pageY - y] 
+    canvas.DrawClass.AfterPosition= AfterPosition.value 
+    canvas.DrawClass.draw(canvas)
     /**
-     * 储存标记点
+     * 储存标记点type和相应的坐标点
      */
     canvas.data.push({
-      x: beforePosition.value[0],
-      y: beforePosition.value[1],
-      w: e.pageX - x - beforePosition.value[0],
-      h: e.pageY - y - beforePosition.value[1]
+      type:canvas.DrawClass.type,
+      BeforePosition:beforePosition.value,
+      AfterPosition:AfterPosition.value
     })
     IsDrawing.value = false
   })

@@ -1,51 +1,42 @@
 <template>
     <div class="shape" @click="HandleSelect">
         <!-- 遍历icon及形状 -->
-        <div v-for="item in shapeList" :key="item.name">
-            <Img :src="item.icon" :name="item.name"></Img>
+        <div v-for="item in ShapeMap" :key="item[1].type">
+            <Img :src="item[1].icon" :name="item[1].type"></Img>
         </div>
     </div>
 </template>
 
 <script lang="ts" >
+import {ShapeClassTypeT} from "@/utils/Canvas/canvas"
 import  {defineComponent} from 'vue'
+import Canvas from '@/utils/Canvas/canvas';
 export default defineComponent({
     name:"shape"
 })
 </script>
 <script lang="ts" setup>
-import { ref,reactive } from 'vue';
-type Shape ={
-    name:string
-    icon:string
-    cb:Function
-}
-/**
- * 
- */
-const shapeList = reactive<Array<Shape>>([
-    {
-        icon:"/canvsShapeImg/rect.png",
-        name:"矩形",
-        cb:()=>{
-            console.log("改变绘制样式")
-        }
-    },
-])
-const shapeMap =new Map<string,Function>()
-    for(let shape  of shapeList){
-        shapeMap.set(shape.name,shape.cb)
-    }
+import { ref,reactive, onMounted, inject } from 'vue';
+import ShapeMap from '@/utils/Canvas';
+
+let canvas =ref()
+onMounted( ()=>{
+const canvasInjetct =inject("canvas__") as any
+canvas=canvasInjetct
+    console.log(canvas.value)
+    // window.canvasInjetct=canvasInjetct
+})
 /**
  * 处理选中图形的事件
  */
 const HandleSelect=(e:MouseEvent)=>{
-    /**
+    /**(e.target as any).name as string
      * 事件代理触发的回调
      */
-    const cb =shapeMap.get((e.target as any).name as string) 
-    cb && cb()
-}
+    (canvas.value as Canvas).DrawClass=ShapeMap.get((e.target as any).name as string) as ShapeClassTypeT
+    console.log((canvas.value as Canvas).DrawClass)
+} 
+
 
 </script>
 

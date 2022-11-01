@@ -1,3 +1,4 @@
+
 // 生成一份object的key的类型，并将非 T 继承类型的key的值类型置为 never
 type ExtractType<O, T> = { [K in keyof O]: O[K] extends T ? O[K] : unknown }
 // 组合两个 object 的类型
@@ -10,22 +11,26 @@ type ExtractStringKey<A> = Diff<
   Extract<keyof A, string>,
   ExtractType<A, string>
 >
-
+import { ShapeDataType } from "./type/CanvasType"
 type styleNameType = ExtractStringKey<CanvasRenderingContext2D>
-
+import ShapeMap from "."
+type ShapeClassType=  ReturnType<typeof ShapeMap.get>
+type GetMapKeyType<T> = T extends Map<any,infer I> ?I:never
+export  type ShapeClassTypeT = GetMapKeyType<typeof ShapeMap>
 class Canvas  {
   options: any
   canvas: HTMLCanvasElement
   height: number
   width: number
   target: HTMLElement // 接收事件的元素
+  DrawClass:ShapeClassTypeT  // 默认类型为矩形// 默认类型为矩形
   before: any
   after: any
   layers: any
   context: CanvasRenderingContext2D
-  data : Array<any>
+  data : Array<ShapeDataType>
   constructor (options: Object) {
-    this.options = options
+    this.options = options 
     const {
       canvas,
       height,
@@ -47,6 +52,7 @@ class Canvas  {
     this.before = before
     this.after = after
     this.data = data
+    this.DrawClass=ShapeMap.get("rect") as ShapeClassTypeT
     this.layers = [] // 画布的层
     if(!this.canvas){
         throw Error( `创建canvas失败,this.canvas=${this.canvas}`)
