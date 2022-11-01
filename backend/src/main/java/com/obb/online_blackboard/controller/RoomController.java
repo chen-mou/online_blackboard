@@ -67,7 +67,6 @@ public class RoomController {
     }
 
     @MessageMapping("/room_info")
-    @SendToUser("/info")
     public Result roomInfo(Principal p, @JsonKey String roomId){
         return Result.success("获取成功", roomService.roomInfo(Long.parseLong(p.getName()), roomId));
     }

@@ -25,7 +25,7 @@ public class MessageUtil {
     SimpMessagingTemplate template;
 
     public void sendParticipants(String roomID, String des, Object payload){
-        RoomEntity room = roomDao.getRoomEntityById(roomID);
+        RoomEntity room = roomDao.findRoomEntityById(roomID);
         room.getParticipants().forEach((item) -> template.convertAndSendToUser(String.valueOf(item.getUserId()), des, payload));
     }
 

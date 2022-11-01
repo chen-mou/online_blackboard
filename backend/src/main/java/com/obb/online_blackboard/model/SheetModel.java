@@ -10,6 +10,7 @@ import tool.util.id.Id;
 import javax.annotation.Resource;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -47,14 +48,18 @@ public class SheetModel {
     }
 
     public SheetEntity getSheetById(long id){
-        SheetEntity sheet = sheetDao.getSheetEntityById(id);
+        Optional<SheetEntity> optional = sheetDao.findById(id);
+        if(optional.isEmpty()){
+            return null;
+        }
+        SheetEntity sheet = optional.get();
         List<Shape> shapes = shapeModel.getShapeBySheetId(id);;
         sheet.setShapeEntities(shapes);
         return sheet;
     }
 
     public List<SheetEntity> getSheetsByRoomId(String roomId){
-        return sheetDao.getSheetEntitiesByRoomId(roomId);
+        return sheetDao.findSheetEntitiesByRoomId(roomId);
     }
 
 }

@@ -13,5 +13,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface RoomDao extends CrudRepository<RoomEntity, String> {
 
-    RoomEntity getRoomEntityById(String roomId);
+    RoomEntity findRoomEntityById(String roomId);
 }

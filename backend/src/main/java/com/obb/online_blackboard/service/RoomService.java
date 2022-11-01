@@ -80,7 +80,7 @@ public class RoomService {
         }
         r.getParticipants().add(user);
         roomModel.saveRoom(r);
-        template.convertAndSend("/" + roomId, Message.def("user_join", user));
+        template.convertAndSend("/exchange/" + roomId, Message.def("user_join", user));
         return r;
     }
 
@@ -93,7 +93,7 @@ public class RoomService {
             throw new OperationException(403, "没有结束会议的权限");
         }
         roomModel.delRoom(roomId);
-        template.convertAndSend("/" + roomId, Message.def("over", null));
+        template.convertAndSend("/exchange/" + roomId, Message.def("over", null));
     }
 
     public RoomEntity roomInfo(long userId, String roomId){
@@ -107,6 +107,7 @@ public class RoomService {
         if(!inRoom(r, userId)){
             throw new OperationException(403, "不在房间中不能获取房间信息");
         }
+        template.convertAndSendToUser(String.valueOf(userId), "/queue/info", r);
         return r;
     }
 

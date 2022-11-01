@@ -40,7 +40,7 @@ public class RoomTask {
     /**
      * 提前20分钟加载房间
      */
-    @Scheduled(cron = "* */5 * * * *")
+    @Scheduled(cron = "* */1 * * * *")
     public void preloadRoom(){
         Date now = DateUtils.addMinutes(new Date(), 20);
         List<RoomEntity> rooms = settingDao.preloadRoom(now);
@@ -58,7 +58,9 @@ public class RoomTask {
             item.setLoaded(1);
         });
         roomDbDao.updateAll(rooms, 1, "meeting");
-        roomDao.saveAll(rooms);
+        for(RoomEntity room : rooms){
+            roomDao.save(room);
+        }
     }
 
 }

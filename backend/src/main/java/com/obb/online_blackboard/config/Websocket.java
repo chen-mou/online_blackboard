@@ -66,9 +66,9 @@ public class Websocket implements WebSocketMessageBrokerConfigurer {
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         WebSocketMessageBrokerConfigurer.super.configureMessageBroker(registry);
-        registry.enableSimpleBroker("/room");
+//        registry.enableSimpleBroker("/room");
         registry.setUserDestinationPrefix("/user").setApplicationDestinationPrefixes("/app");
-        registry.enableStompBrokerRelay("/topic/","/queue/","exchange")
+        registry.enableStompBrokerRelay("/exchange", "/queue")
                 .setRelayHost("47.112.184.57")   //地址
                 .setRelayPort(61613)     //端口
                 .setClientLogin("czl")  // 账号密码

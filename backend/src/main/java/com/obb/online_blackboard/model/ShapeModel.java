@@ -36,7 +36,7 @@ public class ShapeModel {
     }
 
     public List<Shape> getShapeBySheetId(long sheetId){
-        return shapeDao.getShapesBySheetId(sheetId);
+        return shapeDao.findShapesBySheetId(sheetId);
     }
 
 }

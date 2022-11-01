@@ -63,7 +63,7 @@ public class SheetService {
         }
         SheetEntity sheet = sheetModel.createSheet(name);
         room.getSheets().add(sheet.getId());
-        template.convertAndSend("/" + room.getId() + "/create_sheet", sheet);
+        template.convertAndSend("/exchange/" + room.getId() + "/create_sheet", sheet);
         roomModel.saveRoom(room);
         return sheet;
     }
@@ -73,7 +73,7 @@ public class SheetService {
         SheetEntity sheet = sheetModel.getSheetById(sheetId);
         shapeModel.createShape(shape);
         sheet.addStack(userId, shape.getId());
-        template.convertAndSend("/" + roomId + "/draw", shape);
+        template.convertAndSend("/exchange/" + roomId + "/draw", shape);
         sheetModel.save(sheet);
     }
 
@@ -85,7 +85,7 @@ public class SheetService {
         long id = sheet.rollback(userId);
         sheetModel.save(sheet);
         r.unlock();
-        template.convertAndSend("/" + roomId + "/rollback", id);
+        template.convertAndSend("/exchange/" + roomId + "/rollback", id);
     }
 
     public void redo(){}

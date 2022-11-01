@@ -16,9 +16,9 @@ import java.util.List;
 public interface ShapeDao extends CrudRepository<Shape, Long> {
 
     
-    Shape getShapeById(long id);
+    Shape findShapeById(long id);
 
 
-    List<Shape> getShapesBySheetId(long sheetId);
+    List<Shape> findShapesBySheetId(long sheetId);
 
 }

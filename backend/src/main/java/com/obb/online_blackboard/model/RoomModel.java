@@ -13,6 +13,7 @@ import tool.util.lock.LockUtil;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -70,12 +71,15 @@ public class RoomModel {
     }
 
     public RoomEntity getRoomById(String roomId){
-        RoomEntity r = roomDao.getRoomEntityById(roomId);
-        if(r == null){
+        Optional<RoomEntity> optional = roomDao.findById(roomId);
+        RoomEntity r;
+        if(optional.isEmpty()){
             r = roomDbDao.getRoomById(Long.parseLong(roomId));
         }else{
+            r = optional.get();
             SheetEntity nowSheet = sheetModel.getSheetById(r.getNowSheet());
             r.setNowSheetEntity(nowSheet);
+            r.setSetting(roomSettingDao.getByRoomId(Long.parseLong(roomId)));
         }
         return r;
     }
