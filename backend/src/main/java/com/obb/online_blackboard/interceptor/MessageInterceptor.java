@@ -1,5 +1,6 @@
 package com.obb.online_blackboard.interceptor;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.obb.online_blackboard.config.Context;
 import com.obb.online_blackboard.entity.RoomEntity;
@@ -89,13 +90,6 @@ public class MessageInterceptor implements ChannelInterceptor {
 
     }
 
-    @Override
-    public Message<?> postReceive(Message<?> message, MessageChannel channel) {
-        StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
-        StompCommand command = accessor.getCommand();
-        if(command.equals(StompCommand.CONNECTED)){
-            System.out.println("did");
-        }
-        return ChannelInterceptor.super.postReceive(message, channel);
-    }
+
+
 }

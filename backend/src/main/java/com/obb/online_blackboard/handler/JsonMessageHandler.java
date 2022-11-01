@@ -24,9 +24,9 @@ public class JsonMessageHandler implements HandlerMethodArgumentResolver {
 
     @Override
     public Object resolveArgument(MethodParameter parameter, Message<?> message) throws Exception {
-        Object value = message.getPayload();
+        byte[] value = (byte[]) message.getPayload();
         ObjectMapper om = new ObjectMapper();
-        Map<String, Object> map = om.readValue(om.writeValueAsString(value), HashMap.class);
+        Map<String, Object> map = om.readValue(new String(value), HashMap.class);
         JsonKey j = parameter.getParameterAnnotation(JsonKey.class);
         String key = j.name().equals("") ? parameter.getParameterName(): j.name();
         return map.get(key);

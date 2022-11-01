@@ -46,10 +46,11 @@ public class RoomController {
             throw new OperationException(500, "开始时间不能小于当前时间");
         }
         RoomEntity room = roomService.createRoom(setting, user.getId());
-        System.out.println("成功");
+//        System.out.println("成功");
         return Result.success("创建成功", room);
     }
 
+    @Deprecated
     @PostMapping("/join")
     public Result joinRoom(@UserInfo UserEntity user,
                            @JsonKey String roomId,
@@ -60,9 +61,15 @@ public class RoomController {
 
     //结束会议
     @MessageMapping("/over")
-    public Result over(Principal p, String roomId){
+    public Result over(Principal p, @JsonKey String roomId){
         roomService.over(roomId, Long.parseLong(p.getName()));
         return Result.success("会议已结束", null);
+    }
+
+    @MessageMapping("/room_info")
+    @SendToUser("/info")
+    public Result roomInfo(Principal p, @JsonKey String roomId){
+        return Result.success("获取成功", roomService.roomInfo(Long.parseLong(p.getName()), roomId));
     }
 
 }

@@ -1,6 +1,7 @@
 package tool.result;
 
 import lombok.AllArgsConstructor;
+import lombok.Data;
 
 /**
  * @author 陈桢梁
@@ -9,6 +10,7 @@ import lombok.AllArgsConstructor;
  * @logs[0] 2022-10-31 21:32 陈桢梁 创建了Message.java文件
  */
 @AllArgsConstructor
+@Data
 public class Message<T> {
 
     String type;

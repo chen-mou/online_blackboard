@@ -68,7 +68,8 @@ public class Id {
             }
             lock.unlock();
         }else{
-            id = (Integer)val;
+            id = redis.opsForValue().increment(key, 12);
+            this.key.updateId(name, id);
         }
         return id;
     }

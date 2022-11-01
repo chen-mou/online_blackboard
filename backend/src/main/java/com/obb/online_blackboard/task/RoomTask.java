@@ -40,7 +40,7 @@ public class RoomTask {
     /**
      * 提前20分钟加载房间
      */
-    @Scheduled(cron = "* */1 * * * *")
+    @Scheduled(cron = "* */5 * * * *")
     public void preloadRoom(){
         Date now = DateUtils.addMinutes(new Date(), 20);
         List<RoomEntity> rooms = settingDao.preloadRoom(now);

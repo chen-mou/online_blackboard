@@ -27,7 +27,7 @@ public interface RoomSettingDao {
     @Select("select r.* from room r " +
             "left join room_setting rs " +
             "on rs.room_id = r.id " +
-            "where rs.start_time > #{time} " +
+            "where rs.start_time < #{time} " +
             "and r.loaded = 0")
     @Results({
             @Result(column = "id", property = "setting",

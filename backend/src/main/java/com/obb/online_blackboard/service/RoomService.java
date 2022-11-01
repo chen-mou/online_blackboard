@@ -70,10 +70,8 @@ public class RoomService {
         if(setting.getAllowAnonymous() == 0 && isAnonymous == 1){
             throw new OperationException(403, "目标房间不能匿名");
         }
-        for(UserDataEntity user : r.getParticipants()){
-            if(user.getId() == userId){
-                return r;
-            }
+        if(inRoom(r, userId)){
+            return r;
         }
         UserDataEntity user = userDao.getByUserId(userId);
         user.setIsAnonymous(isAnonymous);
@@ -98,5 +96,27 @@ public class RoomService {
         template.convertAndSend("/" + roomId, Message.def("over", null));
     }
 
+    public RoomEntity roomInfo(long userId, String roomId){
+        RoomEntity r = roomModel.getRoomById(roomId);
+        if(r == null) {
+            throw new OperationException(404, "目标房间不存在");
+        }
+        if(!r.getStatus().equals("meeting")){
+            throw new OperationException(404, "会议未开始或已经结束了");
+        }
+        if(!inRoom(r, userId)){
+            throw new OperationException(403, "不在房间中不能获取房间信息");
+        }
+        return r;
+    }
+
+    private boolean inRoom(RoomEntity room, long userId){
+        for(UserDataEntity user :room.getParticipants()){
+            if(user.getUserId() == userId){
+                return true;
+            }
+        }
+        return false;
+    }
 
 }
