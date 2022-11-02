@@ -20,7 +20,7 @@ import java.util.Set;
  */
 @Data
 @AllArgsConstructor
-public class Add implements Operate {
+public class Add extends Operate {
 
     private long shapeId;
 

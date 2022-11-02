@@ -3,6 +3,8 @@ package com.obb.online_blackboard.dao.mysql;
 import com.obb.online_blackboard.entity.RoomEntity;
 import org.apache.ibatis.annotations.*;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -44,5 +46,21 @@ public interface RoomDbDao {
             "where id = #{id}" +
             "</script>")
     void update(RoomEntity room);
+
+
+    @Update("<script>" +
+                "update room set " +
+                    "status = 'over' " +
+                "where " +
+                " id in(select id from room_setting where end_time &lt; #{time})" +
+                " <if test='rooms.size != 0'>" +
+                    "and id not in(" +
+                        "<foreach collection='rooms' item='item' separator=','>" +
+                            "#{item.id}" +
+                        "</foreach>" +
+                        ")" +
+                "</if>" +
+            "</script>")
+    void cleanOver(@Param("time") Date time, @Param("rooms") ArrayList<RoomEntity> rooms);
 
 }

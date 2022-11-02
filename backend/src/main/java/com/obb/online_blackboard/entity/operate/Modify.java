@@ -20,7 +20,7 @@ import java.util.Set;
  */
 @AllArgsConstructor
 @Data
-public class Modify implements Operate {
+public class Modify extends  Operate {
 
     long from;
 

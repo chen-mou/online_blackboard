@@ -20,7 +20,7 @@ import java.util.Set;
  */
 @AllArgsConstructor
 @Data
-public class Delete implements Operate {
+public class Delete extends Operate {
 
     long shapeId;
     @Override

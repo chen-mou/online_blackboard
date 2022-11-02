@@ -12,9 +12,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author 陈桢梁
@@ -61,6 +59,12 @@ public class RoomTask {
         for(RoomEntity room : rooms){
             roomDao.save(room);
         }
+    }
+
+    @Scheduled(cron = "* * */1 * * *")
+    public void cleanOverRoom(){
+        ArrayList<RoomEntity> rooms = new ArrayList<>((Collection) roomDao.findAll());
+        roomDbDao.cleanOver(new Date(), rooms);
     }
 
 }
