@@ -25,6 +25,10 @@ public class Message<T> {
         return def("delete", date);
     }
 
+    public static <T> Message mod(T date){
+        return def("modify", date);
+    }
+
     public static <T> Message add(T date){
         return def("add", date);
     }

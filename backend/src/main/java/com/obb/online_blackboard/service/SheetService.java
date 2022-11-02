@@ -2,6 +2,7 @@ package com.obb.online_blackboard.service;
 
 import com.obb.online_blackboard.entity.RoomEntity;
 import com.obb.online_blackboard.entity.SheetEntity;
+import com.obb.online_blackboard.entity.UserDataEntity;
 import com.obb.online_blackboard.entity.base.Shape;
 import com.obb.online_blackboard.exception.OperationException;
 import com.obb.online_blackboard.model.RoomModel;
@@ -11,6 +12,8 @@ import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import tool.annotation.Lock;
+import tool.result.Message;
 import tool.util.MessageUtil;
 
 import javax.annotation.Resource;
@@ -42,14 +45,25 @@ public class SheetService {
 
     private void verifyCreator(long userId, String roomId, long sheetId){
         RoomEntity room = roomModel.getRoomById(roomId);
+        if(room == null){
+            throw new OperationException(404, "房间不存在");
+        }
         if(!room.getSheets().contains(sheetId)){
             throw new OperationException(404, "画布不存在");
         }
-        if(!room.equals("meeting")){
+        if(!room.getStatus().equals("meeting")){
             throw new OperationException(403, "会议已结束或者未没开始");
         }
         if(room.getSetting().getIsShare() == 0 && room.getCreatorId() != userId){
             throw new OperationException(403, "你没有编辑权限");
+        }
+        for(UserDataEntity ude : room.getParticipants()){
+            if(ude.getUserId() == userId){
+                if(ude.getIsAnonymous() == 1){
+                    throw new OperationException(403, "匿名用户不能操作");
+                }
+                break;
+            }
         }
     }
 
@@ -63,34 +77,47 @@ public class SheetService {
         }
         SheetEntity sheet = sheetModel.createSheet(name);
         room.getSheets().add(sheet.getId());
-        template.convertAndSend("/exchange/" + room.getId() + "/create_sheet", sheet);
+        template.convertAndSend("/exchange/room/" + room.getId() + "/create_sheet", sheet);
         roomModel.saveRoom(room);
         return sheet;
     }
 
-    public void Draw(long userId, Shape shape, String roomId, long sheetId){
+    @Lock(key = "SHEET_WRITE_", argName = "sheetId")
+    public void draw(long userId, Shape shape, String roomId, long sheetId){
         verifyCreator(userId, roomId, sheetId);
         SheetEntity sheet = sheetModel.getSheetById(sheetId);
         shapeModel.createShape(shape);
         sheet.addStack(userId, shape.getId());
-        template.convertAndSend("/exchange/" + roomId + "/draw", shape);
         sheetModel.save(sheet);
+        template.convertAndSend("/exchange/room/" + roomId, Message.add(shape));
     }
 
+    @Lock(key = "SHEET_WRITE_", argName = "sheetId")
     public void rollback(long userId, String roomId, long sheetId){
         verifyCreator(userId, roomId, sheetId);
-        RLock r = redissonClient.getLock("SHEET_ROLLBACK_" + sheetId);
-        r.lock(3, TimeUnit.SECONDS);
         SheetEntity sheet = sheetModel.getSheetById(sheetId);
-        long id = sheet.rollback(userId);
+        sheet.rollback(userId);
         sheetModel.save(sheet);
-        r.unlock();
-        template.convertAndSend("/exchange/" + roomId + "/rollback", id);
     }
 
-    public void redo(){}
+    @Lock(key = "SHEET_WRITE_", argName = "sheetId")
+    public void redo(long userId, String roomId, long sheetId) {
+        verifyCreator(userId, roomId, sheetId);
+        SheetEntity sheet = sheetModel.getSheetById(sheetId);
+        sheet.redo(userId);
+        sheetModel.save(sheet);
 
-    public void set(long userId, Shape shape, String roomId ){
+    }
+
+    @Lock(key = "SHEET_WRITE_", argName = "sheetId")
+    public void modify(long userId, Shape shape, String roomId, long sheetId){
+        verifyCreator(userId, roomId, sheetId);
+        long id = shape.getId();
+        Shape s = shapeModel.createShape(shape);
+    }
+
+    @Lock(key = "SHEET_WRITE_", argName = "sheetId")
+    public void delete(long userId, long roomId, long sheetId, long shapeId){
 
     }
 

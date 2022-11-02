@@ -39,4 +39,8 @@ public class ShapeModel {
         return shapeDao.findShapesBySheetId(sheetId);
     }
 
+    public List<Shape> getShapeByShapesId(List<Long> shapesId){
+        return shapeDao.findShapesByIdIn(shapesId);
+    }
+
 }

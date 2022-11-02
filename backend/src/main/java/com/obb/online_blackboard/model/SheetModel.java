@@ -8,10 +8,7 @@ import org.springframework.stereotype.Repository;
 import tool.util.id.Id;
 
 import javax.annotation.Resource;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author 陈桢梁
@@ -53,8 +50,10 @@ public class SheetModel {
             return null;
         }
         SheetEntity sheet = optional.get();
-        List<Shape> shapes = shapeModel.getShapeBySheetId(id);;
+        List<Shape> shapes = shapeModel.getShapeBySheetId(sheet.getId());
         sheet.setShapeEntities(shapes);
+//        sheet.setUseStack(null);
+//        sheet.setUserIndex(null);
         return sheet;
     }
 

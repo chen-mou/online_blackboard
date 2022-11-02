@@ -4,12 +4,16 @@ import com.obb.online_blackboard.entity.SheetEntity;
 import com.obb.online_blackboard.entity.UserEntity;
 import com.obb.online_blackboard.entity.base.Shape;
 import com.obb.online_blackboard.service.SheetService;
+import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import tool.annotation.JsonKey;
 import tool.annotation.UserInfo;
+import tool.result.Message;
 import tool.result.Result;
 
 import javax.annotation.Resource;
@@ -33,13 +37,27 @@ public class SheetController {
     }
 
     @MessageMapping("/draw")
-    public void draw(Principal p, Shape s){
+    public void draw(Principal p, @JsonKey Shape shape, @JsonKey String roomId, @JsonKey long sheetId){
+        sheetService.draw(Long.parseLong(p.getName()), shape, roomId, sheetId);
+    }
+
+    @MessageMapping("/redo")
+    public void redo(Principal p, @JsonKey String roomId, @JsonKey long sheetId){
+        sheetService.redo(Long.parseLong(p.getName()), roomId, sheetId);
+    }
+
+    @MessageMapping("/rollback")
+    public void rollback(Principal p, @JsonKey String roomId, @JsonKey long sheetId){
+        sheetService.rollback(Long.parseLong(p.getName()), roomId, sheetId);
+    }
+
+    @MessageMapping("/modify")
+    public void setShape(Principal p, Shape shape) {
 
     }
 
-    @MessageMapping("/set")
-    public void setShape(Principal p, Shape s) {
+    @MessageMapping("/delete")
+    public void delete(Principal p, @JsonKey long shapeId, @JsonKey String roomId, @JsonKey long sheetId){}
 
-    }
 
 }

@@ -1,7 +1,11 @@
 package com.obb.online_blackboard.entity.shape;
 
 import com.obb.online_blackboard.entity.base.Shape;
+import com.obb.online_blackboard.exception.OperationException;
 import lombok.Data;
+
+import java.lang.reflect.Field;
+import java.util.Map;
 
 /**
  * @author 陈桢梁
@@ -12,9 +16,9 @@ import lombok.Data;
 @Data
 public class Cube extends Shape {
 
-    private int width;
+    private double width;
 
-    private int height;
+    private double height;
 
     public Cube(Shape shape){
         super(shape);
@@ -25,6 +29,26 @@ public class Cube extends Shape {
         }
     }
 
+    public Cube(Map<String, Object> map)  {
+        super(map);
+        if(!map.containsKey("width") || !map.containsKey("height")){
+            throw new OperationException(500, "缺少参数");
+        }
+        Field[] fields = this.getClass().getDeclaredFields();
+        for(Field field : fields){
+            field.setAccessible(true);
+            try{
+                field.set(this, map.get(field.getName()));
+            }catch (IllegalAccessException e){
+                throw new OperationException(500, "参数设置异常");
+            }
+
+        }
+    }
 
 
+    @Override
+    public Object handler(Map<String, Object> obj) {
+        return new Cube(obj);
+    }
 }

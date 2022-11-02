@@ -7,6 +7,7 @@ import com.obb.online_blackboard.entity.RoomEntity;
 import com.obb.online_blackboard.exception.OperationException;
 import com.obb.online_blackboard.service.RoomService;
 import org.springframework.context.ApplicationContext;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
@@ -22,6 +23,7 @@ import tool.util.JWT;
 
 import javax.servlet.http.HttpServletResponse;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -80,16 +82,37 @@ public class MessageInterceptor implements ChannelInterceptor {
                 throw new OperationException(403, "token有误");
             }
             String userId = data.get("userId");
+            RedisTemplate redis = (RedisTemplate) Context.getContext().getBean("redisTemplate");
+            Object rt = redis.opsForValue().get("token:" + userId);
+            if(rt == null){
+                throw new OperationException(403, "登录过时");
+            }
+            String rtoken = (String) rt;
+            if(!rtoken.equals(token)){
+                throw new OperationException(403, "登录过时");
+            }
             List<String> roomId = accessor.getNativeHeader("Room-Id");
             List<String> isAnonymous = accessor.getNativeHeader("Is-Anonymous");
+
+            if(roomId == null){
+                throw new OperationException(500, "房间号不能为空");
+            }
+
+            int anonymous = Integer.parseInt(((List<String>)getOeDefault(isAnonymous, new ArrayList<>(){{add("0");}})).get(0));
             accessor.setUser(() -> userId);
-            r.joinRoom(roomId.get(0), Long.parseLong(userId), Integer.parseInt(isAnonymous.get(0)));
+            r.joinRoom(roomId.get(0), Long.parseLong(userId), anonymous);
             return message;
         }
         return message;
 
     }
 
-
+    private Object getOeDefault(Object o, Object def){
+        if(o == null){
+            return def;
+        }else{
+            return o;
+        }
+    }
 
 }

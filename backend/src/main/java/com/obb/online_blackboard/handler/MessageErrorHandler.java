@@ -17,6 +17,7 @@ import tool.result.Result;
 public class MessageErrorHandler {
 
     @MessageExceptionHandler(OperationException.class)
+    @SendToUser("/queue/error")
     public Result CommonErrorHandler(OperationException e){
         return Result.Error(e);
     }

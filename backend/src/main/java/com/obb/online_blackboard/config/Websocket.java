@@ -59,8 +59,11 @@ public class Websocket implements WebSocketMessageBrokerConfigurer {
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
         WebSocketMessageBrokerConfigurer.super.addArgumentResolvers(argumentResolvers);
-        argumentResolvers.add(new ShapeHandler());
+
+        /*注意这个顺序和执行顺序要是一致的*/
+
         argumentResolvers.add(new JsonMessageHandler());
+        argumentResolvers.add(new ShapeHandler());
     }
 
     @Override

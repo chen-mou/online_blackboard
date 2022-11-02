@@ -63,6 +63,17 @@ public class LoginInterceptor implements HandlerInterceptor {
                     authBan(response, "token有误");
                     return false;
                 }
+                RedisTemplate redis = (RedisTemplate) app.getBean("redisTemplate");
+                Object rt = redis.opsForValue().get("token:" + userId);
+                if(rt == null){
+                    authBan(response, "登录已过时");
+                    return false;
+                }
+                String rtoken = (String) rt;
+                if(!rtoken.equals(token)){
+                    authBan(response, "登录已超时");
+                    return false;
+                }
                 request.setAttribute("CurrentUser", user);
 //                if(permission.type().equals("auth")){
 //                    String auth = permission.auth();

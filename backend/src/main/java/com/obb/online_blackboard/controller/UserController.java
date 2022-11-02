@@ -3,6 +3,7 @@ package com.obb.online_blackboard.controller;
 import com.obb.online_blackboard.entity.UserDataEntity;
 import com.obb.online_blackboard.entity.UserEntity;
 import com.obb.online_blackboard.service.UserService;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
