@@ -1,5 +1,5 @@
 import Canvas from "./canvas"
-
+import {getRadiusByTwoPoints} from "./math"
 /**
  * ShapeClass
  */
@@ -48,7 +48,7 @@ class Rectangle extends BaseShape{
 /**
  * 自由线条
  */
-class ShapeLine extends BaseShape{
+class Line extends BaseShape{
     constructor(BeforePosition:Array<number>=[0,0],AfterPosition:Array<number>=[0,0]){
         super(BeforePosition,AfterPosition)
         this.type="line"
@@ -65,10 +65,27 @@ class ShapeLine extends BaseShape{
         
     }
 }
+class Circle extends BaseShape{
+    constructor(BeforePosition:Array<number>=[0,0],AfterPosition:Array<number>=[0,0]){
+        super(BeforePosition,AfterPosition)
+        this.type="circle"
+        this.icon="/canvsShapeImg/rect.png"
+    }
 
+    draw(canvas:Canvas){
+        canvas.context.strokeStyle = '#00'
+        canvas.context.fillStyle = '#9f9'
+        canvas.context.beginPath()
+        canvas.context.arc(this.BeforePosition[0],this.BeforePosition[1],
+        getRadiusByTwoPoints(this.BeforePosition,this.AfterPosition),0,2*Math.PI);//arc 的意思是“弧”
+        canvas.context.stroke()
+        
+    }
+}
 
 export {
     BaseShape,
     Rectangle,
-    ShapeLine
+    Line,
+    Circle
 }

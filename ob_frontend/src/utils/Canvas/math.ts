@@ -17,4 +17,16 @@ const getElPagePos = (element: HTMLElement) => {
   return { x: actualLeft, y: actualTop }
 }
 
-export { getElPagePos }
+/**
+ * 计算圆的半径
+ */
+
+const getRadiusByTwoPoints=(APosition:Array<number>,BPisition:Array<number>)=>{
+
+    return Math.sqrt((Math.pow(APosition[0]-BPisition[0],2)+Math.pow(APosition[1]-BPisition[1],2)))
+
+}
+export { getElPagePos,
+getRadiusByTwoPoints 
+
+}
