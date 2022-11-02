@@ -8,7 +8,7 @@ const userStore = useUserStore()
 
 <template>
   <el-menu
-    v-if="!userStore.hasLogin"
+    v-if="userStore.hasLogin"
     default-active="2"
     class="menu"
     :collapse="isCollapse"

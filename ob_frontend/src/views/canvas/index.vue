@@ -2,6 +2,7 @@
 import { defineComponent } from 'vue'
 import { useUserStore } from '@/store/user'
 import Canvas from '@/utils/Canvas/canvas'
+import { de } from 'element-plus/es/locale'
 
 export default defineComponent({
   name: 'BlackboardCanvas',
@@ -50,9 +51,9 @@ onMounted(() => {
       /**
        * 清空之后全部重新绘制
        */
-      canvas.context.clearRect(0, 0, 1600, 1600)
+       canvas.context.clearRect(0, 0, 1600, 1600) 
+      console.log(canvas.data)
       for (let i = 0; i < canvas.data.length; i++) {
-        console.log(canvas.data[i])
         ShapeMap.get(canvas.data[i].type)!.BeforePosition=canvas.data[i].BeforePosition
         ShapeMap.get(canvas.data[i].type)!.AfterPosition=canvas.data[i].AfterPosition
         ShapeMap.get(canvas.data[i].type)?.draw(canvas)

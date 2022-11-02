@@ -52,7 +52,7 @@ class Canvas  {
     this.before = before
     this.after = after
     this.data = data
-    this.DrawClass=ShapeMap.get("rect") as ShapeClassTypeT
+    this.DrawClass=ShapeMap.get("line") as ShapeClassTypeT
     this.layers = [] // 画布的层
     if(!this.canvas){
         throw Error( `创建canvas失败,this.canvas=${this.canvas}`)
