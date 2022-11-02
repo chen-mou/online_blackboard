@@ -9,5 +9,9 @@ import { defineComponent } from 'vue';
 export default defineComponent({
     name:"pen"
 }) 
+</script>
+
+<script lang="ts" setup>
+
 
 </script>

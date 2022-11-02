@@ -1,5 +1,5 @@
 import Canvas from "./canvas"
-import {getRadiusByTwoPoints} from "./math"
+import {getRadiusByTwoPoints,getCenterByTwoPoints} from "./math"
 /**
  * ShapeClass
  */
@@ -76,7 +76,8 @@ class Circle extends BaseShape{
         canvas.context.strokeStyle = '#00'
         canvas.context.fillStyle = '#9f9'
         canvas.context.beginPath()
-        canvas.context.arc(this.BeforePosition[0],this.BeforePosition[1],
+        const {x,y} = getCenterByTwoPoints(this.BeforePosition,this.AfterPosition)
+        canvas.context.arc(x,y,
         getRadiusByTwoPoints(this.BeforePosition,this.AfterPosition),0,2*Math.PI);//arc 的意思是“弧”
         canvas.context.stroke()
         

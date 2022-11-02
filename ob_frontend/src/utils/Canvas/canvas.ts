@@ -59,7 +59,7 @@ class Canvas  {
     }
     this.context = this.canvas.getContext('2d') as CanvasRenderingContext2D // 画布的上下文
   }
-
+  
   changeContextStyle (
     styleName: styleNameType,
     styleValue: string

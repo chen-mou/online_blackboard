@@ -20,13 +20,27 @@ const getElPagePos = (element: HTMLElement) => {
 /**
  * 计算圆的半径
  */
-
-const getRadiusByTwoPoints=(APosition:Array<number>,BPisition:Array<number>)=>{
-
-    return Math.sqrt((Math.pow(APosition[0]-BPisition[0],2)+Math.pow(APosition[1]-BPisition[1],2)))
-
+const getRadiusByTwoPoints = (
+  APosition: Array<number>,
+  BPisition: Array<number>
+) => {
+  return Math.sqrt(
+    Math.pow(APosition[0] - BPisition[0], 2) +
+      Math.pow(APosition[1] - BPisition[1], 2)
+  )/2
 }
-export { getElPagePos,
-getRadiusByTwoPoints 
-
+/**
+ * 计算圆心坐标 
+ */
+const getCenterByTwoPoints = (
+  BPosition: Array<number>,
+  APosition: Array<number>
+) => {
+  return {
+    x:(APosition[0] + BPosition[0])/2 ,
+    y:(APosition[1] + BPosition[1]) /2
+  }
 }
+
+
+export { getElPagePos, getCenterByTwoPoints, getRadiusByTwoPoints }
