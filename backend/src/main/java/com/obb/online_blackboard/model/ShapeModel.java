@@ -2,12 +2,15 @@ package com.obb.online_blackboard.model;
 
 import com.obb.online_blackboard.dao.mysql.IdGenerator;
 import com.obb.online_blackboard.dao.redis.ShapeDao;
+import com.obb.online_blackboard.entity.base.Operate;
 import com.obb.online_blackboard.entity.base.Shape;
 import org.springframework.stereotype.Repository;
 import tool.util.id.Id;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author 陈桢梁
@@ -40,7 +43,14 @@ public class ShapeModel {
     }
 
     public List<Shape> getShapeByShapesId(List<Long> shapesId){
-        return shapeDao.findShapesByIdIn(shapesId);
+        List<Shape> res = new ArrayList<>();
+        shapesId.forEach((item) -> {
+            Optional<Shape> s = shapeDao.findById(item);
+            if(!s.isEmpty()){
+                res.add(s.get());
+            }
+        });
+        return res;
     }
 
 }

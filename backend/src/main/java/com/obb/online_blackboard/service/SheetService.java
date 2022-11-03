@@ -51,6 +51,9 @@ public class SheetService {
         if(!room.getSheets().contains(sheetId)){
             throw new OperationException(404, "画布不存在");
         }
+        if(room.getNowSheet() != sheetId){
+            throw new OperationException(403, "无法编辑没选中的画布");
+        }
         if(!room.getStatus().equals("meeting")){
             throw new OperationException(403, "会议已结束或者未没开始");
         }

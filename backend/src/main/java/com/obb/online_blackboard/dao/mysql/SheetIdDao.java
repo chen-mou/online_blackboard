@@ -10,6 +10,7 @@ import org.apache.ibatis.annotations.Update;
  * @logs[0] 2022-10-29 16:54 陈桢梁 创建了SheetIdDao.java文件
  */
 @Mapper
+@Deprecated
 public interface SheetIdDao {
     @Update("update sheet set id = #{id}")
     void updateId(long id);

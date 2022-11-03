@@ -20,7 +20,7 @@ import java.util.Map;
 @Data
 @RedisHash("Shape")
 @NoArgsConstructor
-public class Shape extends Date implements Special{
+public class Shape implements Special{
 
     @Id
     private long id;
@@ -50,7 +50,11 @@ public class Shape extends Date implements Special{
     }
 
     public Shape(Map<String, Object> map) {
-        Field[] fields = this.getClass().getDeclaredFields();
+        Class clazz = this.getClass().getSuperclass();
+        if(clazz != Shape.class){
+            return;
+        }
+        Field[] fields = clazz.getDeclaredFields();
         for(Field field : fields){
             String name = field.getName();
             if(map.containsKey(name)){

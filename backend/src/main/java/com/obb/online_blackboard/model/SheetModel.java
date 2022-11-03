@@ -1,6 +1,5 @@
 package com.obb.online_blackboard.model;
 
-import com.obb.online_blackboard.dao.mysql.SheetIdDao;
 import com.obb.online_blackboard.dao.redis.SheetDao;
 import com.obb.online_blackboard.entity.SheetEntity;
 import com.obb.online_blackboard.entity.base.Shape;
@@ -50,7 +49,7 @@ public class SheetModel {
             return null;
         }
         SheetEntity sheet = optional.get();
-        List<Shape> shapes = shapeModel.getShapeBySheetId(sheet.getId());
+        List<Shape> shapes = shapeModel.getShapeByShapesId(new ArrayList<>(sheet.getShapes()));
         sheet.setShapeEntities(shapes);
 //        sheet.setUseStack(null);
 //        sheet.setUserIndex(null);

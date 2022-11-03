@@ -10,30 +10,21 @@ import java.util.Map;
 
 /**
  * @author 陈桢梁
- * @desc Cube.java
- * @date 2022-10-29 11:35
- * @logs[0] 2022-10-29 11:35 陈桢梁 创建了Cube.java文件
+ * @desc Line.java
+ * @date 2022-11-03 15:52
+ * @logs[0] 2022-11-03 15:52 陈桢梁 创建了Line.java文件
  */
 @Data
 @NoArgsConstructor
-public class Cube extends Shape {
+public class Line extends Shape {
 
-    private double width;
+    int endX;
 
-    private double height;
+    int endY;
 
-    public Cube(Shape shape){
-        super(shape);
-        if(shape.getType().equals("Cube")){
-            Cube t = (Cube)shape;
-            this.width = t.width;
-            this.height = t.height;
-        }
-    }
-
-    public Cube(Map<String, Object> map)  {
+    public Line(Map<String, Object> map){
         super(map);
-        if(!map.containsKey("width") || !map.containsKey("height")){
+        if(!map.containsKey("endX") || !map.containsKey("endY")){
             throw new OperationException(500, "缺少参数");
         }
         Field[] fields = this.getClass().getDeclaredFields();
@@ -48,9 +39,8 @@ public class Cube extends Shape {
         }
     }
 
-
     @Override
     public Object handler(Map<String, Object> obj) {
-        return new Cube(obj);
+        return new Line(obj);
     }
 }
