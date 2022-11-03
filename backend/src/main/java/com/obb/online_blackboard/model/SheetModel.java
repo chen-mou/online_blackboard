@@ -44,15 +44,20 @@ public class SheetModel {
     }
 
     public SheetEntity getSheetById(long id){
+        SheetEntity sheet = getSheetByIdBase(id);
+        List<Shape> shapes = shapeModel.getShapeByShapesId(new ArrayList<>(sheet.getShapes()));
+        sheet.setShapeEntities(shapes);
+//        sheet.setUseStack(null);
+//        sheet.setUserIndex(null);
+        return sheet;
+    }
+
+    public SheetEntity getSheetByIdBase(long id){
         Optional<SheetEntity> optional = sheetDao.findById(id);
         if(optional.isEmpty()){
             return null;
         }
         SheetEntity sheet = optional.get();
-        List<Shape> shapes = shapeModel.getShapeByShapesId(new ArrayList<>(sheet.getShapes()));
-        sheet.setShapeEntities(shapes);
-//        sheet.setUseStack(null);
-//        sheet.setUserIndex(null);
         return sheet;
     }
 

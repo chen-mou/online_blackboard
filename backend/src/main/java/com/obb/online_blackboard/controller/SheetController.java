@@ -55,12 +55,14 @@ public class SheetController {
     }
 
     @MessageMapping("/modify")
-    public void setShape(Principal p, Shape shape) {
-
+    public void setShape(Principal p, @JsonKey Shape shape, @JsonKey String roomId, @JsonKey long sheetId) {
+        sheetService.modify(Long.parseLong(p.getName()), shape, roomId, sheetId);
     }
 
     @MessageMapping("/delete")
-    public void delete(Principal p, @JsonKey long shapeId, @JsonKey String roomId, @JsonKey long sheetId){}
+    public void delete(Principal p, @JsonKey long shapeId, @JsonKey String roomId, @JsonKey long sheetId){
+        sheetService.delete(Long.parseLong(p.getName()), roomId, sheetId, shapeId);
+    }
 
 
 }

@@ -117,11 +117,23 @@ public class SheetService {
         verifyCreator(userId, roomId, sheetId);
         long id = shape.getId();
         Shape s = shapeModel.createShape(shape);
+        SheetEntity sheet = sheetModel.getSheetById(sheetId);
+        sheet.modStack(userId, id, s.getId());
+        sheetModel.save(sheet);
+        template.convertAndSend("/exchange/room/" + roomId, Message.del(id));
+        template.convertAndSend("/exchange/room/" + roomId, Message.add(shape));
     }
 
     @Lock(key = "SHEET_WRITE_", argName = "sheetId")
-    public void delete(long userId, long roomId, long sheetId, long shapeId){
-
+    public void delete(long userId, String roomId, long sheetId, long shapeId){
+        verifyCreator(userId, roomId, sheetId);
+        Shape s = shapeModel.getById(shapeId);
+        if(s == null){
+            return;
+        }
+        SheetEntity sheet = sheetModel.getSheetByIdBase(sheetId);
+        sheet.delStack(userId, shapeId);
+        template.convertAndSend("/exchange/room/" + roomId, Message.del(shapeId));
     }
 
 }

@@ -53,4 +53,16 @@ public class ShapeModel {
         return res;
     }
 
+    public Shape getById(long shapeId){
+        Optional<Shape> s = shapeDao.findById(shapeId);
+        if(s.isEmpty()){
+            return null;
+        }
+        return s.get();
+    }
+
+    public void delete(long shapeId){
+        shapeDao.deleteById(shapeId);
+    }
+
 }

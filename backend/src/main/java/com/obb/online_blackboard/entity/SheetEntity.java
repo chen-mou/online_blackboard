@@ -31,7 +31,9 @@ public class SheetEntity {
     private String roomId;
 
     //操作栈,只最多保存三十个操作
-    private Map<Long, ArrayList<Operate>> useStack;
+    private Map<Long, Deque<Operate>> useStack;
+
+    private Map<Long, Stack<Operate>> redoStack;
 
     private Set<Long> shapes;
 
@@ -39,30 +41,26 @@ public class SheetEntity {
     @Transient
     private List<Shape> shapeEntities;
 
-    //用户撤销的指针用于回退和重做
-    private Map<Long, Integer> userIndex;
 
     public SheetEntity() {
         shapes = new HashSet<>();
-        userIndex = new HashMap<>();
         useStack = new HashMap<>();
+        redoStack = new HashMap<>();
     }
 
     private void StackOperation(long userId, Operate op){
         if(!useStack.containsKey(userId)){
-            userIndex.put(userId, 0);
-            useStack.put(userId, new ArrayList<>());
+            useStack.put(userId, new LinkedList<>());
+            redoStack.put(userId, new Stack<>());
         }
-        int index = userIndex.get(userId);
-        ArrayList<Operate> list = useStack.get(userId);
-        if(index < list.size()){
-            list.subList(index, list.size()).clear();
+        Deque<Operate> list = useStack.get(userId);
+        if(redoStack.containsKey(userId) && redoStack.get(userId).size() > 0){
+            redoStack.clear();
         }
+        list.addLast(op);
         if(list.size() > 30){
-            list.subList(0, list.size() - 30).clear();
+            list.pollFirst();
         }
-        userIndex.put(userId, index + 1);
-        list.add(op);
     }
 
     public void addStack(long userId, long shape){
@@ -82,30 +80,22 @@ public class SheetEntity {
     }
 
     public void rollback(long userId){
-        Integer index = userIndex.get(userId);
-        if(index == null){
-            useStack.put(userId, new ArrayList<>());
-            userIndex.put(userId, 0);
+        if(!useStack.containsKey(userId) || useStack.get(userId).size() == 0){
+            throw new OperationException(500, "无法撤销");
         }
-        if(index == 0){
-            throw new OperationException(500, "无法撤销了");
-        }
-        Operate op = useStack.get(userId).get(index);
-        userIndex.put(userId, index - 1);
-        op.rollback(this.shapes, this.roomId);
+        Deque<Operate> deque = useStack.get(userId);
+        Operate op = deque.pollLast();
+        redoStack.get(userId).push(op);
+        op.rollback(shapes, roomId);
+
     }
 
     public void redo(long userId){
-        Integer index = userIndex.get(userId);
-        if(index == null){
-            useStack.put(userId, new ArrayList<>());
-            userIndex.put(userId, 0);
-        }
-        if(index == useStack.get(userId).size()){
+        if(!redoStack.containsKey(userId) || redoStack.get(userId).size() == 0){
             throw new OperationException(500, "无法重做了");
         }
-        Operate op = useStack.get(userId).get(index + 1);
-        userIndex.put(userId, index + 1);
+        Operate op = redoStack.get(userId).pop();
+        useStack.get(userId).addLast(op);
         op.redo(this.shapes, this.roomId);
     }
 
