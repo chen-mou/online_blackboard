@@ -52,14 +52,14 @@ class Canvas  {
     this.before = before
     this.after = after
     this.data = data
-    this.DrawClass=ShapeMap.get("rect") as ShapeClassTypeT
+    this.DrawClass=ShapeMap.get("line") as ShapeClassTypeT
     this.layers = [] // 画布的层
     if(!this.canvas){
         throw Error( `创建canvas失败,this.canvas=${this.canvas}`)
     }
     this.context = this.canvas.getContext('2d') as CanvasRenderingContext2D // 画布的上下文
   }
-
+  
   changeContextStyle (
     styleName: styleNameType,
     styleValue: string
