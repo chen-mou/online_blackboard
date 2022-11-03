@@ -25,6 +25,8 @@ public class RoomSettingEntity extends Date {
 
     private long creatorId;
 
+    private String name;
+
     // 1:成员可以编辑 0:成员不能编辑
     @Max(value = 1)
     @Min(value = 0)

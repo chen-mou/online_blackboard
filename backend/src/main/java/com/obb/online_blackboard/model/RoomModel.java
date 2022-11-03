@@ -78,7 +78,9 @@ public class RoomModel {
         }else{
             r = optional.get();
             SheetEntity nowSheet = sheetModel.getSheetById(r.getNowSheet());
+            List<SheetEntity> sheetEntities = sheetModel.getSheetsById(new ArrayList<>(r.getSheets()));
             r.setNowSheetEntity(nowSheet);
+            r.setSheetEntities(sheetEntities);
             r.setSetting(roomSettingDao.getByRoomId(Long.parseLong(roomId)));
         }
         return r;

@@ -56,8 +56,19 @@ public class SheetModel {
         return sheet;
     }
 
-    public List<SheetEntity> getSheetsByRoomId(String roomId){
-        return sheetDao.findSheetEntitiesByRoomId(roomId);
+    public List<SheetEntity> getSheetsById(List<Long> sheetsId){
+        List<SheetEntity> res = new ArrayList<>();
+        sheetsId.forEach((item) -> {
+            Optional<SheetEntity> sheet = sheetDao.findById(item);
+            if(!sheet.isEmpty()){
+                SheetEntity val = sheet.get();
+                SheetEntity sheetEntity = new SheetEntity();
+                sheetEntity.setId(val.getId());
+                sheetEntity.setName(val.getName());
+                res.add(sheetEntity);
+            }
+        });
+        return res;
     }
 
 }
