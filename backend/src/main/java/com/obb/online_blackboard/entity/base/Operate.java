@@ -26,11 +26,7 @@ public abstract class Operate {
 
     public abstract void redo(Set<Long> shapes, String roomId);
 
-    public Operate(){
-        ApplicationContext app = Context.getContext();
-        tool.util.id.Id i = app.getBean(tool.util.id.Id.class);
-        this.id = i.getId("operate");
-    }
+
 
 
 }

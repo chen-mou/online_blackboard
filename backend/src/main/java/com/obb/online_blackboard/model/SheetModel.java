@@ -45,6 +45,9 @@ public class SheetModel {
 
     public SheetEntity getSheetById(long id){
         SheetEntity sheet = getSheetByIdBase(id);
+        if(sheet == null){
+            return null;
+        }
         List<Shape> shapes = shapeModel.getShapeByShapesId(new ArrayList<>(sheet.getShapes()));
         sheet.setShapeEntities(shapes);
 //        sheet.setUseStack(null);

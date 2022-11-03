@@ -16,6 +16,7 @@ import java.util.Map;
  * @logs[0] 2022-10-29 16:01 陈桢梁 创建了ShapeConvert.java文件
  */
 @ReadingConverter
+@Deprecated
 public class ShapeConvert extends DefaultRedisTypeMapper {
 
 
