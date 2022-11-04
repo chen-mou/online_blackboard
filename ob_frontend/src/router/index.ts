@@ -31,12 +31,11 @@ router.beforeEach(async (to, from) => {
   if (
     // 检查用户是否已登录
     !userStore.hasLogin &&
-    to.name !== 'ground' &&
     to.name !== 'login' &&
     !(await userStore.getUserData())
   ) {
     // 将用户重定向到登录页面
-    return { name: 'ground' }
+    return { name: 'login' }
   }
 })
 

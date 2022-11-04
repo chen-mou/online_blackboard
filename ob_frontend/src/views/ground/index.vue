@@ -3,6 +3,7 @@ import { useUserStore } from "@/store/user";
 import { defineComponent, ref } from "vue";
 import { ElMessage } from "element-plus";
 import { useRoomStore } from "@/store/room";
+import dayjs from "dayjs";
 
 export default defineComponent({
   name: "BlackboardGround",
@@ -21,11 +22,11 @@ export default defineComponent({
       newName: '',
       whiteboardCode: '',
       hideName: false,
-      orderTime: false,
-      fromDate: '',
-      fromTime: '',
+      fromDate: dayjs().format('YYYY-MM-DD'),
+      fromTime: dayjs().format('HH:mm'),
       toDate: '',
       toTime: '',
+      roomName: (this.userStore as any).nickname + '的房间',
     }
   },
   mounted() {
@@ -46,19 +47,32 @@ export default defineComponent({
   },
   methods: {
     async joinRoom() {
-      return
+      let data: any = {
+        isAnonymous: Number(this.hideName),
+        roomId: this.whiteboardCode,
+      }
+      let msg: string = await this.roomStore.joinRoom(data);
+      if (msg) {
+        this.$message({
+          type: 'error',
+          message: msg,
+        })
+      }
     },
     async createRoom() {
       let data: any = {
         isShare: 0,
         allowAnonymous: Number(this.hideName),
+        startTime: `${this.fromDate} ${this.fromTime}`,
+        endTime: `${this.toDate} ${this.toTime}`,
       }
-      if (this.orderTime) {
-        data.startTime = `${this.fromDate} ${this.fromTime}`
-        data.endTime = `${this.toDate} ${this.toTime}`
+      let msg: string = await this.roomStore.createRoom(data)
+      if (msg) {
+        this.$message({
+          type: 'error',
+          message: msg,
+        })
       }
-      await this.roomStore.createRoom(data)
-      return
     },
   },
   watch: {
@@ -77,7 +91,7 @@ export default defineComponent({
         <DArrowRight/>
       </el-icon>
       <div v-show="packEnter==='create'" class="container-in">
-        <el-input placeholder="输入白板号" v-model="whiteboardCode"/>
+        <el-input placeholder="输入房间号" v-model="whiteboardCode"/>
         <el-input placeholder="你的昵称" v-model="newName" :disabled="!hideName"/>
         <p class="buttons">
           <el-checkbox label="开启匿名" v-model="hideName" @click="newName=userStore.nickname" title="只有在房间开启匿名功能时生效"/>
@@ -91,8 +105,9 @@ export default defineComponent({
         <DArrowLeft/>
       </el-icon>
       <div v-show="packEnter==='enter'" class="container-in">
+        <el-input placeholder="房间名" v-model="roomName"/>
         <el-input placeholder="你的昵称" v-model="newName" :disabled="!hideName"/>
-        <div v-show="orderTime">
+        <div>
           从
           <input type="date" class="date-picker" v-model="fromDate"/>
           <input type="time" class="date-picker" v-model="fromTime"/>
@@ -102,7 +117,6 @@ export default defineComponent({
           <input type="time" class="date-picker" v-model="toTime"/>
         </div>
         <p class="buttons">
-          <el-checkbox label="预约时间" v-model="orderTime"/>
           <el-checkbox label="开启匿名" v-model="hideName" @click="newName=userStore.nickname"/>
           <el-button type="primary" @click="createRoom">创建</el-button>
         </p>
@@ -116,7 +130,7 @@ export default defineComponent({
   border: 1px solid lightgray;
   box-shadow: 0 0 20px 0 lightgray;
   border-radius: 30px;
-  height: 230px;
+  height: 270px;
   overflow: hidden;
   display: flex;
 }

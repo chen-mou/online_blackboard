@@ -1,27 +1,14 @@
 import { defineStore } from "pinia";
 import request from "@/utils/request";
-import { Participate } from "@/store/interface/room";
 
 export const useRoomStore = defineStore('room', {
   state: () => ({
-    roomId: 0,
+    roomId: '',
     name: '',
-    loaded: 0,
-    nowSheet: 0,
-    participants: [{
-      userId: 123,
-      nickname: '123',
-      isAnonymous: 0,
-    }] as Participate[],
-    setting: {
-      allowAnonymous: 0,
-      endTime: '',
-      startTime: '',
-      isShare: 0,
-    },
-    sheets: [],
-    status: '',
-    timeout: 0,
+    isShare: 0,
+    creatorId: 0,
+    startTime: '',
+    endTime: '',
   }),
   actions: {
     async joinRoom(data: any) {
@@ -30,8 +17,11 @@ export const useRoomStore = defineStore('room', {
         data,
         url: '/room/join'
       })
-
-      return
+      if (res.code != 200) {
+        return res.msg
+      }
+      this._loadRoom(res.data)
+      return false
     },
     async createRoom(data: any) {
       const res = await request({
@@ -39,8 +29,19 @@ export const useRoomStore = defineStore('room', {
         data,
         url: '/room/create',
       })
-      console.log(res)
-      return
+      if (res.code != 200) {
+        return res.msg
+      }
+      this._loadRoom(res.data)
+      return false
+    },
+    _loadRoom(res: any) {
+      this.name = res.name
+      this.roomId = res.roomId
+      this.isShare = res.isShare
+      this.endTime = res.endTime
+      this.creatorId = res.creatorId
+      this.startTime = res.startTime
     },
     //结束
     async overRoom() {
@@ -48,7 +49,10 @@ export const useRoomStore = defineStore('room', {
         method: 'post',
         url: '/room/over',
       })
-      console.log(res)
+      this.roomId = ''
+      if (res.code != 200) {
+        return res.msg
+      }
     }
   },
   getters: {}
