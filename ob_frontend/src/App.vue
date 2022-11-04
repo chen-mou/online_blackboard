@@ -19,7 +19,7 @@ const userStore = useUserStore()
     <div class="welcome">
       <p v-if="userStore.hasLogin">欢迎</p>
       <p v-if="!userStore.hasLogin">请登录</p>
-      <p v-show="!isCollapse && userStore.hasLogin">`{{ userStore.nickname }}</p>
+      <p v-show="!isCollapse && userStore.hasLogin">，{{ userStore.nickname }}</p>
     </div>
     <el-menu-item index="/">
       <el-icon>

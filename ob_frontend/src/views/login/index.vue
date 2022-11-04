@@ -1,7 +1,6 @@
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 import { useUserStore } from "@/store/user";
-import { useRoute, useRouter } from "vue-router";
 
 export default defineComponent({
   name: "UserLogin",
@@ -9,24 +8,26 @@ export default defineComponent({
     const username = ref('')
     const password = ref('')
     const userStore = useUserStore()
+    const stat = ref<'登录' | '注册'>('登录')
 
     return {
       username,
       password,
       userStore,
+      stat
     }
   },
   methods: {
     async login() {
-      await this.userStore.login(this.username, this.password, (failData: any) => {
-        this.promptMessage(failData.msg)
-      })
-      this.password = ''
-    },
-    async register() {
-      await this.userStore.register(this.username, this.password, (failData: any) => {
-        this.promptMessage(failData.msg)
-      })
+      if (this.stat === '登录') {
+        await this.userStore.login(this.username, this.password, (failData: any) => {
+          this.promptMessage(failData.msg)
+        })
+      } else {
+        await this.userStore.register(this.username, this.password, (failData: any) => {
+          this.promptMessage(failData.msg)
+        })
+      }
       this.password = ''
     },
     promptMessage(msg: string) {
@@ -57,11 +58,12 @@ export default defineComponent({
 
 <template>
   <div class="container">
+    <h3>在线黑板 · {{ stat }}</h3>
     <el-input v-model="username" placeholder="输入账号" clearable></el-input>
     <el-input v-model="password" type="password" placeholder="输入密码" show-password clearable></el-input>
     <div style="float: right">
-      <el-button @click="register">去注册</el-button>
-      <el-button type="primary" @click="login">登录</el-button>
+      <el-button @click="stat=stat==='登录'?'注册':'登录'">去{{ stat === '登录' ? '注册' : '登录' }}</el-button>
+      <el-button type="primary" @click="login">{{ stat }}</el-button>
     </div>
   </div>
 </template>

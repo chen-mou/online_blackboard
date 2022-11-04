@@ -2,14 +2,17 @@
 import { useUserStore } from "@/store/user";
 import { defineComponent, ref } from "vue";
 import { ElMessage } from "element-plus";
+import { useRoomStore } from "@/store/room";
 
 export default defineComponent({
   name: "BlackboardGround",
   setup() {
     const userStore = useUserStore()
+    const roomStore = useRoomStore()
     const packEnter = ref<'enter' | 'create'>('enter')
     return {
       userStore,
+      roomStore,
       packEnter,
     }
   },
@@ -19,7 +22,6 @@ export default defineComponent({
       whiteboardCode: '',
       hideName: false,
       orderTime: false,
-      roomName: '',
       fromDate: '',
       fromTime: '',
       toDate: '',
@@ -30,7 +32,6 @@ export default defineComponent({
     if (!this.userStore.hasLogin) {
       this.userStore.getUserData().then((res) => {
         if (!res) {
-          console.log('to login')
           ElMessage({
             message: '请先登录',
             type: 'info',
@@ -44,16 +45,25 @@ export default defineComponent({
     this.newName = this.userStore.nickname
   },
   methods: {
-    joinRoom() {
+    async joinRoom() {
       return
     },
-    createRoom() {
+    async createRoom() {
+      let data: any = {
+        isShare: 0,
+        allowAnonymous: Number(this.hideName),
+      }
+      if (this.orderTime) {
+        data.startTime = `${this.fromDate} ${this.fromTime}`
+        data.endTime = `${this.toDate} ${this.toTime}`
+      }
+      await this.roomStore.createRoom(data)
       return
     },
   },
   watch: {
     toTime() {
-      console.log(this.fromDate,this.fromTime,'>>',this.toDate,this.toTime)
+      console.log(this.fromDate, this.fromTime, '>>', this.toDate, this.toTime)
     }
   }
 })
@@ -81,7 +91,6 @@ export default defineComponent({
         <DArrowLeft/>
       </el-icon>
       <div v-show="packEnter==='enter'" class="container-in">
-        <el-input placeholder="房间名" v-model="roomName"/>
         <el-input placeholder="你的昵称" v-model="newName" :disabled="!hideName"/>
         <div v-show="orderTime">
           从
@@ -107,7 +116,7 @@ export default defineComponent({
   border: 1px solid lightgray;
   box-shadow: 0 0 20px 0 lightgray;
   border-radius: 30px;
-  height: 300px;
+  height: 230px;
   overflow: hidden;
   display: flex;
 }
