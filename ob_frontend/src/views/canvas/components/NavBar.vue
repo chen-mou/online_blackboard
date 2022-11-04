@@ -27,6 +27,10 @@ export default defineComponent({
 
 <script lang="ts" setup>
 import operationVue from "./operation.vue";
+
+
+
+
 </script>
 <style lang="less" scoped>
 .NavBar {

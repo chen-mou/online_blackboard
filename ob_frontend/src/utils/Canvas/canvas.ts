@@ -11,21 +11,19 @@ type ExtractStringKey<A> = Diff<
   Extract<keyof A, string>,
   ExtractType<A, string>
 >
-import { ShapeDataType } from "./type/CanvasType"
+import { Pen, ShapeDataType } from "./type/CanvasType"
 type styleNameType = ExtractStringKey<CanvasRenderingContext2D>
-import ShapeMap from "."
+import ShapeMap from "./ShapeMap"
 type ShapeClassType=  ReturnType<typeof ShapeMap.get>
 type GetMapKeyType<T> = T extends Map<any,infer I> ?I:never
 export  type ShapeClassTypeT = GetMapKeyType<typeof ShapeMap>
 class Canvas  {
   options: any
   canvas: HTMLCanvasElement
-  height: number
-  width: number
   target: HTMLElement // 接收事件的元素
   DrawClass:ShapeClassTypeT  // 默认类型为矩形// 默认类型为矩形
-  before: any
   after: any
+  pen: Pen|null
   layers: any
   context: CanvasRenderingContext2D
   data : Array<ShapeDataType>
@@ -33,10 +31,7 @@ class Canvas  {
     this.options = options 
     const {
       canvas,
-      height,
-      width,
       target,
-      before,
       after,
       data = [],
       list = null
@@ -44,30 +39,47 @@ class Canvas  {
     if (canvas === null) {
       throw Error('请传入canvas元素对于的Id')
     }
-    this.canvas =
-      (document.getElementById(canvas) as HTMLCanvasElement) || canvas as HTMLCanvasElement
-    this.height = height // 画布的宽高
-    this.width = width
+    this.canvas =(document.getElementById(canvas) as HTMLCanvasElement) || canvas as HTMLCanvasElement
     this.target = document.getElementById(target) as HTMLElement
-    this.before = before
     this.after = after
     this.data = data
     this.DrawClass=ShapeMap.get("line") as ShapeClassTypeT
     this.layers = [] // 画布的层
+    this.pen={
+      icon:"",
+      linewidth:1,
+      strokeStyle:"#00",
+      fillStyle:"#9f9"
+    }
     if(!this.canvas){
         throw Error( `创建canvas失败,this.canvas=${this.canvas}`)
     }
     this.context = this.canvas.getContext('2d') as CanvasRenderingContext2D // 画布的上下文
+    this.context.strokeStyle=this.pen.strokeStyle
+    this.context.fillStyle=this.pen.fillStyle
   }
-  
-  changeContextStyle (
-    styleName: styleNameType,
-    styleValue: string
-  ) {
-    (this.context[styleName] as string) = styleValue
-  }
+    // init(){
 
+    // }
+    drawData(){
+      this.context.clearRect(0, 0, 1600, 1600) 
+      for (let i = 0; i < this.data.length; i++) {
+        if(this.data[i].type=="img"){
+            console.log(this.data[i])
+            ShapeMap.get(this.data[i].type)?.draw(this,this.data[i].file) 
+        }else{
+          const {strokeStyle,fillStyle} =this.data[i].pen as Pen
+          this.context.strokeStyle=strokeStyle
+          this.context.fillStyle=fillStyle
+          this.context.lineWidth=4
+          ShapeMap.get(this.data[i].type)!.BeforePosition=this.data[i].BeforePosition
+          ShapeMap.get(this.data[i].type)!.AfterPosition=this.data[i].AfterPosition
+          ShapeMap.get(this.data[i].type)?.draw(this) 
+        }
 
-}
+      }
+
+    }
+} 
 
 export default Canvas

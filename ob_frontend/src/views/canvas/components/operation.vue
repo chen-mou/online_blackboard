@@ -6,22 +6,26 @@
         <span>
             回退
         </span>
-        <a  @click="exportAsPng">
+        <a @click="exportAsPng">
             导出
         </a>
+        <div>
+            <button>上传图片</button>
+            <input type="file" @change="importPng" accept="image/*">
+        </div>
+        <img :src="ImageSrc" alt="没有图片哦" style="width:60px;height: 60px;" id="img">
     </div>
-</template>
+</template> 
 
 <script lang="ts" setup>
-
+import ShapeMap from "@/utils/Canvas/ShapeMap";
 import Canvas from "@/utils/Canvas/canvas";
 import {inject, nextTick, onMounted, reactive, ref} from "vue"
-let canvas =ref()
+let canvas =ref<Canvas>()
 onMounted( ()=>{
     
 const canvasInjetct =inject("canvas__") as any
     canvas=canvasInjetct
-    console.log(canvas.value)
 })
 
 /**
@@ -48,11 +52,41 @@ const exportAsPng=()=>{
 }
 
 
+/**
+ * 
+ * @param e 
+ */
+const ImageSrc=ref("")
+const importPng=(e: any)=>{
+    const  file = e.target.files[0] 
+    ImageSrc.value = URL.createObjectURL(file)
+    console.log(e.target.files);
 
+    (canvas.value as Canvas).data.push({
+        type:"img",
+        BeforePosition:[100,100],
+        AfterPosition:[300,300],
+        pen:null,
+        file
+    })
+    ShapeMap.get("img")?.draw(canvas.value as Canvas,file)
+}
 </script>
 <script lang="ts">
 import { defineComponent } from 'vue';
 export default defineComponent({
     name:"operation"
 })
-</script>
+</script>   
+
+<style lang="less" scoped>
+button {
+    position: absolute;
+}
+
+input {
+    opacity: 0;
+    width: 60px;
+    height: 20px;
+}
+</style>

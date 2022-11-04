@@ -2,7 +2,7 @@
 import { defineComponent } from 'vue'
 import { useUserStore } from '@/store/user'
 import Canvas from '@/utils/Canvas/canvas'
-import { de } from 'element-plus/es/locale'
+
 
 export default defineComponent({
   name: 'BlackboardCanvas',
@@ -21,10 +21,10 @@ export default defineComponent({
 </script>
 
 <script setup lang="ts">
+import {deepCopy} from "@/utils/index"
 import NavBar from './components/NavBar.vue'
 import { onMounted, ref, reactive, provide } from 'vue'
 import { getElPagePos } from '../../utils/Canvas/math'
-import ShapeMap from '@/utils/Canvas'
 const IsDrawing = ref<Boolean>(false)
 const canvasRef = ref(null)
 const canvasProvide=ref<Canvas>()
@@ -51,17 +51,10 @@ onMounted(() => {
       /**
        * 清空之后全部重新绘制
        */
-       canvas.context.clearRect(0, 0, 1600, 1600) 
-      console.log(canvas.data)
-      for (let i = 0; i < canvas.data.length; i++) {
-        ShapeMap.get(canvas.data[i].type)!.BeforePosition=canvas.data[i].BeforePosition
-        ShapeMap.get(canvas.data[i].type)!.AfterPosition=canvas.data[i].AfterPosition
-        ShapeMap.get(canvas.data[i].type)?.draw(canvas)
-      }
+      canvas.drawData()
       AfterPosition.value = [e.pageX - x, e.pageY - y] 
       canvas.DrawClass.BeforePosition= beforePosition.value
       canvas.DrawClass.AfterPosition= AfterPosition.value 
-  
       canvas.DrawClass.draw(canvas)
     }
   })
@@ -75,7 +68,8 @@ onMounted(() => {
     canvas.data.push({
       type:canvas.DrawClass.type,
       BeforePosition:beforePosition.value,
-      AfterPosition:AfterPosition.value
+      AfterPosition:AfterPosition.value,
+      pen:deepCopy(canvas.pen)
     })
     IsDrawing.value = false
   })

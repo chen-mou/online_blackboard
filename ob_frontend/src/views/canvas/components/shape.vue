@@ -2,7 +2,7 @@
     <div class="shape" @click="HandleSelect">
         <!-- 遍历icon及形状 -->
         <div v-for="item in ShapeMap" :key="item[1].type">
-            <Img :src="item[1].icon" :name="item[1].type"></Img>
+            <img :src="item[1].icon" :name="item[1].type">
         </div>
     </div>
 </template>
@@ -17,13 +17,12 @@ export default defineComponent({
 </script>
 <script lang="ts" setup>
 import { ref,reactive, onMounted, inject } from 'vue';
-import ShapeMap from '@/utils/Canvas';
+import ShapeMap from '@/utils/Canvas/ShapeMap';
 
 let canvas =ref()
 onMounted( ()=>{
 const canvasInjetct =inject("canvas__") as any
 canvas=canvasInjetct
-    console.log(canvas.value)
     // window.canvasInjetct=canvasInjetct
 })
 /**
@@ -43,6 +42,7 @@ const HandleSelect=(e:MouseEvent)=>{
 <style lang="less" scoped>
 .shape {
     width: 40vh;
+    display: flex;
     border-left: 1px solid rgb(211, 201, 201);
     border-right: 1px solid rgb(211, 201, 201);
 }
