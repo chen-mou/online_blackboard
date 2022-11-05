@@ -5,6 +5,7 @@ import com.obb.online_blackboard.dao.redis.ShapeDao;
 import com.obb.online_blackboard.entity.base.Operate;
 import com.obb.online_blackboard.entity.base.Save;
 import com.obb.online_blackboard.entity.base.Shape;
+import com.obb.online_blackboard.model.ShapeModel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.context.ApplicationContext;
@@ -42,8 +43,8 @@ public class Add implements Operate {
         shapes.add(shapeId);
         ApplicationContext app = Context.getContext();
         SimpMessagingTemplate s = app.getBean(SimpMessagingTemplate.class);
-        ShapeDao shapeDao = app.getBean(ShapeDao.class);
-        Shape shape = shapeDao.findShapeById(shapeId);
+        ShapeModel shapeDao = app.getBean(ShapeModel.class);
+        Shape shape = shapeDao.getById(shapeId);
         save.save();
         s.convertAndSend("/exchange/room/" + roomId, new Message<>("add", shape));
     }
