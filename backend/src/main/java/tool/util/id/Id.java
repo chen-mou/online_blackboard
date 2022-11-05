@@ -56,21 +56,18 @@ public class Id {
                     if(!tr){
                         throw new OperationException(500, "服务器繁忙");
                     }
-                    id = (Integer) redis.opsForValue().get(key);
                 }catch (InterruptedException e){
                     throw new OperationException(500, "中断错误" + e.getMessage());
                 }
             }else{
                 long dbId = this.key.getId(name);
                 id = Math.toIntExact(dbId + 12);
-                this.key.updateId(name, id);
+//                this.key.updateId(name, id);
                 redis.opsForValue().set(key, id);
             }
             lock.unlock();
-        }else{
-            id = redis.opsForValue().increment(key, 12);
-            this.key.updateId(name, id);
         }
+        id = redis.opsForValue().increment(key, 12);
         return id;
     }
 

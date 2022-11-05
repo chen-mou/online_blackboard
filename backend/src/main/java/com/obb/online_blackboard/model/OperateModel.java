@@ -35,15 +35,15 @@ public class OperateModel {
         return op;
     }
 
-    public Operates getById(long userId, long sheetId){
-        Optional<Operates> op = operateDao.findById(userId + "-" + sheetId);
+    public Operates getById(long sheetId){
+        Optional<Operates> op = operateDao.findById(sheetId);
         if(op.isEmpty()){
             return null;
         }
         return op.get();
     }
 
-    public void delete(String id){
+    public void delete(long id){
         operateDao.deleteById(id);
     }
 

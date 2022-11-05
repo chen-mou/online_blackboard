@@ -99,7 +99,7 @@ public class SheetService {
     public void rollback(long userId, String roomId, long sheetId){
         verifyCreator(userId, roomId, sheetId);
         SheetEntity sheet = sheetModel.getSheetById(sheetId);
-        sheet.rollback(userId, () -> {
+        sheet.rollback(() -> {
             sheetModel.save(sheet);
         });
     }
@@ -108,7 +108,7 @@ public class SheetService {
     public void redo(long userId, String roomId, long sheetId) {
         verifyCreator(userId, roomId, sheetId);
         SheetEntity sheet = sheetModel.getSheetById(sheetId);
-        sheet.redo(userId, () -> {
+        sheet.redo(() -> {
             sheetModel.save(sheet);
         });
 

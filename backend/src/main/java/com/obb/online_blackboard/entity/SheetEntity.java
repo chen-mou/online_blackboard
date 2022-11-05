@@ -50,7 +50,7 @@ public class SheetEntity {
 
     private void StackOperation(long userId, Operate op){
         OperateModel operateModel = Context.getContext().getBean(OperateModel.class);
-        Operates ops = operateModel.getById(userId, this.id);
+        Operates ops = operateModel.getById(this.id);
         if(ops == null){
             ops = new Operates(userId, this.id);
         }
@@ -74,9 +74,9 @@ public class SheetEntity {
         StackOperation(userId, new Modify(from, to));
     }
 
-    public void rollback(long userId, Save save){
+    public void rollback(Save save){
         OperateModel operateModel = Context.getContext().getBean(OperateModel.class);
-        Operates ops = operateModel.getById(userId, this.id);
+        Operates ops = operateModel.getById(this.id);
         Operate op;
         try {
             if (ops == null) {
@@ -90,9 +90,9 @@ public class SheetEntity {
         operateModel.save(ops);
     }
 
-    public void redo(long userId, Save save){
+    public void redo(Save save){
         OperateModel operateModel = Context.getContext().getBean(OperateModel.class);
-        Operates ops = operateModel.getById(userId, this.id);
+        Operates ops = operateModel.getById(this.id);
         Operate op;
         try {
             if (ops == null) {

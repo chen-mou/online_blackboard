@@ -4,6 +4,9 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * @author 陈桢梁
  * @desc KeyGenerator.java
@@ -18,5 +21,8 @@ public interface IdGenerator {
 
     @Update("update  redis_model_id set value = #{id} where name = #{table}")
     void updateId(String table, long id);
+
+    @Select("select name from redis_model_id")
+    List<String> getAllName();
 
 }

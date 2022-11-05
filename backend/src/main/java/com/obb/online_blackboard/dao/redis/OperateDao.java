@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
  * @logs[0] 2022-11-03 19:00 陈桢梁 创建了OperateDao.java文件
  */
 @Repository
-public interface OperateDao extends CrudRepository<Operates, String> {
+public interface OperateDao extends CrudRepository<Operates, Long> {
 
 
 }
