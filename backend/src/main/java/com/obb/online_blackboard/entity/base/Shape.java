@@ -84,4 +84,17 @@ public class Shape implements Special{
             throw new OperationException(500, e.getMessage());
         }
     }
+
+    protected static void set(Shape s, Map<String, Object> map){
+        Field[] fields = s.getClass().getDeclaredFields();
+        for(Field field : fields){
+            field.setAccessible(true);
+            try{
+                field.set(s, map.get(field.getName()));
+            }catch (IllegalAccessException e){
+                throw new OperationException(500, "参数设置异常");
+            }
+
+        }
+    }
 }

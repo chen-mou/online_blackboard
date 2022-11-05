@@ -36,16 +36,7 @@ public class Cube extends Shape {
         if(!map.containsKey("width") || !map.containsKey("height")){
             throw new OperationException(500, "缺少参数");
         }
-        Field[] fields = this.getClass().getDeclaredFields();
-        for(Field field : fields){
-            field.setAccessible(true);
-            try{
-                field.set(this, map.get(field.getName()));
-            }catch (IllegalAccessException e){
-                throw new OperationException(500, "参数设置异常");
-            }
-
-        }
+        Shape.set(this, map);
     }
 
 

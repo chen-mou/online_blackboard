@@ -28,7 +28,7 @@ public class Round extends Shape {
 
     public Round(Map<String, Object> map) {
         super(map);
-        if (!map.containsKey(radius)) {
+        if (!map.containsKey("radius")) {
             throw new OperationException(500, "缺少参数radius");
         }
         try {

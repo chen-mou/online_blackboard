@@ -1,7 +1,6 @@
 package com.obb.online_blackboard.entity.operate;
 
 import com.obb.online_blackboard.config.Context;
-import com.obb.online_blackboard.dao.redis.ShapeDao;
 import com.obb.online_blackboard.entity.base.Operate;
 import com.obb.online_blackboard.entity.base.Save;
 import com.obb.online_blackboard.entity.base.Shape;
