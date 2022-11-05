@@ -20,6 +20,24 @@ spring:
   redis:
     host: 47.112.184.57
 
+  servlet:
+    multipart:
+      max-file-size: 5MB
+
 mybatis:
   configuration:
     map-underscore-to-camel-case: true
+
+
+---
+
+spring:
+  profile: dev
+  uri_pre: http://47.112.184.57/
+
+---
+
+spring:
+  profile: local
+  uri_pre: http://localhost:18888/
+
