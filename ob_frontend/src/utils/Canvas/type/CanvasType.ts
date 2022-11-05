@@ -8,6 +8,8 @@ export type ShapeDataType ={
     AfterPosition:Array<number>// mouseup position
     pen:Pen|null
     file?:File
+    text?:string
+    
 }
 
 /**
@@ -16,6 +18,7 @@ export type ShapeDataType ={
 export type Pen={
     icon:string
     linewidth:number
-    strokeStyle:string
+    strokeStyle:string | CanvasGradient | CanvasPattern
     fillStyle:string
+    lineStyle?:number
 }

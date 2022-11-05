@@ -35,6 +35,7 @@ class Rectangle extends BaseShape{
                 this.AfterPosition[0]-this.BeforePosition[0] ,
                 this.AfterPosition[1]-this.BeforePosition[1]
             )
+            
             canvas.context.stroke()
         }else{
             throw Error(`this.BeforePosition:${this.BeforePosition}`)
