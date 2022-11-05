@@ -46,7 +46,7 @@ public class RoomTask {
             return;
         }
         rooms.forEach((item) -> {
-            SheetEntity sheet= sheetModel.createSheet("sheet-1");
+            SheetEntity sheet= sheetModel.createSheet("sheet-1", item.getId());
             RoomSettingEntity setting = item.getSetting();
             //会议结束后房间保留三个小时，前一个小时可以编辑，后一个小时会不能编辑
             item.setTimeout(setting.getEndTime().getTime() - setting.getStartTime().getTime() + 3 * 60 * 60 * 1000);

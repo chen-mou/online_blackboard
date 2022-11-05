@@ -15,16 +15,11 @@ import java.util.Set;
  * @date 2022-11-01 19:58
  * @logs[0] 2022-11-01 19:58 陈桢梁 创建了Operate.java文件
  */
-@RedisHash("operate")
-@Data
-public abstract class Operate {
+public interface Operate {
 
-    @Id
-    private long id;
+    void rollback(Set<Long> shapes, String roomId, Save save);
 
-    public abstract void rollback(Set<Long> shapes, String roomId);
-
-    public abstract void redo(Set<Long> shapes, String roomId);
+    void redo(Set<Long> shapes, String roomId, Save save);
 
 
 

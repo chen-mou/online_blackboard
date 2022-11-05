@@ -2,6 +2,7 @@ package com.obb.online_blackboard.model;
 
 import com.obb.online_blackboard.dao.redis.OperateDao;
 import com.obb.online_blackboard.entity.base.Operate;
+import com.obb.online_blackboard.entity.operate.Operates;
 import org.springframework.stereotype.Repository;
 import tool.util.id.Id;
 
@@ -23,22 +24,26 @@ public class OperateModel {
     @Resource
     Id id;
 
-    public Operate createOperate(Operate op){
-        long id = this.id.getId("operate");
-        op.setId(id);
+    public Operates createOperate(Operates op, long userId, long sheet){
+        op.setId(userId + "-" + sheet);
         operateDao.save(op);
         return op;
     }
 
-    public Operate getById(long id){
-        Optional<Operate> op = operateDao.findById(id);
+    public Operates save(Operates op){
+        operateDao.save(op);
+        return op;
+    }
+
+    public Operates getById(long userId, long sheetId){
+        Optional<Operates> op = operateDao.findById(userId + "-" + sheetId);
         if(op.isEmpty()){
             return null;
         }
         return op.get();
     }
 
-    public void delete(long id){
+    public void delete(String id){
         operateDao.deleteById(id);
     }
 

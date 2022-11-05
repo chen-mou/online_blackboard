@@ -3,6 +3,7 @@ package com.obb.online_blackboard.entity.operate;
 import com.obb.online_blackboard.config.Context;
 import com.obb.online_blackboard.dao.redis.ShapeDao;
 import com.obb.online_blackboard.entity.base.Operate;
+import com.obb.online_blackboard.entity.base.Save;
 import com.obb.online_blackboard.entity.base.Shape;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,23 +21,25 @@ import java.util.Set;
  */
 @AllArgsConstructor
 @Data
-public class Delete extends Operate {
+public class Delete implements Operate {
 
     long shapeId;
     @Override
-    public void rollback(Set<Long> shapes, String roomId) {
+    public void rollback(Set<Long> shapes, String roomId, Save save) {
         shapes.add(shapeId);
         ApplicationContext app = Context.getContext();
         SimpMessagingTemplate s = app.getBean(SimpMessagingTemplate.class);
         ShapeDao shapeDao = app.getBean(ShapeDao.class);
         Shape shape = shapeDao.findShapeById(shapeId);
+        save.save();
         s.convertAndSend("/exchange/room/" + roomId, new Message<>("add", shape));
     }
 
     @Override
-    public void redo(Set<Long> shapes, String roomId) {
+    public void redo(Set<Long> shapes, String roomId, Save save) {
         shapes.remove(shapeId);
         SimpMessagingTemplate s = Context.getContext().getBean(SimpMessagingTemplate.class);
+        save.save();
         s.convertAndSend("/exchange/room/" + roomId, new Message<>("delete", shapeId));
     }
 }

@@ -78,10 +78,10 @@ public class SheetService {
         if(!room.getStatus().equals("meeting")){
             throw new OperationException(403, "会议已经结束或者还未开始");
         }
-        SheetEntity sheet = sheetModel.createSheet(name);
+        SheetEntity sheet = sheetModel.createSheet(name, room.getId());
         room.getSheets().add(sheet.getId());
-        template.convertAndSend("/exchange/room/" + room.getId() + "/create_sheet", sheet);
         roomModel.saveRoom(room);
+        template.convertAndSend("/exchange/room/" + room.getId(), Message.def("/create_sheet", sheet));
         return sheet;
     }
 
@@ -99,16 +99,18 @@ public class SheetService {
     public void rollback(long userId, String roomId, long sheetId){
         verifyCreator(userId, roomId, sheetId);
         SheetEntity sheet = sheetModel.getSheetById(sheetId);
-        sheet.rollback(userId);
-        sheetModel.save(sheet);
+        sheet.rollback(userId, () -> {
+            sheetModel.save(sheet);
+        });
     }
 
     @Lock(key = "SHEET_WRITE_", argName = "sheetId")
     public void redo(long userId, String roomId, long sheetId) {
         verifyCreator(userId, roomId, sheetId);
         SheetEntity sheet = sheetModel.getSheetById(sheetId);
-        sheet.redo(userId);
-        sheetModel.save(sheet);
+        sheet.redo(userId, () -> {
+            sheetModel.save(sheet);
+        });
 
     }
 
@@ -120,8 +122,8 @@ public class SheetService {
         SheetEntity sheet = sheetModel.getSheetById(sheetId);
         sheet.modStack(userId, id, s.getId());
         sheetModel.save(sheet);
-        template.convertAndSend("/exchange/room/" + roomId, Message.del(id));
-        template.convertAndSend("/exchange/room/" + roomId, Message.add(shape));
+//        template.convertAndSend("/exchange/room/" + roomId, Message.del(id));
+//        template.convertAndSend("/exchange/room/" + roomId, Message.add(shape));
     }
 
     @Lock(key = "SHEET_WRITE_", argName = "sheetId")

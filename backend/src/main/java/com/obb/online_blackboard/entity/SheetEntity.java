@@ -1,14 +1,17 @@
 package com.obb.online_blackboard.entity;
 
 import com.obb.online_blackboard.config.Context;
+import com.obb.online_blackboard.entity.base.Save;
 import com.obb.online_blackboard.entity.base.Shape;
 import com.obb.online_blackboard.entity.operate.Add;
 import com.obb.online_blackboard.entity.operate.Delete;
 import com.obb.online_blackboard.entity.operate.Modify;
 import com.obb.online_blackboard.entity.base.Operate;
+import com.obb.online_blackboard.entity.operate.Operates;
 import com.obb.online_blackboard.exception.OperationException;
 import com.obb.online_blackboard.model.OperateModel;
 import lombok.Data;
+import org.springframework.context.ApplicationContext;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.redis.core.RedisHash;
@@ -33,9 +36,6 @@ public class SheetEntity {
     private String roomId;
 
     //操作栈,只最多保存三十个操作
-    private Map<Long, List<Long>> useStack;
-
-    private Map<Long, List<Long>> redoStack;
 
     private Set<Long> shapes;
 
@@ -46,27 +46,16 @@ public class SheetEntity {
 
     public SheetEntity() {
         shapes = new HashSet<>();
-        useStack = new HashMap<>();
-        redoStack = new HashMap<>();
     }
 
     private void StackOperation(long userId, Operate op){
-        if(!useStack.containsKey(userId)){
-            useStack.put(userId, new LinkedList<>());
-            redoStack.put(userId, new LinkedList<>());
-        }
-        List<Long> list = useStack.get(userId);
-        if(redoStack.containsKey(userId) && redoStack.get(userId).size() > 0){
-            redoStack.clear();
-        }
         OperateModel operateModel = Context.getContext().getBean(OperateModel.class);
-        operateModel.createOperate(op);
-        list.add(op.getId());
-        if(list.size() > 30){
-            long id = list.get(0);
-            list.remove(0);
-            operateModel.delete(id);
+        Operates ops = operateModel.getById(userId, this.id);
+        if(ops == null){
+            ops = new Operates(userId, this.id);
         }
+        ops.addOperates(op);
+        operateModel.save(ops);
     }
 
     public void addStack(long userId, long shape){
@@ -85,49 +74,52 @@ public class SheetEntity {
         StackOperation(userId, new Modify(from, to));
     }
 
-    public void rollback(long userId){
-        if(!useStack.containsKey(userId) || useStack.get(userId).size() == 0){
-            throw new OperationException(500, "无法撤销");
-        }
-        List<Long> deque = useStack.get(userId);
-        int index = deque.size() - 1;
-        Long id = deque.get(index);
-        deque.remove(index);
+    public void rollback(long userId, Save save){
         OperateModel operateModel = Context.getContext().getBean(OperateModel.class);
-        Operate op = operateModel.getById(id);
-        redoStack.get(userId).add(id);
-        op.rollback(shapes, roomId);
-
+        Operates ops = operateModel.getById(userId, this.id);
+        Operate op;
+        try {
+            if (ops == null) {
+                throw new OperationException(500, "无法撤销了");
+            }
+            op = ops.rollback();
+        }catch (OperationException e){
+            throw new OperationException(500, "无法撤销了");
+        }
+        op.rollback(shapes, roomId, save);
+        operateModel.save(ops);
     }
 
-    public void redo(long userId){
-        if(!redoStack.containsKey(userId) || redoStack.get(userId).size() == 0){
+    public void redo(long userId, Save save){
+        OperateModel operateModel = Context.getContext().getBean(OperateModel.class);
+        Operates ops = operateModel.getById(userId, this.id);
+        Operate op;
+        try {
+            if (ops == null) {
+                throw new OperationException(500, "无法重做了");
+            }
+            op = ops.redo();
+        }catch (OperationException e){
             throw new OperationException(500, "无法重做了");
         }
-        List<Long> list = redoStack.get(userId);
-        int index = list.size() - 1;
-        long id = list.get(index);
-        list.remove(index);
-        OperateModel operateModel =  Context.getContext().getBean(OperateModel.class);
-        Operate op = operateModel.getById(id);
-        useStack.get(userId).add(id);
-        op.redo(this.shapes, this.roomId);
+        op.redo(shapes, roomId, save);
+        operateModel.save(ops);
     }
 
-    public Map<Long, ArrayList<Long>> getUseStack() {
-        Map<Long, ArrayList<Long>> res = new HashMap<>();
-        useStack.forEach((key, value) -> {
-            res.put(key, new ArrayList<>(value));
-        });
-        return res;
-    }
-
-    public Map<Long, ArrayList<Long>> getRedoStack(){
-        Map<Long, ArrayList<Long>> res = new HashMap<>();
-        redoStack.forEach((key, value) -> {
-            res.put(key, new ArrayList<>(value));
-        });
-        return res;
-    }
+//    public Map<Long, ArrayList<Long>> getUseStack() {
+//        Map<Long, ArrayList<Long>> res = new HashMap<>();
+//        useStack.forEach((key, value) -> {
+//            res.put(key, new ArrayList<>(value));
+//        });
+//        return res;
+//    }
+//
+//    public Map<Long, ArrayList<Long>> getRedoStack(){
+//        Map<Long, ArrayList<Long>> res = new HashMap<>();
+//        redoStack.forEach((key, value) -> {
+//            res.put(key, new ArrayList<>(value));
+//        });
+//        return res;
+//    }
 
 }

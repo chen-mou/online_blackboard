@@ -30,10 +30,11 @@ public class SheetModel {
     @Resource
     Id id;
 
-    public SheetEntity createSheet(String name){
+    public SheetEntity createSheet(String name, String roomId){
         SheetEntity sheetEntity = new SheetEntity();
         sheetEntity.setId(id.getId("sheet"));
         sheetEntity.setName(name);
+        sheetEntity.setRoomId(roomId);
 //        sheetIdDao.updateId(sheetEntity.getId());
         sheetDao.save(sheetEntity);
         return sheetEntity;
