@@ -1,21 +1,17 @@
-import { io } from "socket.io-client";
+import { Stomp } from "@stomp/stompjs";
 
-
-export function useWs(eventName: string, userId: string, callback: (data: unknown) => void) {
-  const socket = io('/connect', {
-    autoConnect: true,
-    extraHeaders: { userId },
-  })
-  socket.on('connect', () => {
-    console.log(socket.id)
-  })
-  socket.on(eventName, callback)
+export function useWs(eventName: string, callback: (data: unknown) => void) {
+  const client = Stomp.client('/connect')
+  const headers = {
+    Authorization: localStorage.getItem('token')
+  }
+  client.connect(headers, callback)
   return {
     emit(data: unknown) {
-      socket.emit(eventName, data)
+      client.send(eventName, {}, JSON.stringify(data))
     },
     close() {
-      socket.close()
+      client.disconnect()
     },
   }
 }
