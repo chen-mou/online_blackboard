@@ -3,7 +3,7 @@ import request from "@/utils/request";
 
 export const useRoomStore = defineStore('room', {
   state: () => ({
-    roomId: '',
+    roomId: 'test',
     name: '',
     isShare: 0,
     creatorId: 0,
