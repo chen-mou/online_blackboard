@@ -1,9 +1,15 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useUserStore } from "./store/user";
+import { useRoomStore } from "@/store/room";
 
 const isCollapse = ref(true)
 const userStore = useUserStore()
+const roomStore = useRoomStore()
+
+const showCanvas = computed(() => {
+  return roomStore.roomId !== ''
+})
 </script>
 
 <template>
@@ -27,7 +33,7 @@ const userStore = useUserStore()
       </el-icon>
       <template #title>主页</template>
     </el-menu-item>
-    <el-menu-item index="/canvas">
+    <el-menu-item index="/canvas" v-if="showCanvas">
       <el-icon>
         <Edit/>
       </el-icon>

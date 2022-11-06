@@ -1,21 +1,22 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { useUserStore } from '@/store/user'
-import Canvas from '@/utils/Canvas/canvas'
+import { useWs } from "@/utils/ws";
 
 
 export default defineComponent({
   name: 'BlackboardCanvas',
-
   watch: {
     'userStore.hasLogin' (newVal) {
-      console.log(newVal)
       if (newVal) {
         return
       }
       //todo 登出处理
+
       return
     }
+  },
+  mounted() {
+    useWs()
   }
 })
 </script>
@@ -25,6 +26,7 @@ import {deepCopy} from "@/utils/index"
 import NavBar from './components/NavBar.vue'
 import { onMounted, ref, reactive, provide } from 'vue'
 import { getElPagePos } from '../../utils/Canvas/math'
+import Canvas from '@/utils/Canvas/canvas'
 const IsDrawing = ref<Boolean>(false)
 const canvasRef = ref(null)
 const canvasProvide=ref<Canvas>()
@@ -76,7 +78,6 @@ onMounted(() => {
 })
   provide("canvas__",canvasProvide)
 
-const userStore = useUserStore()
 /**
  * 绑定mouse事件
  */
