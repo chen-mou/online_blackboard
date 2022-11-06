@@ -16,7 +16,7 @@ export default defineComponent({
     }
   },
   mounted() {
-    useWs()
+    // useWs()
   }
 })
 </script>
