@@ -75,6 +75,16 @@ onMounted(() => {
     })
     IsDrawing.value = false
   })
+
+  /**
+   * 监听双击事件可选中和可拖动
+   */
+  canvas.canvas.addEventListener("dblclick",(e)=>{
+    /**
+     * 判断点是否在data的图形里面在的话拿出那一个图形并绘制
+     */
+    canvas.drawControlBorder(e.pageX - x,e.pageY - y)
+  })
 })
   provide("canvas__",canvasProvide)
 
