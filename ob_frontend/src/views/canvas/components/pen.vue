@@ -1,6 +1,17 @@
 <template>
     <div>
-        <input type="color" v-model="penColor">
+        <div>
+            <div class="grid" >
+                <div style="height: 20px ;width: 20px;border: 1px black solid;"  v-for="item in PenList" :key="item.icon" >
+                    <div :style="{backgroundColor:item.color }"
+                        style="height: 18px;width:18px;margin: 1px;" >
+                    </div>
+                </div>
+                <el-color-picker v-model="penColor  " />
+            </div>
+
+            <hr>
+        </div>
     </div>
 </template>
 
@@ -12,8 +23,12 @@ export default defineComponent({
 </script>
 
 <script lang="ts" setup>
-import {Pen} from "@/utils/Canvas/type/CanvasType"
-const PenList=reactive<Array<Pen>>([])
+const PenList=reactive<Array<any>>([
+    {
+        icon:'a',
+        color:"#000000"
+    }
+])
 let canvas =ref()
 const penColor =ref<string>("a42d2d")
 onMounted( ()=>{
@@ -24,13 +39,18 @@ const canvasInjetct =inject("canvas__") as any
 
 watch(penColor,(newValue,oldValue)=>{
     canvas.value.context.strokeStyle=newValue
+    console.log(canvas.value.context.strokeStyle)
     canvas.value.pen.strokeStyle=newValue
 })
 </script>   
 
 <style lang="less" scoped>
-
-input{
+input {
     border: solid 2px gray;
+}
+.grid{
+    height: 15vh;
+    width: 200px;
+    border: 1px black solid;
 }
 </style>

@@ -13,6 +13,7 @@ type ExtractStringKey<A> = Diff<
 import { Pen, ShapeDataType } from './type/CanvasType'
 type styleNameType = ExtractStringKey<CanvasRenderingContext2D>
 import ShapeMap from './ShapeMap'
+import { deepCopy } from '..'
 type ShapeClassType = ReturnType<typeof ShapeMap.get>
 type GetMapKeyType<T> = T extends Map<any, infer I> ? I : never
 export type ShapeClassTypeT = GetMapKeyType<typeof ShapeMap>
@@ -57,6 +58,7 @@ class Canvas {
 
   // }
   drawData () {
+    const pen = deepCopy(this.pen)
     this.context.clearRect(0, 0, 1600, 1600)
     for (let i = 0; i < this.data.length; i++) {
       if (this.data[i].type == 'img') {
@@ -75,6 +77,7 @@ class Canvas {
         ShapeMap.get(this.data[i].type)?.draw(this)
       }
     }
+    this.context.strokeStyle=pen?.strokeStyle as any
   }
 
   drawControlBorder (positionX: number, positionY: number) {

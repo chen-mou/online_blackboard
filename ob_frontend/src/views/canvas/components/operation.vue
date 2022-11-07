@@ -1,19 +1,42 @@
 <template>
-    <div>
-        <span @click="cleanCanvas">
-            清空
-        </span>
-        <span>
-            回退
-        </span>
-        <a @click="exportAsPng">
-            导出
-        </a>
+    <div style="display: grid;   grid-template-columns: repeat(2, 50px);">
         <div>
-            <button>上传图片</button>
-            <input type="file" @change="importPng" accept="image/*">
+            <el-icon @click="cleanCanvas">
+                <DeleteFilled />
+            </el-icon>
+            <span>
+                清空
+            </span>
         </div>
-        <img :src="ImageSrc" alt="没有图片哦" style="width:60px;height: 60px;" id="img">
+        <div>
+            <el-icon>
+                <Refresh />
+            </el-icon>
+            <span>
+                回退
+            </span>
+        </div>
+        <div>
+            <el-icon @click="exportAsPng">
+                <Picture />
+            </el-icon>
+            <span>
+                导出
+            </span>
+        </div>
+
+        <div>
+            <div>
+                <el-icon class="upload">
+                    <FolderOpened />
+                </el-icon>
+                <input type="file" @change="importPng" accept="image/*" >
+            </div>
+            <span>
+                上传
+            </span>
+        </div>
+        <img :src="ImageSrc" id="img">
     </div>
 </template> 
 
@@ -80,13 +103,18 @@ export default defineComponent({
 </script>   
 
 <style lang="less" scoped>
-button {
+.upload {
     position: absolute;
+    width: 30px;
+}
+
+.el-icon {
+    font-size: 30px;
 }
 
 input {
     opacity: 0;
-    width: 60px;
-    height: 20px;
+    width: 40px;
+    height: 35px;
 }
 </style>
