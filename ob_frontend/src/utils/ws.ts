@@ -2,7 +2,7 @@ import { io } from "socket.io-client";
 
 
 export function useWs(eventName: string, userId: string, callback: (data: unknown) => void) {
-  const socket = io('/ws', {
+  const socket = io('/connect', {
     autoConnect: true,
     extraHeaders: { userId },
   })
