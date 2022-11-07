@@ -2,10 +2,6 @@
     <div class="NavBar">
         <pen></pen>
         <shape></shape>
-
-        <div>
-            color
-        </div>
         <operationVue></operationVue>
     </div>
 </template>
