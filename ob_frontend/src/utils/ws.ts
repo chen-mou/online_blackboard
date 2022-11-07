@@ -1,17 +1,27 @@
-import { Stomp } from "@stomp/stompjs";
+import { IFrame, Stomp } from "@stomp/stompjs";
+import Socket from 'sockjs-client'
 
-export function useWs(eventName: string, callback: (data: unknown) => void) {
-  const client = Stomp.client('/connect')
+export function useWs(roomId: string, isAnonymous: number, channels: Array<{ channel: string, callback: (data: IFrame) => void }>) {
+  const client = Stomp.over(new Socket('http://47.112.184.57:18888/connect'))
   const headers = {
-    Authorization: localStorage.getItem('token')
+    Authorization: localStorage.getItem('token'),
+    'Room-Id': roomId,
+    isAnonymous,
   }
-  client.connect(headers, callback)
+  client.connect(
+    headers,
+    () => {
+      for (const { channel, callback } of channels) {
+        client.subscribe(channel, callback)
+      }
+    },
+  )
   return {
-    emit(data: unknown) {
-      client.send(eventName, {}, JSON.stringify(data))
+    send(channel: string, data: unknown) {
+      client.send(channel, {}, JSON.stringify(data))
     },
     close() {
-      client.disconnect()
+      client.deactivate()
     },
   }
 }

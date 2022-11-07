@@ -3,12 +3,13 @@ import request from "@/utils/request";
 
 export const useRoomStore = defineStore('room', {
   state: () => ({
-    roomId: 'test',
+    roomId: '1000288',
     name: '',
     isShare: 0,
     creatorId: 0,
     startTime: '',
     endTime: '',
+    allowAnonymous: 0,
   }),
   actions: {
     async joinRoom(data: any) {
@@ -36,12 +37,14 @@ export const useRoomStore = defineStore('room', {
       return false
     },
     _loadRoom(res: any) {
+      console.log(res)
       this.name = res.name
-      this.roomId = res.roomId
-      this.isShare = res.isShare
-      this.endTime = res.endTime
+      this.roomId = res.id
+      this.isShare = res.setting.isShare
+      this.endTime = res.setting.endTime
       this.creatorId = res.creatorId
-      this.startTime = res.startTime
+      this.startTime = res.setting.startTime
+      this.allowAnonymous = res.setting.allowAnonymous
     },
     //结束
     async overRoom() {
