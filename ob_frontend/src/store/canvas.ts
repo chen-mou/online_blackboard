@@ -48,6 +48,7 @@ export const useCanvasStore = defineStore('canvas', {
         /**
          * 传入相应的坐标
          */
+        console.log(canvas.context.strokeStyle)
         beforePosition = [e.pageX - x, e.pageY - y]
         canvas.DrawClass.BeforePosition = beforePosition
         IsDrawing = true
