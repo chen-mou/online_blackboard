@@ -4,25 +4,8 @@ import { getElPagePos } from "@/utils/Canvas/math";
 import { deepCopy } from "@/utils";
 import { useWs } from "@/utils/ws";
 import { IFrame } from "@stomp/stompjs";
+import { ElMessage } from "element-plus";
 
-const channels = [
-  {
-    channel: '/exchange/room/',
-    callback(frame: IFrame) {
-      console.log(frame)
-    }
-  }, {
-    channel: '/user/queue/info',
-    callback(frame: IFrame) {
-      console.log(frame)
-    }
-  }, {
-    channel: '/user/queue/error',
-    callback(frame: IFrame) {
-      console.log(frame)
-    }
-  }
-]
 
 export const useCanvasStore = defineStore('canvas', {
   state: () => ({
@@ -31,9 +14,28 @@ export const useCanvasStore = defineStore('canvas', {
   }),
   actions: {
     connect(roomId: string, isAnonymous: number) {
-      channels[0].channel = channels[0].channel.substring(0, 15) + roomId
-      this.ws = useWs(roomId, isAnonymous, channels)
+      this.ws = useWs(roomId, isAnonymous, [{
+        channel: `/exchange/room/${roomId}`,
+        callback: this._wsRoomReceive
+      }, {
+        channel: '/user/queue/info',
+        callback: this._wsUserReceive
+      }, {
+        channel: '/user/queue/error',
+        callback: this._wsErrReceive
+      }])
       this.ws.send('/app/room_info', { roomId })
+    },
+    _wsRoomReceive(frame: IFrame) {
+      console.log(frame)
+    },
+    _wsUserReceive(frame: IFrame) {
+      console.log(frame)
+    },
+    _wsErrReceive(frame: IFrame) {
+      ElMessage.error({
+        message: frame.body
+      })
     },
     initCanvas() {
       let beforePosition = [0, 0]
