@@ -28,9 +28,6 @@ public class SheetController {
         sheetService.createSheet(roomId, name, Long.parseLong(principal.getName()));
     }
 
-    @MessageMapping("/modify_sheet")
-    public void modify(Principal principal, @JsonKey String room, @JsonKey long sheetId){}
-
     @MessageMapping("/draw")
     public void draw(Principal p, @JsonKey Shape shape, @JsonKey String roomId, @JsonKey long sheetId){
         sheetService.draw(Long.parseLong(p.getName()), shape, roomId, sheetId);
@@ -47,7 +44,7 @@ public class SheetController {
     }
 
     @MessageMapping("/modify")
-    public void setShape(Principal p, @JsonKey Shape shape, @JsonKey String roomId, @JsonKey long sheetId) {
+    public void modify(Principal p, @JsonKey Shape shape, @JsonKey String roomId, @JsonKey long sheetId) {
         sheetService.modify(Long.parseLong(p.getName()), shape, roomId, sheetId);
     }
 

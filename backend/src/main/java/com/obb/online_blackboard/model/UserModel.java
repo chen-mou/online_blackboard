@@ -58,6 +58,11 @@ public class UserModel {
         return user;
     }
 
+    /**
+     * 只能获取数据库的用户数据
+     * @param userId 用户ID
+     * @return
+     */
     public UserDataEntity getDataById(long userId) {
         return userDao.getByUserId(userId);
     }

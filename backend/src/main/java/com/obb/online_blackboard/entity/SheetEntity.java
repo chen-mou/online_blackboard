@@ -55,7 +55,7 @@ public class SheetEntity {
         OperateModel operateModel = Context.getContext().getBean(OperateModel.class);
         Operates ops = operateModel.getById(this.id);
         if(ops == null){
-            ops = new Operates(userId, this.id);
+            ops = new Operates(this.id);
         }
         ops.addOperates(op);
         operateModel.save(ops);

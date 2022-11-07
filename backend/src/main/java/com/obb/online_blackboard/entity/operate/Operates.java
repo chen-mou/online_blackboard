@@ -20,7 +20,7 @@ import java.util.List;
 public class Operates {
 
     @Id
-    String id;
+    long id;
 
     List<Operate> redo;
 
@@ -31,9 +31,9 @@ public class Operates {
         operates = new LinkedList<>();
     }
 
-    public Operates(long userId, long sheetId){
+    public Operates(long sheetId){
         this();
-        this.id = userId + "-" + sheetId;
+        this.id = sheetId;
     }
 
     public void addOperates(Operate op){

@@ -24,8 +24,8 @@ public class OperateModel {
     @Resource
     Id id;
 
-    public Operates createOperate(Operates op, long userId, long sheet){
-        op.setId(userId + "-" + sheet);
+    public Operates createOperate(Operates op, long sheet){
+        op.setId(sheet);
         operateDao.save(op);
         return op;
     }

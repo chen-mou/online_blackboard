@@ -133,7 +133,7 @@ public class RoomService {
     }
 
     private boolean inRoom(RoomEntity room, long userId){
-        UserDataEntity data = userModel.getDataById(userId);
+        UserDataEntity data = userModel.getUserById(userId);
         return data.getNowRoom().equals(room.getId());
     }
 

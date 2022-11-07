@@ -15,6 +15,7 @@ import tool.annotation.Lock;
 import tool.result.Message;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * @author 陈桢梁
@@ -123,10 +124,13 @@ public class SheetService {
         shape.setSheetId(sheetId);
         Shape s = shapeModel.createShape(shape);
         SheetEntity sheet = sheetModel.getSheetById(sheetId);
+        if(!sheet.getShapes().contains(shape.getId())){
+            throw new OperationException(404, "图像不存在");
+        }
         sheet.modStack(userId, id, s.getId());
         sheetModel.save(sheet);
-//        template.convertAndSend("/exchange/room/" + roomId, Message.del(id));
-//        template.convertAndSend("/exchange/room/" + roomId, Message.add(shape));
+        template.convertAndSend("/exchange/room/" + roomId, Message.del(id, sheetId));
+        template.convertAndSend("/exchange/room/" + roomId, Message.add(shape, sheetId));
     }
 
     @Lock(key = "SHEET_WRITE_", argName = "sheetId")
@@ -138,9 +142,24 @@ public class SheetService {
         }
         SheetEntity sheet = sheetModel.getSheetByIdBase(sheetId);
         sheet.delStack(userId, shapeId);
+        sheetModel.save(sheet);
         template.convertAndSend("/exchange/room/" + roomId, Message.del(shapeId, sheetId));
     }
 
+
+    public void updateNowSheet(String roomId, long userId, long sheetId){
+        RoomEntity room = roomModel.getRoomById(roomId);
+        if(room.getCreatorId() != userId){
+            return;
+        }
+        List<SheetEntity> sheets = sheetModel.getAllByRoomId(roomId);
+        sheets.forEach(item -> {
+            if(item.getId() == sheetId){
+                room.setNowSheet(sheetId);
+                roomModel.saveRoom(room);
+            }
+        });
+    }
 
 
     public SheetEntity getSheetById(long sheetId,  String roomId, long userId){
