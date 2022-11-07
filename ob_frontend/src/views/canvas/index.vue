@@ -41,6 +41,7 @@ onMounted(() => {
   const { x, y } = getElPagePos(document.getElementById('canvas') as any)
 
   canvas.canvas.addEventListener('mousedown', e => {
+    console.log(canvas.context.strokeStyle)
     /**
      * 传入相应的坐标
      */
@@ -49,6 +50,7 @@ onMounted(() => {
     IsDrawing.value = true
   })
   canvas.canvas.addEventListener('mousemove', e => {
+
     if (IsDrawing.value) {
       /**
        * 清空之后全部重新绘制

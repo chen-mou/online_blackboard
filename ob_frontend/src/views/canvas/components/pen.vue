@@ -39,6 +39,7 @@ const canvasInjetct =inject("canvas__") as any
 
 watch(penColor,(newValue,oldValue)=>{
     canvas.value.context.strokeStyle=newValue
+    console.log(canvas.value.context.strokeStyle)
     canvas.value.pen.strokeStyle=newValue
 })
 </script>   

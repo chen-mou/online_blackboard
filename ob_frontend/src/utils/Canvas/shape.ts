@@ -55,6 +55,7 @@ class Line extends BaseShape{
     }
 
     draw(canvas:Canvas){
+        
         canvas.context.beginPath()
         canvas.context.moveTo(this.BeforePosition[0],this.BeforePosition[1])
         canvas.context.lineTo(this.AfterPosition[0],this.AfterPosition[1])
