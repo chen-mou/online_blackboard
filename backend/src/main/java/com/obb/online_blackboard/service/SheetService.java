@@ -45,9 +45,9 @@ public class SheetService {
      * 权限要求
      * 只读模式：多用于白板完成后展示，每个人都无法编辑，所有人在翻页时会自动同步翻页
      * 协作模式：多用于白板创作阶段，每个人可以在相同或不同的当前页编辑页编辑内容
-     * @param userId
-     * @param roomId
-     * @param sheetId
+     * @param userId 用户ID
+     * @param roomId 房间号
+     * @param sheetId 画布ID
      */
     private void verifyCreator(long userId, String roomId, long sheetId){
         RoomEntity room = roomModel.getRoomById(roomId);
@@ -72,7 +72,7 @@ public class SheetService {
         }
     }
 
-    public SheetEntity createSheet(String roomId, String name, long userId){
+    public void createSheet(String roomId, String name, long userId){
         RoomEntity room = roomModel.getRoomById(roomId);
         if(room.getCreatorId() != userId){
             throw new OperationException(403, "非房间创建者不能创建画布");
@@ -84,7 +84,6 @@ public class SheetService {
         room.getSheets().add(sheet.getId());
         roomModel.saveRoom(room);
         template.convertAndSend("/exchange/room/" + room.getId(), Message.def("/create_sheet", sheet));
-        return sheet;
     }
 
     @Lock(key = "SHEET_WRITE_", argName = "sheetId")
@@ -102,9 +101,7 @@ public class SheetService {
     public void rollback(long userId, String roomId, long sheetId){
         verifyCreator(userId, roomId, sheetId);
         SheetEntity sheet = sheetModel.getSheetById(sheetId);
-        sheet.rollback(() -> {
-            sheetModel.save(sheet);
-        });
+        sheet.rollback(() -> sheetModel.save(sheet));
     }
 
     @Lock(key = "SHEET_WRITE_", argName = "sheetId")
