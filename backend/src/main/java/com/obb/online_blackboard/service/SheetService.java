@@ -8,17 +8,13 @@ import com.obb.online_blackboard.exception.OperationException;
 import com.obb.online_blackboard.model.RoomModel;
 import com.obb.online_blackboard.model.ShapeModel;
 import com.obb.online_blackboard.model.SheetModel;
-import org.redisson.api.RLock;
-import org.redisson.api.RedissonClient;
-import org.springframework.data.redis.core.RedisTemplate;
+import com.obb.online_blackboard.model.UserModel;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import tool.annotation.Lock;
 import tool.result.Message;
-import tool.util.MessageUtil;
 
 import javax.annotation.Resource;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author 陈桢梁
@@ -41,7 +37,17 @@ public class SheetService {
     @Resource
     ShapeModel shapeModel;
 
+    @Resource
+    UserModel userModel;
 
+    /**
+     * 权限要求
+     * 只读模式：多用于白板完成后展示，每个人都无法编辑，所有人在翻页时会自动同步翻页
+     * 协作模式：多用于白板创作阶段，每个人可以在相同或不同的当前页编辑页编辑内容
+     * @param userId
+     * @param roomId
+     * @param sheetId
+     */
     private void verifyCreator(long userId, String roomId, long sheetId){
         RoomEntity room = roomModel.getRoomById(roomId);
         if(room == null){
@@ -50,22 +56,18 @@ public class SheetService {
         if(!room.getSheets().contains(sheetId)){
             throw new OperationException(404, "画布不存在");
         }
-        if(room.getNowSheet() != sheetId){
-            throw new OperationException(403, "无法编辑没选中的画布");
-        }
+//        if(room.getNowSheet() != sheetId){
+//            throw new OperationException(403, "无法编辑没选中的画布");
+//        }
         if(!room.getStatus().equals("meeting")){
             throw new OperationException(403, "会议已结束或者未没开始");
         }
-        if(room.getSetting().getIsShare() == 0 && room.getCreatorId() != userId){
-            throw new OperationException(403, "你没有编辑权限");
+        if(room.getSetting().getIsShare() == 0 /**&& room.getCreatorId() != userId**/){
+            throw new OperationException(403, "只读模式无法编辑");
         }
-        for(UserDataEntity ude : room.getParticipants()){
-            if(ude.getUserId() == userId){
-                if(ude.getIsAnonymous() == 1){
-                    throw new OperationException(403, "匿名用户不能操作");
-                }
-                break;
-            }
+        UserDataEntity user = userModel.getUserById(userId);
+        if(user.getIsAnonymous() == 1) {
+            throw new OperationException(403, "匿名用户无法编辑");
         }
     }
 
@@ -92,7 +94,7 @@ public class SheetService {
         shapeModel.createShape(shape);
         sheet.addStack(userId, shape.getId());
         sheetModel.save(sheet);
-        template.convertAndSend("/exchange/room/" + roomId, Message.add(shape));
+        template.convertAndSend("/exchange/room/" + roomId, Message.add(shape, sheetId));
     }
 
     @Lock(key = "SHEET_WRITE_", argName = "sheetId")
@@ -136,7 +138,25 @@ public class SheetService {
         }
         SheetEntity sheet = sheetModel.getSheetByIdBase(sheetId);
         sheet.delStack(userId, shapeId);
-        template.convertAndSend("/exchange/room/" + roomId, Message.del(shapeId));
+        template.convertAndSend("/exchange/room/" + roomId, Message.del(shapeId, sheetId));
+    }
+
+
+
+    public SheetEntity getSheetById(long sheetId,  String roomId, long userId){
+        RoomEntity r = roomModel.getRoomById(roomId);
+        if(!r.getStatus().equals("meeting")){
+            throw new OperationException(500, "会议未开始或已结束");
+        }
+        if(!r.getSheets().contains(sheetId)){
+            throw new OperationException(404, "画布不存在");
+        }
+        if(r.getCreatorId() == userId){
+            r.setNowSheet(sheetId);
+            roomModel.saveRoom(r);
+        }
+        SheetEntity sheet = sheetModel.getSheetById(sheetId);
+        return sheet;
     }
 
 }

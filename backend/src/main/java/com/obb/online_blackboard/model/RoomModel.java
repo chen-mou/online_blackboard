@@ -6,6 +6,8 @@ import com.obb.online_blackboard.dao.mysql.RoomSettingDao;
 import com.obb.online_blackboard.entity.RoomEntity;
 import com.obb.online_blackboard.entity.RoomSettingEntity;
 import com.obb.online_blackboard.entity.SheetEntity;
+import com.obb.online_blackboard.entity.UserDataEntity;
+import com.obb.online_blackboard.entity.base.Shape;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 import tool.util.id.Id;
@@ -16,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * @author 陈桢梁
@@ -46,6 +49,15 @@ public class RoomModel {
 
     @Resource
     RedisTemplate<String, Object> redisTemplate;
+
+    @Resource
+    UserModel userModel;
+
+    @Resource
+    ShapeModel shapeModel;
+
+    @Resource
+    ThreadPoolExecutor threadPoolExecutor;
 
     private final String SETTING_KEY = "setting_key:";
 
@@ -82,7 +94,7 @@ public class RoomModel {
         }else{
             r = optional.get();
             SheetEntity nowSheet = sheetModel.getSheetById(r.getNowSheet());
-            List<SheetEntity> sheetEntities = sheetModel.getSheetsById(new ArrayList<>(r.getSheets()));
+            List<SheetEntity> sheetEntities = sheetModel.getAllByRoomId(roomId);
             r.setNowSheetEntity(nowSheet);
             r.setSheetEntities(sheetEntities);
 //            r.setSetting(roomSettingDao.getByRoomId(Long.parseLong(roomId)));
@@ -97,11 +109,21 @@ public class RoomModel {
     }
 
     public void delRoom(String roomId){
+        List<UserDataEntity> users = userModel.getUserDataByRoomId(roomId);
         RoomEntity room = new RoomEntity();
         room.setId(roomId);
         room.setStatus("over");
         roomDao.deleteById(roomId);
         roomDbDao.update(room);
+        threadPoolExecutor.execute(() -> {
+            users.forEach(item -> item.setNowRoom(null));
+            userModel.saveAllData(users);
+            List<SheetEntity> s = sheetModel.getAllByRoomId(roomId);
+            s.forEach(item -> {
+                List<Shape> shapes = shapeModel.getBySheetId(item.getId());
+                shapes.forEach(item1 -> shapeModel.delete(item1.getId()));
+            });
+        });
     }
 
     public void updateRoomSetting(RoomSettingEntity setting){

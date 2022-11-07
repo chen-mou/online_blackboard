@@ -1,20 +1,12 @@
 package com.obb.online_blackboard.controller;
 
-import com.obb.online_blackboard.entity.SheetEntity;
-import com.obb.online_blackboard.entity.UserEntity;
 import com.obb.online_blackboard.entity.base.Shape;
 import com.obb.online_blackboard.service.SheetService;
-import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.web.bind.annotation.RestController;
 import tool.annotation.JsonKey;
-import tool.annotation.UserInfo;
 import tool.result.Message;
-import tool.result.Result;
 
 import javax.annotation.Resource;
 import java.security.Principal;
@@ -64,5 +56,12 @@ public class SheetController {
         sheetService.delete(Long.parseLong(p.getName()), roomId, sheetId, shapeId);
     }
 
+
+    @MessageMapping("/change_sheet")
+    @SendToUser("/queue/info")
+    public Message changeSheet(Principal p, @JsonKey long sheetId, @JsonKey String roomId){
+        return Message.def("change_sheet",
+                sheetService.getSheetById(sheetId, roomId, Long.parseLong(p.getName())));
+    }
 
 }

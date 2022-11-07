@@ -27,7 +27,7 @@ public class IdTask {
     @Value("${spring.application.name}")
     String name;
 
-    @Scheduled(cron = "* * */1 * * *")
+    @Scheduled(cron = "* */1 * * * *")
     public void updateKey(){
         List<String> names = idGenerator.getAllName();
         names.forEach(item -> {

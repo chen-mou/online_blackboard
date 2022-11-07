@@ -8,16 +8,25 @@ import com.obb.online_blackboard.interceptor.MessageInterceptor;
 import com.obb.online_blackboard.interceptor.PrincipalInterceptor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.event.EventListener;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.handler.invocation.HandlerMethodArgumentResolver;
 import org.springframework.messaging.handler.invocation.HandlerMethodReturnValueHandler;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
+import org.springframework.web.socket.messaging.SessionConnectedEvent;
+import org.springframework.web.socket.messaging.SessionDisconnectEvent;
+import tool.result.Message;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Stack;
 
@@ -81,6 +90,19 @@ public class Websocket implements WebSocketMessageBrokerConfigurer {
                 .setVirtualHost("/websocket");
 
     }
-
+    @EventListener
+    public void onSocketDisconnected(SessionDisconnectEvent event) {
+        StompHeaderAccessor sha = StompHeaderAccessor.wrap(event.getMessage());
+        ApplicationContext app = Context.getContext();
+        RedisTemplate<String, Object> redis = (RedisTemplate<String, Object>) app.getBean("redisTemplate");
+        SimpMessagingTemplate template = app.getBean(SimpMessagingTemplate.class);
+        Integer userId = (Integer) redis.opsForValue().get("session:" + sha.getSessionId());
+        template.convertAndSend("/exchange/room/", Message.def("change_status", new HashMap<>(){
+            {
+                put("userId", userId);
+                put("status", "offline");
+            }
+        }));
+    }
 
 }

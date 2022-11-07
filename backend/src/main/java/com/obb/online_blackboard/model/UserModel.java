@@ -1,9 +1,13 @@
 package com.obb.online_blackboard.model;
 
 import com.obb.online_blackboard.dao.mysql.UserDao;
+import com.obb.online_blackboard.dao.redis.UserDataDao;
 import com.obb.online_blackboard.entity.UserDataEntity;
 import com.obb.online_blackboard.entity.UserEntity;
+import org.apache.catalina.User;
 import org.springframework.data.annotation.Transient;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,7 +16,10 @@ import tool.util.id.Id;
 import tool.util.lock.LockUtil;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * @author 陈桢梁
@@ -31,6 +38,9 @@ public class UserModel {
 
     @Resource
     RedisTemplate<String, Object> redis;
+
+    @Resource
+    UserDataDao userDataDao;
 
     @Resource
     Id id;
@@ -70,4 +80,35 @@ public class UserModel {
         userDao.updateNickname(newName);
     }
 
+    public List<UserDataEntity> getUserDataByRoomId(String roomId){
+        UserDataEntity userData = new UserDataEntity();
+        userData.setNowRoom(roomId);
+        ExampleMatcher matcher = ExampleMatcher.matching().withIgnoreNullValues();
+        Example<UserDataEntity> example = Example.of(userData, matcher);
+        Iterable<UserDataEntity> data = userDataDao.findAll(example);
+        ArrayList<UserDataEntity> res = new ArrayList<>(){
+            {
+                data.forEach(item -> {
+                    add(item);
+                });
+            }
+        };
+        return res;
+    }
+
+    public UserDataEntity getUserById(long userId){
+        Optional<UserDataEntity> op = userDataDao.findById(userId);
+        if(op.isEmpty()){
+            return userDao.getByUserId(userId);
+        }
+        return op.get();
+    }
+
+    public void saveData(UserDataEntity userData){
+        userDataDao.save(userData);
+    }
+
+    public void saveAllData(List<UserDataEntity> userDataEntities){
+        userDataEntities.forEach(item -> saveData(item));
+    }
 }

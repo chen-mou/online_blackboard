@@ -3,6 +3,7 @@ package com.obb.online_blackboard.dao.redis;
 import com.obb.online_blackboard.entity.SheetEntity;
 import com.obb.online_blackboard.model.SheetModel;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.QueryByExampleExecutor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -14,7 +15,7 @@ import java.util.List;
  * @logs[0] 2022-10-27 17:17 陈桢梁 创建了SheetDao.java文件
  */
 @Repository
-public interface SheetDao extends CrudRepository<SheetEntity, Long> {
+public interface SheetDao extends CrudRepository<SheetEntity, Long>, QueryByExampleExecutor<SheetEntity> {
 
     List<SheetEntity> getSheetEntitiesByIdIn(List<Long> id);
 

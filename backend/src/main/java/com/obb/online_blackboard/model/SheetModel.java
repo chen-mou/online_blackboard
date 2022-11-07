@@ -1,14 +1,15 @@
 package com.obb.online_blackboard.model;
 
 import com.obb.online_blackboard.dao.redis.SheetDao;
-import com.obb.online_blackboard.dao.redis.SheetQueryDao;
 import com.obb.online_blackboard.entity.SheetEntity;
 import com.obb.online_blackboard.entity.base.Shape;
 import org.springframework.stereotype.Repository;
 import tool.util.id.Id;
 
 import javax.annotation.Resource;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * @author 陈桢梁
@@ -28,8 +29,6 @@ public class SheetModel {
     @Resource
     ShapeModel shapeModel;
 
-//    @Resource
-//    SheetQueryDao sheetQueryDao;
 
     @Resource
     Id id;
@@ -79,6 +78,10 @@ public class SheetModel {
             }
         });
         return res;
+    }
+
+    public List<SheetEntity> getAllByRoomId(String roomId){
+        return sheetDao.findAllByRoomId(roomId);
     }
 
 //    public Iterable<SheetEntity> getAllSheetName(){

@@ -34,7 +34,7 @@ public class RoomEntity {
 
     private int loaded;
 
-    private List<UserDataEntity> participants;
+//    private List<UserDataEntity> participants;
 
     private String status;
 
@@ -55,7 +55,6 @@ public class RoomEntity {
 
 
     public RoomEntity(){
-        participants = new ArrayList<>();
         sheets = new HashSet<>();
     }
 

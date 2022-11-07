@@ -1,11 +1,10 @@
 package com.obb.online_blackboard.service;
 
 import com.obb.online_blackboard.dao.mysql.UserDao;
-import com.obb.online_blackboard.dao.redis.RoomDao;
 import com.obb.online_blackboard.entity.RoomEntity;
 import com.obb.online_blackboard.entity.RoomSettingEntity;
+import com.obb.online_blackboard.entity.SheetEntity;
 import com.obb.online_blackboard.entity.UserDataEntity;
-import com.obb.online_blackboard.entity.base.Shape;
 import com.obb.online_blackboard.exception.OperationException;
 import com.obb.online_blackboard.model.RoomModel;
 import com.obb.online_blackboard.model.SheetModel;
@@ -14,11 +13,8 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tool.result.Message;
-import tool.util.MessageUtil;
-import tool.util.id.Id;
 
 import javax.annotation.Resource;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -37,10 +33,11 @@ public class RoomService {
     UserModel userModel;
 
     @Resource
-    SheetModel sheetModel;
+    SheetService sheetService;
 
     @Resource
     UserDao userDao;
+
 
     @Resource
     SimpMessagingTemplate template;
@@ -72,17 +69,17 @@ public class RoomService {
         if(setting.getAllowAnonymous() == 0 && isAnonymous == 1){
             throw new OperationException(403, "目标房间不能匿名");
         }
-        if(inRoom(r, userId)){
-            return r;
-        }
-        UserDataEntity user = userDao.getByUserId(userId);
+        UserDataEntity user = userModel.getUserById(userId);
         user.setIsAnonymous(isAnonymous);
+        user.setStatus("online");
+        user.setNowRoom(roomId);
+        userModel.saveData(user);
         if(isAnonymous == 1){
             user.setNickname("匿名用户");
         }
-        r.getParticipants().add(user);
-        roomModel.saveRoom(r);
-        template.convertAndSend("/exchange/room/" + roomId, Message.def("user_join", user));
+        if(!inRoom(r, userId)){
+            template.convertAndSend("/exchange/room/" + roomId, Message.def("user_join", user));
+        }
         return r;
     }
 
@@ -117,17 +114,27 @@ public class RoomService {
         return roomModel.getByCreator(userId);
     }
 
-    public void updateSetting(RoomSettingEntity setting){
-
+    public void updateSetting(RoomSettingEntity setting, long userId){
+        RoomEntity r = roomModel.getRoomById(setting.getRoomId());
+        if(r.getCreatorId() != userId){
+            throw new OperationException(403, "只有创建者才能修改设置");
+        }
+        if(!r.getStatus().equals("meeting")){
+            throw new OperationException(404, "会议未开始或已结束");
+        }
+        roomModel.updateRoomSetting(setting);
+        if(setting.getIsShare() != null){
+            switch(setting.getIsShare()){
+                case 0:
+                    SheetEntity sheet = sheetService.getSheetById(r.getNowSheet(), r.getId(), userId);
+                    template.convertAndSend("/exchange/room/" + r.getId(), Message.def("change_sheet", sheet));
+            }
+        }
     }
 
     private boolean inRoom(RoomEntity room, long userId){
-        for(UserDataEntity user :room.getParticipants()){
-            if(user.getUserId() == userId){
-                return true;
-            }
-        }
-        return false;
+        UserDataEntity data = userModel.getDataById(userId);
+        return data.getNowRoom().equals(room.getId());
     }
 
 }

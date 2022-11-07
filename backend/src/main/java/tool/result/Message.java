@@ -15,22 +15,34 @@ public class Message<T> {
 
     String type;
 
+    long sheet;
+
     T date;
+
+    public Message(String type, T date){
+        this.type = type;
+        this.date = date;
+    }
 
     public static <T> Message def(String type, T date){
         return new Message(type, date);
     }
 
-    public static <T> Message del(T date){
-        return def("delete", date);
+    public static <T> Message del(T date, long sheet){
+        Message msg = def("delete", date);
+        msg.setSheet(sheet);
+        return msg;
     }
 
     public static <T> Message mod(T date){
+
         return def("modify", date);
     }
 
-    public static <T> Message add(T date){
-        return def("add", date);
+    public static <T> Message add(T date, long sheet){
+        Message msg = def("add", date);
+        msg.setSheet(sheet);
+        return msg;
     }
 
 }

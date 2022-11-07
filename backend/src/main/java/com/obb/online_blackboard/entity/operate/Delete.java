@@ -11,6 +11,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import tool.result.Message;
 
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -25,21 +26,21 @@ public class Delete implements Operate {
 
     long shapeId;
     @Override
-    public void rollback(Set<Long> shapes, String roomId, Save save) {
+    public void rollback(Set<Long> shapes, long sheetId,String roomId, Save save) {
         shapes.add(shapeId);
         ApplicationContext app = Context.getContext();
         SimpMessagingTemplate s = app.getBean(SimpMessagingTemplate.class);
         ShapeDao shapeDao = app.getBean(ShapeDao.class);
-        Shape shape = shapeDao.findShapeById(shapeId);
+        Optional<Shape> shape = shapeDao.findById(shapeId);
         save.save();
-        s.convertAndSend("/exchange/room/" + roomId, new Message<>("add", shape));
+        s.convertAndSend("/exchange/room/" + roomId, Message.add(shape.get(), sheetId));
     }
 
     @Override
-    public void redo(Set<Long> shapes, String roomId, Save save) {
+    public void redo(Set<Long> shapes, long sheetId, String roomId, Save save) {
         shapes.remove(shapeId);
         SimpMessagingTemplate s = Context.getContext().getBean(SimpMessagingTemplate.class);
         save.save();
-        s.convertAndSend("/exchange/room/" + roomId, new Message<>("delete", shapeId));
+        s.convertAndSend("/exchange/room/" + roomId, Message.add(shapeId, sheetId));
     }
 }

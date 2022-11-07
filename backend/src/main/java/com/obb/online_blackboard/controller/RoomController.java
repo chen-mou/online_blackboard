@@ -51,13 +51,13 @@ public class RoomController {
     }
 
     @PostMapping("/update_setting")
-    public Result UpdateSetting(@RequestBody RoomSettingEntity setting){
-        roomService.updateSetting(setting);
+    public Result UpdateSetting(@RequestBody RoomSettingEntity setting, @UserInfo UserEntity user){
+        roomService.updateSetting(setting, user.getId());
         return Result.success("修改成功", setting);
     }
 
     @Deprecated
-    @PostMapping("/join")
+//    @PostMapping("/join")
     public Result joinRoom(@UserInfo UserEntity user,
                            @JsonKey String roomId,
                            @JsonKey int isAnonymous){
@@ -67,14 +67,16 @@ public class RoomController {
 
     //结束会议
     @MessageMapping("/over")
-    public Result over(Principal p, @JsonKey String roomId){
+    public void over(Principal p, @JsonKey String roomId){
         roomService.over(roomId, Long.parseLong(p.getName()));
-        return Result.success("会议已结束", null);
     }
 
     @MessageMapping("/room_info")
     public Result roomInfo(Principal p, @JsonKey String roomId){
         return Result.success("获取成功", roomService.roomInfo(Long.parseLong(p.getName()), roomId));
     }
+
+    @MessageMapping("/quit")
+    public void quit(Principal p, @JsonKey String roomId){}
 
 }

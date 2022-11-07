@@ -100,6 +100,8 @@ public class MessageInterceptor implements ChannelInterceptor {
 
             int anonymous = Integer.parseInt(((List<String>)getOeDefault(isAnonymous, new ArrayList<>(){{add("0");}})).get(0));
             accessor.setUser(() -> userId);
+            String session = accessor.getSessionId();
+            redis.opsForValue().set("session:" + session, userId);
             r.joinRoom(roomId.get(0), Long.parseLong(userId), anonymous);
             return message;
         }

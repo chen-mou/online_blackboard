@@ -24,10 +24,10 @@ public class MessageUtil {
     @Resource
     SimpMessagingTemplate template;
 
-    public void sendParticipants(String roomID, String des, Object payload){
-        RoomEntity room = roomDao.findRoomEntityById(roomID);
-        room.getParticipants().forEach((item) -> template.convertAndSendToUser(String.valueOf(item.getUserId()), des, payload));
-    }
+//    public void sendParticipants(String roomID, String des, Object payload){
+//        RoomEntity room = roomDao.findRoomEntityById(roomID);
+//        room.getParticipants().forEach((item) -> template.convertAndSendToUser(String.valueOf(item.getUserId()), des, payload));
+//    }
 
     public void sendParticipants(List<UserDataEntity> participants, String des, Object payload){
        participants.forEach((item) -> template.convertAndSendToUser(String.valueOf(item.getUserId()), des, payload));

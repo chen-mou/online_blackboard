@@ -14,6 +14,7 @@ import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.redis.core.RedisHash;
+import org.springframework.data.redis.core.index.Indexed;
 
 import java.util.*;
 
@@ -32,6 +33,7 @@ public class SheetEntity {
 
     private String name;
 
+    @Indexed
     private final String roomId;
 
     //操作栈,只最多保存三十个操作
@@ -87,7 +89,7 @@ public class SheetEntity {
         }catch (OperationException e){
             throw new OperationException(500, "无法撤销了");
         }
-        op.rollback(shapes, roomId, save);
+        op.rollback(shapes, this.id,roomId, save);
         operateModel.save(ops);
     }
 
@@ -103,7 +105,7 @@ public class SheetEntity {
         }catch (OperationException e){
             throw new OperationException(500, "无法重做了");
         }
-        op.redo(shapes, roomId, save);
+        op.redo(shapes, this.id,roomId, save);
         operateModel.save(ops);
     }
 

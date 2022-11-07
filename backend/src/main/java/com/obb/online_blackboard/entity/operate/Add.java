@@ -26,7 +26,7 @@ public class Add implements Operate {
     private long shapeId;
 
     @Override
-    public void rollback(Set<Long> shapes, String roomId, Save save) {
+    public void rollback(Set<Long> shapes, long sheetId,String roomId, Save save) {
         shapes.remove(shapeId);
         SimpMessagingTemplate s = Context.getContext().getBean(SimpMessagingTemplate.class);
 
@@ -34,17 +34,17 @@ public class Add implements Operate {
          * 应该要保存了再将消息发送出去，其他地方同理
          */
         save.save();
-        s.convertAndSend("/exchange/room/" + roomId, new Message<>("delete", shapeId));
+        s.convertAndSend("/exchange/room/" + roomId, Message.del(shapeId, sheetId));
     }
 
     @Override
-    public void redo(Set<Long> shapes, String roomId, Save save) {
+    public void redo(Set<Long> shapes, long sheetId,String roomId, Save save) {
         shapes.add(shapeId);
         ApplicationContext app = Context.getContext();
         SimpMessagingTemplate s = app.getBean(SimpMessagingTemplate.class);
         ShapeModel shapeDao = app.getBean(ShapeModel.class);
         Shape shape = shapeDao.getById(shapeId);
         save.save();
-        s.convertAndSend("/exchange/room/" + roomId, new Message<>("add", shape));
+        s.convertAndSend("/exchange/room/" + roomId, Message.add(shape, sheetId));
     }
 }

@@ -27,6 +27,7 @@ public class Shape implements Special{
 
     protected String type;
 
+    @Indexed
     protected long sheetId;
 
     protected String color;
