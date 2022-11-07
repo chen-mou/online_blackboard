@@ -30,11 +30,11 @@ public class RoomSettingEntity extends Date {
     // 1:成员可以编辑 0:成员不能编辑
     @Max(value = 1)
     @Min(value = 0)
-    private int isShare;
+    private Integer isShare;
 
     @Max(value = 1)
     @Min(value = 0)
-    private int allowAnonymous;
+    private Integer allowAnonymous;
 
     @NotNull
     @JsonFormat(locale = "zh",timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm")

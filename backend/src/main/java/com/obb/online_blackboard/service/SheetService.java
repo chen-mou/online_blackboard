@@ -10,6 +10,7 @@ import com.obb.online_blackboard.model.ShapeModel;
 import com.obb.online_blackboard.model.SheetModel;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import tool.annotation.Lock;
@@ -40,8 +41,6 @@ public class SheetService {
     @Resource
     ShapeModel shapeModel;
 
-    @Resource
-    RedissonClient redissonClient;
 
     private void verifyCreator(long userId, String roomId, long sheetId){
         RoomEntity room = roomModel.getRoomById(roomId);
@@ -89,6 +88,7 @@ public class SheetService {
     public void draw(long userId, Shape shape, String roomId, long sheetId){
         verifyCreator(userId, roomId, sheetId);
         SheetEntity sheet = sheetModel.getSheetById(sheetId);
+        shape.setSheetId(sheetId);
         shapeModel.createShape(shape);
         sheet.addStack(userId, shape.getId());
         sheetModel.save(sheet);
@@ -118,6 +118,7 @@ public class SheetService {
     public void modify(long userId, Shape shape, String roomId, long sheetId){
         verifyCreator(userId, roomId, sheetId);
         long id = shape.getId();
+        shape.setSheetId(sheetId);
         Shape s = shapeModel.createShape(shape);
         SheetEntity sheet = sheetModel.getSheetById(sheetId);
         sheet.modStack(userId, id, s.getId());

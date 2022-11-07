@@ -19,7 +19,7 @@ import java.util.List;
 public class IdTask {
 
     @Resource
-    IdGenerator id;
+    IdGenerator idGenerator;
 
     @Resource
     RedisTemplate<String, Object> redis;
@@ -29,14 +29,14 @@ public class IdTask {
 
     @Scheduled(cron = "* * */1 * * *")
     public void updateKey(){
-        List<String> names = id.getAllName();
+        List<String> names = idGenerator.getAllName();
         names.forEach(item -> {
             String key = name + "-" + item + "-id";
             Object obj = redis.opsForValue().get(key);
             if(obj == null){
                 return;
             }
-            id.updateId(item, (Integer)obj);
+            idGenerator.updateId(item, (Integer)obj);
         });
     }
 }

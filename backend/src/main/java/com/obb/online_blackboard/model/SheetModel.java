@@ -1,6 +1,7 @@
 package com.obb.online_blackboard.model;
 
 import com.obb.online_blackboard.dao.redis.SheetDao;
+import com.obb.online_blackboard.dao.redis.SheetQueryDao;
 import com.obb.online_blackboard.entity.SheetEntity;
 import com.obb.online_blackboard.entity.base.Shape;
 import org.springframework.stereotype.Repository;
@@ -27,14 +28,15 @@ public class SheetModel {
     @Resource
     ShapeModel shapeModel;
 
+//    @Resource
+//    SheetQueryDao sheetQueryDao;
+
     @Resource
     Id id;
 
     public SheetEntity createSheet(String name, String roomId){
-        SheetEntity sheetEntity = new SheetEntity();
-        sheetEntity.setId(id.getId("sheet"));
+        SheetEntity sheetEntity = new SheetEntity(id.getId("sheet"), roomId);
         sheetEntity.setName(name);
-        sheetEntity.setRoomId(roomId);
 //        sheetIdDao.updateId(sheetEntity.getId());
         sheetDao.save(sheetEntity);
         return sheetEntity;
@@ -71,13 +73,16 @@ public class SheetModel {
             Optional<SheetEntity> sheet = sheetDao.findById(item);
             if(!sheet.isEmpty()){
                 SheetEntity val = sheet.get();
-                SheetEntity sheetEntity = new SheetEntity();
-                sheetEntity.setId(val.getId());
+                SheetEntity sheetEntity = new SheetEntity(val.getId(), val.getRoomId());
                 sheetEntity.setName(val.getName());
                 res.add(sheetEntity);
             }
         });
         return res;
     }
+
+//    public Iterable<SheetEntity> getAllSheetName(){
+//
+//    }
 
 }

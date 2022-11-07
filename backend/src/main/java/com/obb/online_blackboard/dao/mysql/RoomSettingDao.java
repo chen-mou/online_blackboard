@@ -36,4 +36,16 @@ public interface RoomSettingDao {
 
     })
     List<RoomEntity> preloadRoom(Date time);
+
+
+    @Update("<script>" +
+                "update room_setting set " +
+                    "<if test='startTime != null'>start_time = #{startTime},</if>" +
+                    "<if test='endTime != null'>end_time = #{endTime},</if>" +
+                    "<if test='allowAnonymous != null'>allow_anonymous = #{allowAnonymous},</if>" +
+                    "<if test='isShare != null'>is_share = #{isShare},</if>" +
+                    "id = #{id}" +
+                    "where id = #{id}" +
+            "</script>")
+    void update(RoomSettingEntity roomSettingEntity);
 }

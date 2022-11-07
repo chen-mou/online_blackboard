@@ -1,6 +1,7 @@
 package com.obb.online_blackboard.controller;
 
 import com.obb.online_blackboard.entity.UserDataEntity;
+import com.obb.online_blackboard.entity.UserEntity;
 import com.obb.online_blackboard.exception.OperationException;
 import com.obb.online_blackboard.service.FileService;
 import org.springframework.web.bind.annotation.*;
@@ -37,7 +38,7 @@ public class FileController {
     FileService fileService;
 
     @PostMapping("/upload")
-    public Result upload(MultipartFile file, @UserInfo UserDataEntity userData, String type){
+    public Result upload(MultipartFile file, @UserInfo UserEntity userData, String type){
         if(file.getSize() > 5 * 1024 * 1024){
             throw new OperationException(500, "文件过大");
         }
@@ -46,7 +47,7 @@ public class FileController {
         if(!allowSuffix.contains(filename.split("\\.")[1]) || !typ.split("/").equals("image")){
             throw new OperationException(500, "文件类型有误");
         }
-        fileService.upload(file, userData.getUserId(), type);
+        fileService.upload(file, userData.getId(), type);
         return Result.success("上传成功", null);
     }
 

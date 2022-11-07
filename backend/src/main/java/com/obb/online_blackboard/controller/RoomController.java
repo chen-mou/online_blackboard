@@ -5,15 +5,10 @@ import com.obb.online_blackboard.entity.RoomSettingEntity;
 import com.obb.online_blackboard.entity.UserEntity;
 import com.obb.online_blackboard.exception.OperationException;
 import com.obb.online_blackboard.service.RoomService;
-import org.apache.catalina.User;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import tool.annotation.JsonKey;
 import tool.annotation.UserInfo;
 import tool.result.Result;
@@ -42,12 +37,23 @@ public class RoomController {
                              Errors errors){
         ParamError.handlerError(errors);
         Date start = setting.getStartTime();
-        if(start.getTime() < new Date().getTime()){
+        if(start.getTime() < new Date().getTime() - 5 * 60 * 10000){
             throw new OperationException(500, "开始时间不能小于当前时间");
         }
         RoomEntity room = roomService.createRoom(setting, user.getId());
 //        System.out.println("成功");
         return Result.success("创建成功", room);
+    }
+
+    @GetMapping("/my_room")
+    public Result getMyRoom(@UserInfo UserEntity user){
+        return Result.success("获取成功", roomService.getUserRoom(user.getId()));
+    }
+
+    @PostMapping("/update_setting")
+    public Result UpdateSetting(@RequestBody RoomSettingEntity setting){
+        roomService.updateSetting(setting);
+        return Result.success("修改成功", setting);
     }
 
     @Deprecated

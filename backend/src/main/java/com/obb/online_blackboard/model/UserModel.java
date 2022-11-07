@@ -59,6 +59,7 @@ public class UserModel {
         user.setId(userId);
         UserDataEntity data = new UserDataEntity();
         data.setUserId(userId);
+        data.setAvatar(1);
         data.setNickname("初始名字" + MD5.salt(String.valueOf(userId)).substring(24));
         userDao.createData(data);
         userDao.create(user);

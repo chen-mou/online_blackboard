@@ -49,7 +49,7 @@ public class Aop {
                 }
             }
             RLock rl = redissonClient.getLock(key);
-            rl.lock(3, TimeUnit.SECONDS);
+            rl.lock(5, TimeUnit.SECONDS);
             Object res;
             res = pjp.proceed();
             rl.unlock();

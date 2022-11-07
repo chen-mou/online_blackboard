@@ -19,6 +19,7 @@ import tool.util.id.Id;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author 陈桢梁
@@ -110,6 +111,14 @@ public class RoomService {
         }
         template.convertAndSendToUser(String.valueOf(userId), "/queue/info", r);
         return r;
+    }
+
+    public List<RoomEntity> getUserRoom(long userId){
+        return roomModel.getByCreator(userId);
+    }
+
+    public void updateSetting(RoomSettingEntity setting){
+
     }
 
     private boolean inRoom(RoomEntity room, long userId){

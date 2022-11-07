@@ -11,7 +11,6 @@ import com.obb.online_blackboard.entity.operate.Operates;
 import com.obb.online_blackboard.exception.OperationException;
 import com.obb.online_blackboard.model.OperateModel;
 import lombok.Data;
-import org.springframework.context.ApplicationContext;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.redis.core.RedisHash;
@@ -29,11 +28,11 @@ import java.util.*;
 public class SheetEntity {
 
     @Id
-    private long id;
+    private final long id;
 
     private String name;
 
-    private String roomId;
+    private final String roomId;
 
     //操作栈,只最多保存三十个操作
 
@@ -44,7 +43,9 @@ public class SheetEntity {
     private List<Shape> shapeEntities;
 
 
-    public SheetEntity() {
+    public SheetEntity(long id, String roomId) {
+        this.id = id;
+        this.roomId = roomId;
         shapes = new HashSet<>();
     }
 

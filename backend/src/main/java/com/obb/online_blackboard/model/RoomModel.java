@@ -6,6 +6,7 @@ import com.obb.online_blackboard.dao.mysql.RoomSettingDao;
 import com.obb.online_blackboard.entity.RoomEntity;
 import com.obb.online_blackboard.entity.RoomSettingEntity;
 import com.obb.online_blackboard.entity.SheetEntity;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 import tool.util.id.Id;
 import tool.util.lock.LockUtil;
@@ -42,6 +43,9 @@ public class RoomModel {
 
     @Resource
     SheetModel sheetModel;
+
+    @Resource
+    RedisTemplate<String, Object> redisTemplate;
 
     private final String SETTING_KEY = "setting_key:";
 
@@ -81,7 +85,7 @@ public class RoomModel {
             List<SheetEntity> sheetEntities = sheetModel.getSheetsById(new ArrayList<>(r.getSheets()));
             r.setNowSheetEntity(nowSheet);
             r.setSheetEntities(sheetEntities);
-            r.setSetting(roomSettingDao.getByRoomId(Long.parseLong(roomId)));
+//            r.setSetting(roomSettingDao.getByRoomId(Long.parseLong(roomId)));
         }
         return r;
     }
@@ -100,8 +104,15 @@ public class RoomModel {
         roomDbDao.update(room);
     }
 
-    public void updateRoomSetting(RoomSettingEntity setting, long roomId){
+    public void updateRoomSetting(RoomSettingEntity setting){
+        String key = SETTING_KEY + setting.getRoomId();
+        redisTemplate.delete(key);
+        roomSettingDao.update(setting);
+        redisTemplate.delete(key);
+    }
 
+    public List<RoomEntity> getByCreator(long userId){
+        return roomDbDao.getRoomByCreatorId(userId);
     }
 
 }

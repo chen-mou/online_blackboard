@@ -2,8 +2,11 @@ package com.obb.online_blackboard.model;
 
 import com.obb.online_blackboard.dao.mysql.IdGenerator;
 import com.obb.online_blackboard.dao.redis.ShapeDao;
+import com.obb.online_blackboard.dao.redis.ShapeQueryDao;
 import com.obb.online_blackboard.entity.base.Operate;
 import com.obb.online_blackboard.entity.base.Shape;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Repository;
 import tool.util.id.Id;
 
@@ -27,6 +30,9 @@ public class ShapeModel {
     @Resource
     Id id;
 
+//    @Resource
+//    ShapeQueryDao shapeQuery;
+
     public Shape createShape(Shape shape){
         long id = this.id.getId("shape");
         shape.setId(id);
@@ -38,9 +44,13 @@ public class ShapeModel {
         shapeDao.save(shape);
     }
 
-    public List<Shape> getShapeBySheetId(long sheetId){
-        return shapeDao.findShapesBySheetId(sheetId);
-    }
+//    public Iterable<Shape> getShapeBySheetId(long sheetId){
+//        Shape s = new Shape();
+//        s.setSheetId(sheetId);
+//        Example<Shape> example = Example.of(s);
+//        Iterable<Shape> shapes = shapeQuery.findAll(example);
+//        return shapes;
+//    }
 
     public List<Shape> getShapeByShapesId(List<Long> shapesId){
         List<Shape> res = new ArrayList<>();
