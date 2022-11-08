@@ -108,10 +108,26 @@ class ShapeImg extends BaseShape{
         }
     }
 }
+
+class FreeLine extends BaseShape{
+    data: never[]
+    constructor(BeforePosition:Array<number>=[0,0],AfterPosition:Array<number>=[0,0]){
+        super(BeforePosition,AfterPosition)
+        this.type="img"
+        this.data=[]
+    }
+    draw(){
+        /**
+         * 获取到的数据为move节流获取到的data
+         */
+        console.log()
+    }
+}
 export {
     BaseShape,
     Rectangle,
     Line,
     Circle,
-    ShapeImg
+    ShapeImg,
+    FreeLine
 }

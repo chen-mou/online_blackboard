@@ -7,12 +7,12 @@
       <span>
                 清空
             </span>
-    </div>
-    <div>
-      <el-icon>
-        <Refresh/>
-      </el-icon>
-      <span>
+        </div>
+        <div>
+            <el-icon @click="turnBack">
+                <Refresh />
+            </el-icon>
+            <span>
                 回退
             </span>
     </div>
@@ -35,10 +35,9 @@
       <span>
                 上传
             </span>
+        </div>
     </div>
-    <img :src="ImageSrc" id="img">
-  </div>
-</template>
+</template> 
 
 <script lang="ts" setup>
 import ShapeMap from "@/utils/Canvas/ShapeMap";
@@ -105,6 +104,13 @@ const importPng = (e: any) => {
     }
   }
   b.readAsArrayBuffer(file)
+}
+/**
+ * 实现回退功能
+ */
+const turnBack= ()=>{
+    canvas.value!.data=canvas.value!.data.slice(0,canvas.value!.data.length-1)
+    canvas.value?.drawData()
 }
 </script>
 <script lang="ts">
