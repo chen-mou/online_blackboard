@@ -36,6 +36,7 @@ class Canvas {
     this.canvas =
       (document.getElementById(canvas) as HTMLCanvasElement) ||
       (canvas as HTMLCanvasElement)
+    console.log(options)
     this.target = document.getElementById(target) as HTMLElement
     this.after = after
     this.data = data
@@ -54,12 +55,32 @@ class Canvas {
     this.context.strokeStyle = this.pen.strokeStyle
     this.context.fillStyle = this.pen.fillStyle
   }
+  reload():Canvas{
+    const { canvas, target, after, data = [], list = null } = this.options
+    this.canvas =
+      (document.getElementById(canvas) as HTMLCanvasElement) ||
+      (canvas as HTMLCanvasElement)
+    this.target = document.getElementById(target) as HTMLElement
+    if (!this.canvas) {
+      throw Error(`创建canvas失败,this.canvas=${this.canvas}`)
+    }
+    this.context = this.canvas.getContext('2d') as CanvasRenderingContext2D // 画布的上下文
+    this.pen = {
+      icon: '',
+      linewidth: 1,
+      strokeStyle: '#000000',
+      fillStyle: '#9f9'
+    }
+    this.context.strokeStyle = this.pen.strokeStyle
+    this.context.fillStyle = this.pen.fillStyle
+    return this
+  }
   // init(){
 
   // }
   drawData () {
     const pen = deepCopy(this.pen)
-    this.context.clearRect(0, 0, 1600, 1600)
+    this.canvas.height=this.canvas.height+0
     for (let i = 0; i < this.data.length; i++) {
       if (this.data[i].type == 'img') {
         console.log(this.data[i])

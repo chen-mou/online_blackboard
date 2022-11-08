@@ -5,12 +5,14 @@ import { deepCopy } from "@/utils";
 import { useWs } from "@/utils/ws";
 import { IFrame } from "@stomp/stompjs";
 import { ElMessage } from "element-plus";
+import { ShapeDataType } from "@/utils/Canvas/type/CanvasType";
 
 
 export const useCanvasStore = defineStore('canvas', {
   state: () => ({
     canvas: {} as Canvas,
     ws: {} as { send: (channel: string, data: unknown) => void, close: () => void },
+    _cacheData: [] as Array<ShapeDataType>
   }),
   actions: {
     connect(roomId: string, isAnonymous: number) {
@@ -41,8 +43,14 @@ export const useCanvasStore = defineStore('canvas', {
       let beforePosition = [0, 0]
       let AfterPosition = [0, 0]
       let IsDrawing = false
-      const canvas = new Canvas({ canvas: 'canvas' })
-      this.canvas = canvas
+      let canvas = {} as Canvas
+      if (this.canvas.canvas) {
+        canvas = this.canvas.reload()
+        this.canvas.drawData()
+      } else {
+        canvas = new Canvas({ canvas: 'canvas' })
+        this.canvas = canvas
+      }
 
       const { x, y } = getElPagePos(document.getElementById('canvas') as HTMLElement)
 
@@ -68,9 +76,9 @@ export const useCanvasStore = defineStore('canvas', {
         }
       })
       canvas.canvas.addEventListener('mouseup', e => {
-        AfterPosition = [e.pageX - x, e.pageY - y]
-        canvas.DrawClass.AfterPosition = AfterPosition
-        canvas.DrawClass.draw(canvas)
+        // AfterPosition = [e.pageX - x, e.pageY - y]
+        // canvas.DrawClass.AfterPosition = AfterPosition
+        // canvas.DrawClass.draw(canvas)
         /**
          * 储存标记点type和相应的坐标点
          */
@@ -91,6 +99,10 @@ export const useCanvasStore = defineStore('canvas', {
          */
         canvas.drawControlBorder(e.pageX - x, e.pageY - y)
       })
+    },
+    cacheCanvasData() {
+      console.log('cache')
+      this._cacheData = this.canvas.data
     }
   },
   getters: {},
