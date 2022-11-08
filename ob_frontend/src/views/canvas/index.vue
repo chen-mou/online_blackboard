@@ -44,4 +44,8 @@ onBeforeUnmount(() => {
   //   width: 100%
   // }
 }
+
+* {
+  user-select: none;
+}
 </style>

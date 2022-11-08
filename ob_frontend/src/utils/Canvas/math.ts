@@ -1,4 +1,5 @@
 import CanvasConfig from './config'
+
 /**
  * 计算画板相对于页面的绝对坐标
  * @param element
@@ -28,7 +29,7 @@ const getRadiusByTwoPoints = (
   return (
     Math.sqrt(
       Math.pow(APosition[0] - BPisition[0], 2) +
-        Math.pow(APosition[1] - BPisition[1], 2)
+      Math.pow(APosition[1] - BPisition[1], 2)
     ) / 2
   )
 }
@@ -47,15 +48,19 @@ const getCenterByTwoPoints = (
 
 /**
  * 返回两点的矩形x,y
- * @param BPosition 
- * @param APosition 
- * @returns 
+ * @param BPosition
+ * @param APosition
+ * @returns
  */
 const getBorder = (BPosition: Array<number>, APosition: Array<number>) => {
   return {
-    BoderBPosition:[BPosition[0]+CanvasConfig.borderGap,BPosition[1]+CanvasConfig.borderGap],
-    BorederAPosition:[APosition[0]+CanvasConfig.borderGap,APosition[1]+CanvasConfig.borderGap]
+    BoderBPosition: [BPosition[0] + CanvasConfig.borderGap, BPosition[1] + CanvasConfig.borderGap],
+    BorederAPosition: [APosition[0] + CanvasConfig.borderGap, APosition[1] + CanvasConfig.borderGap]
   }
+}
+
+const distance = (BPosition: Array<number>, APosition: Array<number>) => {
+  return Math.abs(BPosition[0]-APosition[0])+Math.abs(BPosition[1]-APosition[1])
 }
 
 export {
@@ -63,5 +68,5 @@ export {
   getCenterByTwoPoints,
   getRadiusByTwoPoints,
   getBorder,
-
+  distance,
 }

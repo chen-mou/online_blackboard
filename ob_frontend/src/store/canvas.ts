@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import Canvas from "@/utils/Canvas/canvas";
-import { getElPagePos } from "@/utils/Canvas/math";
+import { distance, getElPagePos } from "@/utils/Canvas/math";
 import { deepCopy } from "@/utils";
 import { useWs } from "@/utils/ws";
 import { IFrame } from "@stomp/stompjs";
@@ -43,6 +43,8 @@ export const useCanvasStore = defineStore('canvas', {
       let beforePosition = [0, 0]
       let AfterPosition = [0, 0]
       let IsDrawing = false
+      let showLine = false
+      let prepareDrawing = false
       let canvas = {} as Canvas
       if (this.canvas.canvas) {
         canvas = this.canvas.reload()
@@ -61,27 +63,44 @@ export const useCanvasStore = defineStore('canvas', {
         console.log(canvas.context.strokeStyle)
         beforePosition = [e.pageX - x, e.pageY - y]
         canvas.DrawClass.BeforePosition = beforePosition
-        IsDrawing = true
+        prepareDrawing = true
+        showLine = true
       })
+
       canvas.canvas.addEventListener('mousemove', e => {
+        AfterPosition = [e.pageX - x, e.pageY - y]
+        // 距离超过一定值就开始画
+        if (distance(AfterPosition, beforePosition) > 10 && prepareDrawing) {
+          IsDrawing = true
+          showLine = true
+        } else {
+          IsDrawing = false
+          // 如果距离小于一定值且显示实时线条，则擦除线条
+          if (showLine) {
+            showLine = false
+            console.log('nonono')
+            canvas.drawData()
+          }
+        }
         if (IsDrawing) {
           /**
            * 清空之后全部重新绘制
            */
           canvas.drawData()
-          AfterPosition = [e.pageX - x, e.pageY - y]
           canvas.DrawClass.BeforePosition = beforePosition
           canvas.DrawClass.AfterPosition = AfterPosition
           canvas.DrawClass.draw(canvas)
         }
       })
       canvas.canvas.addEventListener('mouseup', e => {
-        // AfterPosition = [e.pageX - x, e.pageY - y]
-        // canvas.DrawClass.AfterPosition = AfterPosition
-        // canvas.DrawClass.draw(canvas)
         /**
          * 储存标记点type和相应的坐标点
          */
+        prepareDrawing = false
+        showLine = false
+        if (!IsDrawing) {
+          return
+        }
         canvas.data.push({
           type: canvas.DrawClass.type,
           BeforePosition: beforePosition,
