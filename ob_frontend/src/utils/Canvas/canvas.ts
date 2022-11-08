@@ -85,7 +85,6 @@ class Canvas {
       if (this.data[i].type == 'img') {
           console.log(this.data[i])
           ShapeMap.get(this.data[i].type)?.draw(this, this.data[i].file)  
-
       } else {
         const { strokeStyle, fillStyle } = this.data[i].pen as Pen
         this.context.strokeStyle = strokeStyle

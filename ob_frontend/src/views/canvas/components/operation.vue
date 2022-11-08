@@ -9,7 +9,7 @@
             </span>
         </div>
         <div>
-            <el-icon>
+            <el-icon @click="turnBack">
                 <Refresh />
             </el-icon>
             <span>
@@ -93,9 +93,17 @@ const importPng=(e: any)=>{
     })
     ShapeMap.get("img")?.draw(canvas.value as Canvas,file)
 }
+/**
+ * 实现回退功能
+ */
+const turnBack= ()=>{
+    canvas.value!.data=canvas.value!.data.slice(0,canvas.value!.data.length-1)
+    canvas.value?.drawData()
+}
 </script>
 <script lang="ts">
 import { defineComponent } from 'vue';
+import { slice } from "lodash";
 export default defineComponent({
     name:"operation"
 })
