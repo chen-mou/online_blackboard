@@ -7,12 +7,12 @@
       <span>
                 清空
             </span>
-        </div>
-        <div>
-            <el-icon @click="turnBack">
-                <Refresh />
-            </el-icon>
-            <span>
+    </div>
+    <div>
+      <el-icon @click="turnBack">
+        <Refresh/>
+      </el-icon>
+      <span>
                 回退
             </span>
     </div>
@@ -33,11 +33,11 @@
         <input type="file" @change="importPng" accept="image/*">
       </div>
       <span>
-                上传
+                导入
             </span>
-        </div>
     </div>
-</template> 
+  </div>
+</template>
 
 <script lang="ts" setup>
 import ShapeMap from "@/utils/Canvas/ShapeMap";
@@ -94,14 +94,21 @@ const importPng = (e: any) => {
   const file = e.target.files[0]
   let b = new FileReader()
   b.onload = (e1: ProgressEvent<FileReader>) => {
-    // 拿到二进制流
-    let bytes = String.fromCharCode.apply(null, new Uint8Array(e1.target?.result as unknown as Array<number>) as unknown as Array<number>)
+    // 拿到二进制流并把 json 的部分截取出来
+    let arr = new Uint8Array(e1.target?.result as unknown as Array<number>)
+    arr = arr.slice(-bytesToInt32(String.fromCharCode(...arr.slice(-4))) - 4, -4)
+    let bytes = ''
+    for (let i of arr) {
+      bytes += String.fromCharCode(i)
+    }
     try {
-      // 把 json 的部分截取出来转成对象
-      let data = JSON.parse(bytes.slice(-bytesToInt32(bytes.slice(-4)) - 4, -4))
+      // 转成对象
+      let data = JSON.parse(bytes)
       canvas.value?.data.push(...data)
       canvas.value?.drawData()
+      console.log('ok')
     } catch (e) {
+      console.log('图片格式出错！')
       ElMessage.error({
         message: '图片格式出错！'
       })
@@ -112,9 +119,9 @@ const importPng = (e: any) => {
 /**
  * 实现回退功能
  */
-const turnBack= ()=>{
-    canvas.value!.data=canvas.value!.data.slice(0,canvas.value!.data.length-1)
-    canvas.value?.drawData()
+const turnBack = () => {
+  canvas.value!.data = canvas.value!.data.slice(0, canvas.value!.data.length - 1)
+  canvas.value?.drawData()
 }
 </script>
 <script lang="ts">
