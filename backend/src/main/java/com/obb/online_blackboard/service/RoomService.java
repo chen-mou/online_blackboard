@@ -117,6 +117,8 @@ public class RoomService {
                         throw new OperationException(500, e.getMessage());
                     }
                 }
+                redis.delete("user_session:" + item.getUserId());
+                redis.delete("session:" + sessionID);
 //                session.
             });
         });
@@ -134,7 +136,7 @@ public class RoomService {
         if(!inRoom(r, userId)){
             throw new OperationException(403, "不在房间中不能获取房间信息");
         }
-        template.convertAndSendToUser(String.valueOf(userId), "/queue/info", r);
+        template.convertAndSendToUser(String.valueOf(userId), "/queue/info", Message.def("room_info", r));
         return r;
     }
 

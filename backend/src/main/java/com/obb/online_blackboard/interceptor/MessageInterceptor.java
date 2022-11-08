@@ -1,14 +1,9 @@
 package com.obb.online_blackboard.interceptor;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.obb.online_blackboard.config.Context;
-import com.obb.online_blackboard.entity.RoomEntity;
 import com.obb.online_blackboard.exception.OperationException;
 import com.obb.online_blackboard.service.RoomService;
-import org.springframework.context.ApplicationContext;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.http.HttpHeaders;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHeaders;
@@ -17,16 +12,14 @@ import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.MessageHeaderAccessor;
-import org.springframework.stereotype.Component;
+import org.xerial.snappy.Snappy;
 import tool.result.Result;
 import tool.util.JWT;
 
-import javax.servlet.http.HttpServletResponse;
-import java.security.Principal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 /**
  * @author 陈桢梁
@@ -98,7 +91,7 @@ public class MessageInterceptor implements ChannelInterceptor {
                 throw new OperationException(500, "房间号不能为空");
             }
 
-            int anonymous = Integer.parseInt(((List<String>)getOeDefault(isAnonymous, new ArrayList<>(){{add("0");}})).get(0));
+            int anonymous = Integer.parseInt(((List<String>)getOrDefault(isAnonymous, new ArrayList<>(){{add("0");}})).get(0));
             accessor.setUser(() -> userId);
             String session = accessor.getSessionId();
             redis.opsForValue().set("session:" + session, userId);
@@ -110,7 +103,7 @@ public class MessageInterceptor implements ChannelInterceptor {
 
     }
 
-    private Object getOeDefault(Object o, Object def){
+    private Object getOrDefault(Object o, Object def){
         if(o == null){
             return def;
         }else{

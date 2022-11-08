@@ -8,6 +8,8 @@ import com.obb.online_blackboard.entity.RoomSettingEntity;
 import com.obb.online_blackboard.entity.SheetEntity;
 import com.obb.online_blackboard.entity.UserDataEntity;
 import com.obb.online_blackboard.entity.base.Shape;
+import org.springframework.data.redis.core.PartialUpdate;
+import org.springframework.data.redis.core.RedisKeyValueTemplate;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 import tool.util.id.Id;
@@ -59,6 +61,9 @@ public class RoomModel {
     @Resource
     ThreadPoolExecutor threadPoolExecutor;
 
+    @Resource
+    RedisKeyValueTemplate template;
+
     private final String SETTING_KEY = "setting_key:";
 
     private final String SETTING_LOCK = "setting_lock:";
@@ -70,6 +75,7 @@ public class RoomModel {
         if(name == null || name.equals("")){
             room.setName(room.getCreatorName() + "的会议");
         }
+        room.setLoaded(0);
         roomDbDao.insert(room);
         return room.getId();
     }
@@ -78,12 +84,29 @@ public class RoomModel {
         roomDao.save(room);
     }
 
+    public void updateRoom(String roomId, String key, Object value){
+        PartialUpdate<RoomEntity> update = new PartialUpdate<>(roomId, RoomEntity.class).set(key, value);
+        template.update(update);
+    }
+
     public String createSetting(RoomSettingEntity setting, long userId, String roomId){
         setting.setId(String.valueOf(id.getId("room_setting")));
         setting.setCreatorId(userId);
         setting.setRoomId(roomId);
         roomSettingDao.createSetting(setting);
         return setting.getId();
+    }
+
+    public RoomEntity getVerifyRoom(String roomId){
+        Optional<RoomEntity> optional = roomDao.findById(roomId);
+        RoomEntity r;
+        if(optional.isEmpty()){
+            r = roomDbDao.getRoomById(Long.parseLong(roomId));
+        }else{
+            r = optional.get();
+            r.setSetting(roomSettingDao.getByRoomId(Long.parseLong(roomId)));
+        }
+        return r;
     }
 
     public RoomEntity getRoomById(String roomId){

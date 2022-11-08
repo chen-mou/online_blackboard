@@ -50,7 +50,7 @@ public class SheetService {
      * @param sheetId 画布ID
      */
     private void verifyCreator(long userId, String roomId, long sheetId){
-        RoomEntity room = roomModel.getRoomById(roomId);
+        RoomEntity room = roomModel.getVerifyRoom(roomId);
         if(room == null){
             throw new OperationException(404, "房间不存在");
         }
@@ -74,15 +74,16 @@ public class SheetService {
 
     public void createSheet(String roomId, String name, long userId){
         RoomEntity room = roomModel.getRoomById(roomId);
-        if(room.getCreatorId() != userId){
-            throw new OperationException(403, "非房间创建者不能创建画布");
-        }
         if(!room.getStatus().equals("meeting")){
             throw new OperationException(403, "会议已经结束或者还未开始");
         }
+        UserDataEntity user = userModel.getUserById(userId);
+        if(!user.getNowRoom().equals(roomId)){
+            throw new OperationException(403, "你不在房间中");
+        }
         SheetEntity sheet = sheetModel.createSheet(name, room.getId());
         room.getSheets().add(sheet.getId());
-        roomModel.saveRoom(room);
+        roomModel.updateRoom(roomId, "sheets", room.getSheets());
         template.convertAndSend("/exchange/room/" + room.getId(), Message.def("/create_sheet", sheet));
     }
 
@@ -93,7 +94,7 @@ public class SheetService {
         shape.setSheetId(sheetId);
         shapeModel.createShape(shape);
         sheet.addStack(userId, shape.getId());
-        sheetModel.save(sheet);
+        sheetModel.updateSheet(sheetId, "shapes", sheet.getShapes());
         template.convertAndSend("/exchange/room/" + roomId, Message.add(shape, sheetId));
     }
 

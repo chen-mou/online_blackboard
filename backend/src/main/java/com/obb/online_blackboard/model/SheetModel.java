@@ -1,8 +1,11 @@
 package com.obb.online_blackboard.model;
 
 import com.obb.online_blackboard.dao.redis.SheetDao;
+import com.obb.online_blackboard.entity.RoomEntity;
 import com.obb.online_blackboard.entity.SheetEntity;
 import com.obb.online_blackboard.entity.base.Shape;
+import org.springframework.data.redis.core.PartialUpdate;
+import org.springframework.data.redis.core.RedisKeyValueTemplate;
 import org.springframework.stereotype.Repository;
 import tool.util.id.Id;
 
@@ -29,7 +32,8 @@ public class SheetModel {
     @Resource
     ShapeModel shapeModel;
 
-
+    @Resource
+    RedisKeyValueTemplate template;
     @Resource
     Id id;
 
@@ -43,6 +47,11 @@ public class SheetModel {
 
     public void save(SheetEntity sheetEntity){
         sheetDao.save(sheetEntity);
+    }
+
+    public void updateSheet(long sheetId, String key, Object val){
+        PartialUpdate<SheetEntity> update = new PartialUpdate<>(sheetId, SheetEntity.class).set(key, val);
+        template.update(update);
     }
 
     public SheetEntity getSheetById(long id){
@@ -81,7 +90,9 @@ public class SheetModel {
     }
 
     public List<SheetEntity> getAllByRoomId(String roomId){
-        return sheetDao.findAllByRoomId(roomId);
+        List<SheetEntity> sheetEntities = sheetDao.findAllByRoomId(roomId);
+        sheetEntities.forEach(item -> item.setShapes(null));
+        return sheetEntities;
     }
 
 //    public Iterable<SheetEntity> getAllSheetName(){

@@ -1,5 +1,6 @@
 package com.obb.online_blackboard.entity;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.obb.online_blackboard.config.Context;
 import com.obb.online_blackboard.entity.base.Save;
 import com.obb.online_blackboard.entity.base.Shape;
@@ -26,6 +27,7 @@ import java.util.*;
  */
 @Data
 @RedisHash("sheet")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class SheetEntity {
 
     @Id

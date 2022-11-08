@@ -1,7 +1,14 @@
 package tool.result;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.obb.online_blackboard.exception.OperationException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.xerial.snappy.Snappy;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 /**
  * @author 陈桢梁
@@ -17,11 +24,24 @@ public class Message<T> {
 
     long sheet;
 
-    T date;
+    boolean isZip;
 
-    public Message(String type, T date){
-        this.type = type;
-        this.date = date;
+    String data;
+
+    public Message(String type, T date) {
+        try {
+            this.type = type;
+            String str = new ObjectMapper().writeValueAsString(date);
+            if(str.length() > 1000){
+                str = new String(Snappy.compress(str, StandardCharsets.UTF_8));
+                this.isZip = true;
+            }
+            this.data = str;
+        }catch (JsonProcessingException e){
+            throw new OperationException(500, "消息序列化出错");
+        }catch (IOException e){
+            throw new OperationException(500, "消息压缩出错");
+        }
     }
 
     public static <T> Message def(String type, T date){
@@ -39,7 +59,7 @@ public class Message<T> {
         return def("modify", date);
     }
 
-    public static <T> Message add(T date, long sheet){
+    public static <T> Message add(T date, long sheet) {
         Message msg = def("add", date);
         msg.setSheet(sheet);
         return msg;
