@@ -7,6 +7,8 @@ import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 
 import '@/assets/global.css'
 import 'element-plus/dist/index.css'
+import dayjs from "dayjs";
+import isBetween from 'dayjs/plugin/isBetween';
 
 const app = createApp(App).use(router);
 
@@ -17,3 +19,5 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 }
 
 app.mount('#app')
+
+dayjs.extend(isBetween)
