@@ -9,13 +9,20 @@ import com.obb.online_blackboard.exception.OperationException;
 import com.obb.online_blackboard.model.RoomModel;
 import com.obb.online_blackboard.model.SheetModel;
 import com.obb.online_blackboard.model.UserModel;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.WebSession;
+import org.springframework.web.socket.CloseStatus;
+import org.springframework.web.socket.handler.ConcurrentWebSocketSessionDecorator;
 import tool.result.Message;
+import tool.util.WebSocketSession;
 
 import javax.annotation.Resource;
+import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * @author 陈桢梁
@@ -36,8 +43,10 @@ public class RoomService {
     SheetService sheetService;
 
     @Resource
-    UserDao userDao;
+    RedisTemplate<String, Object> redis;
 
+    @Resource
+    ThreadPoolExecutor pool;
 
     @Resource
     SimpMessagingTemplate template;
@@ -91,8 +100,27 @@ public class RoomService {
         if(room.getCreatorId() != userId){
             throw new OperationException(403, "没有结束会议的权限");
         }
+        List<UserDataEntity> users = userModel.getUserDataByRoomId(roomId);
         roomModel.delRoom(roomId);
         template.convertAndSend("/exchange/room/" + roomId, Message.def("over", null));
+        pool.execute(() -> {
+            users.forEach((item) -> {
+                String sessionID = (String)redis.opsForValue().get("user_session:" + item.getUserId());
+                ConcurrentWebSocketSessionDecorator session = WebSocketSession.getSession(sessionID);
+                if(session == null){
+                    return;
+                }
+                if(session.isOpen()){
+                    try {
+                        session.close(CloseStatus.NORMAL);
+                    } catch (IOException e) {
+                        throw new OperationException(500, e.getMessage());
+                    }
+                }
+//                session.
+            });
+        });
+
     }
 
     public RoomEntity roomInfo(long userId, String roomId){

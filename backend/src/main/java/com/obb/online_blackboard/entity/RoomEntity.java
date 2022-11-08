@@ -32,7 +32,7 @@ public class RoomEntity {
 
     private String name;
 
-    private int loaded;
+    private Integer loaded;
 
 //    private List<UserDataEntity> participants;
 
