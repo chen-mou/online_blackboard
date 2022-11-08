@@ -103,7 +103,6 @@ const turnBack= ()=>{
 </script>
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { slice } from "lodash";
 export default defineComponent({
     name:"operation"
 })
