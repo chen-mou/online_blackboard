@@ -68,12 +68,14 @@ const cleanCanvas = () => {
 const exportAsPng = () => {
   const el = document.createElement('a');
   // 设置 href 为图片经过 base64 编码后的字符串，默认为 png 格式
+  // 拿到 base64 部分并转成二进制
   let bytes = atob((canvas.value as Canvas).canvas.toDataURL().split('base64,')[1])
   let data = JSON.stringify(canvas.value?.data)
-
+  // 把数据长度（32位int）转成二进制（byte*4）
   let dataLen = int32ToBytes(data.length)
   // console.log('原数据', dataLen, '转换后', bytesToInt32(int32ToBytes(dataLen)))
 
+  // 把数据和图片的二进制流合并，转回 base64
   el.href = 'data:image/png;base64,' + btoa(bytes + data + dataLen)
   el.download = '项目名称';
 
@@ -92,8 +94,10 @@ const importPng = (e: any) => {
   const file = e.target.files[0]
   let b = new FileReader()
   b.onload = (e1: ProgressEvent<FileReader>) => {
+    // 拿到二进制流
     let bytes = String.fromCharCode.apply(null, new Uint8Array(e1.target?.result as unknown as Array<number>) as unknown as Array<number>)
     try {
+      // 把 json 的部分截取出来转成对象
       let data = JSON.parse(bytes.slice(-bytesToInt32(bytes.slice(-4)) - 4, -4))
       canvas.value?.data.push(...data)
       canvas.value?.drawData()
