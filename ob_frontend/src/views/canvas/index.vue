@@ -8,18 +8,21 @@ export default defineComponent({
 
 <script setup lang="ts">
 import NavBar from './components/NavBar.vue'
-import { onMounted, ref, reactive, provide } from 'vue'
+import { onMounted, ref, reactive, provide, onBeforeUnmount } from 'vue'
 import Canvas from '@/utils/Canvas/canvas'
 import { useCanvasStore } from "@/store/canvas";
+
 const canvasRef = ref(null)
-const canvasProvide=ref<Canvas>()
+const canvasProvide = ref<Canvas>()
 const canvasStore = useCanvasStore();
 onMounted(() => {
   canvasStore.initCanvas()
-  canvasProvide.value=canvasStore.canvas
+  canvasProvide.value = canvasStore.canvas
 })
-  provide("canvas__",canvasProvide)
-
+provide("canvas__", canvasProvide)
+onBeforeUnmount(() => {
+  canvasStore.cacheCanvasData()
+})
 /**
  * 绑定mouse事件
  */

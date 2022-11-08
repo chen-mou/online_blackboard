@@ -41,7 +41,7 @@ const HandleSelect=(e:MouseEvent)=>{
 
 <style lang="less" scoped>
 .shape {
-    width: 40vh;
+    width: 20vw;
     display: flex;
     border-left: 1px solid rgb(211, 201, 201);
     border-right: 1px solid rgb(211, 201, 201);
