@@ -62,8 +62,9 @@ class Canvas {
     this.context.clearRect(0, 0, 1600, 1600)
     for (let i = 0; i < this.data.length; i++) {
       if (this.data[i].type == 'img') {
-        console.log(this.data[i])
-        ShapeMap.get(this.data[i].type)?.draw(this, this.data[i].file)
+          console.log(this.data[i])
+          ShapeMap.get(this.data[i].type)?.draw(this, this.data[i].file)  
+
       } else {
         const { strokeStyle, fillStyle } = this.data[i].pen as Pen
         this.context.strokeStyle = strokeStyle

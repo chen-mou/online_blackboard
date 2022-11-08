@@ -36,7 +36,6 @@
                 上传
             </span>
         </div>
-        <img :src="ImageSrc" id="img">
     </div>
 </template> 
 
