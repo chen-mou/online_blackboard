@@ -30,6 +30,7 @@ import operationVue from "./operation.vue";
 </script>
 <style lang="less" scoped>
 .NavBar {
+    box-sizing: border-box;
     height: 15vh;
     width: 100%;
     border-bottom: 2px solid rgb(217, 211, 211);

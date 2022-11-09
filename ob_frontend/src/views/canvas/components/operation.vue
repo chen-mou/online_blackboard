@@ -67,7 +67,8 @@ onMounted(() => {
 const cleanCanvas = () => {
   if (canvas.value) {
     canvas.value.data = []
-    canvas.value?.drawData()
+    // canvas.value?.drawData()
+    canvas.value.layers.drawData()
   }
 }
 /**
@@ -129,8 +130,8 @@ const importPng = (e: any) => {
  * 实现回退功能
  */
 const turnBack = () => {
-  canvas.value!.data = canvas.value!.data.slice(0, canvas.value!.data.length - 1)
-  canvas.value?.drawData()
+  canvas.value!.layers.data = canvas.value!.layers.data.slice(0, canvas.value!.data.length - 1)
+  canvas.value?.layers.drawData()
 }
 </script>
 <script lang="ts">

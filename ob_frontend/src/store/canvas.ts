@@ -113,13 +113,13 @@ export const useCanvasStore = defineStore('canvas', {
         if (!IsDrawing) {
           return
         }
-        canvas.data.push({
+        canvas.layers.data.push({
           type: canvas.DrawClass.type,
           BeforePosition: beforePosition,
           AfterPosition: AfterPosition,
           pen: deepCopy(canvas.pen)
         })
-        IsDrawing = false
+        IsDrawing = false 
         /**
          * 鼠标画完之后画入第二层
          * 画入后清空上一层画布
