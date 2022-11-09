@@ -77,6 +77,9 @@ public class RoomController {
     }
 
     @MessageMapping("/quit")
-    public void quit(Principal p, @JsonKey String roomId){}
+    public void quit(Principal p, @JsonKey String roomId){
+        long userId = Long.parseLong(p.getName());
+        roomService.quit(userId, roomId);
+    }
 
 }

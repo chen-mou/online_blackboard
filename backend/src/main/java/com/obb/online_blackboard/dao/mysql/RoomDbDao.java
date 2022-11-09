@@ -25,7 +25,7 @@ public interface RoomDbDao {
     @Results({
             @Result(column = "id", property = "id"),
             @Result(column = "id", property = "setting",
-                    one = @One(select = "com.obb.online_blackboard.dao.mysql.RoomDbDao.getStartEndTimeById"))
+                    one = @One(select = "com.obb.online_blackboard.dao.mysql.RoomDbDao.getSettingById"))
     })
     List<RoomEntity> getRoomByCreatorId(long creatorId);
 
@@ -70,7 +70,7 @@ public interface RoomDbDao {
             "</script>")
     void cleanOver(@Param("time") Date time, @Param("rooms") ArrayList<RoomEntity> rooms);
 
-    @Select("select start_time, end_time from room_setting where room_id = #{roomId}")
-    RoomSettingEntity getStartEndTimeById(long roomId);
+    @Select("select * from room_setting where room_id = #{roomId}")
+    RoomSettingEntity getSettingById(long roomId);
 
 }

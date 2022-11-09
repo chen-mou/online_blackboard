@@ -86,7 +86,7 @@ public class RoomService {
         if(isAnonymous == 1){
             user.setNickname("匿名用户");
         }
-        if(!inRoom(r, userId)){
+        if(!inRoom(r.getId(), userId)){
             template.convertAndSend("/exchange/room/" + roomId, Message.def("user_join", user));
         }
         return r;
@@ -105,20 +105,7 @@ public class RoomService {
         template.convertAndSend("/exchange/room/" + roomId, Message.def("over", null));
         pool.execute(() -> {
             users.forEach((item) -> {
-                String sessionID = (String)redis.opsForValue().get("user_session:" + item.getUserId());
-                ConcurrentWebSocketSessionDecorator session = WebSocketSession.getSession(sessionID);
-                if(session == null){
-                    return;
-                }
-                if(session.isOpen()){
-                    try {
-                        session.close(CloseStatus.NORMAL);
-                    } catch (IOException e) {
-                        throw new OperationException(500, e.getMessage());
-                    }
-                }
-                redis.delete("user_session:" + item.getUserId());
-                redis.delete("session:" + sessionID);
+                closeSession(item.getUserId());
 //                session.
             });
         });
@@ -133,7 +120,7 @@ public class RoomService {
         if(!r.getStatus().equals("meeting")){
             throw new OperationException(404, "会议未开始或已经结束了");
         }
-        if(!inRoom(r, userId)){
+        if(!inRoom(r.getId(), userId)){
             throw new OperationException(403, "不在房间中不能获取房间信息");
         }
         template.convertAndSendToUser(String.valueOf(userId), "/queue/info", Message.def("room_info", r));
@@ -162,9 +149,39 @@ public class RoomService {
         }
     }
 
-    private boolean inRoom(RoomEntity room, long userId){
+    public void quit(long userId, String roomId){
+        if(!inRoom(roomId, userId)){
+            throw new OperationException(403, "你不在这个房间中");
+        }
+        RoomEntity r = roomModel.getVerifyRoom(roomId);
+        if(r.getCreatorId() == userId){
+            over(roomId, userId);
+        }else{
+            closeSession(userId);
+            template.convertAndSend("/exchange/room/" + roomId, Message.def("user_quit", userId));
+        }
+    }
+
+    public void closeSession(long userId){
+        String sessionID = (String)redis.opsForValue().get("user_session:" + userId);
+        ConcurrentWebSocketSessionDecorator session = WebSocketSession.getSession(sessionID);
+        if(session == null){
+            return;
+        }
+        if(session.isOpen()){
+            try {
+                session.close(CloseStatus.NORMAL);
+            } catch (IOException e) {
+                throw new OperationException(500, e.getMessage());
+            }
+        }
+        redis.delete("user_session:" + userId);
+        redis.delete("session:" + sessionID);
+    }
+
+    private boolean inRoom(String roomId, long userId){
         UserDataEntity data = userModel.getUserById(userId);
-        return data.getNowRoom().equals(room.getId());
+        return data.getNowRoom().equals(roomId);
     }
 
 }
