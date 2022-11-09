@@ -56,7 +56,7 @@ export const useRoomStore = defineStore('room', {
       if (res.code != 200) {
         return res.msg
       }
-    }
+    },
   },
   getters: {}
 })

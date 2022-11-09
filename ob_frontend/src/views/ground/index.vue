@@ -4,9 +4,14 @@ import { defineComponent, ref } from "vue";
 import { ElMessage } from "element-plus";
 import { useRoomStore } from "@/store/room";
 import dayjs from "dayjs";
+import RoomEntry from './components/RoomEntry.vue'
 
 export default defineComponent({
   name: "BlackboardGround",
+  components: {
+    RoomEntry,
+  },
+
   setup() {
     const userStore = useUserStore()
     const roomStore = useRoomStore()
@@ -123,6 +128,12 @@ export default defineComponent({
       </div>
     </div>
   </div>
+  <div class="my-room">
+    <p>我的房间</p>
+    <div>
+      <RoomEntry v-for="room in userStore.myRooms" :key="room.id" :room="room"/>
+    </div>
+  </div>
 </template>
 
 <style scoped>
@@ -178,5 +189,15 @@ export default defineComponent({
   outline: none;
   cursor: pointer;
   margin-right: 10px;
+}
+
+.my-room {
+  margin-left: 20px;
+  border: 1px solid lightgray;
+  box-shadow: 0 0 20px 0 lightgray;
+  border-radius: 30px;
+  max-height: 80vh;
+  padding: 30px;
+  overflow-y: auto;
 }
 </style>
