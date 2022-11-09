@@ -20,6 +20,7 @@ export default defineComponent({
       userStore,
       roomStore,
       packEnter,
+      dayjs,
     }
   },
   data() {
@@ -27,11 +28,10 @@ export default defineComponent({
       newName: '',
       whiteboardCode: '',
       hideName: false,
-      fromDate: dayjs().format('YYYY-MM-DD'),
-      fromTime: dayjs().format('HH:mm'),
-      toDate: '',
-      toTime: '',
+      fromDatetime: dayjs().format('YYYY-MM-DD HH:mm'),
+      toDatetime: '',
       roomName: (this.userStore as any).nickname + '的房间',
+      startNow: false,
     }
   },
   mounted() {
@@ -52,24 +52,17 @@ export default defineComponent({
   },
   methods: {
     async joinRoom() {
-      let data: any = {
-        isAnonymous: Number(this.hideName),
-        roomId: this.whiteboardCode,
-      }
-      let msg: string = await this.roomStore.joinRoom(data);
-      if (msg) {
-        this.$message({
-          type: 'error',
-          message: msg,
-        })
-      }
+      console.log(this.whiteboardCode, this.hideName)
+      this.roomStore.joinRoom(this.whiteboardCode, Number(this.hideName));
+      await this.$router.replace('/canvas')
     },
     async createRoom() {
       let data: any = {
         isShare: 0,
         allowAnonymous: Number(this.hideName),
-        startTime: `${this.fromDate} ${this.fromTime}`,
-        endTime: `${this.toDate} ${this.toTime}`,
+        startTime: this.fromDatetime,
+        endTime: this.toDatetime,
+        startNow: this.startNow,
       }
       let msg: string = await this.roomStore.createRoom(data)
       if (msg) {
@@ -77,14 +70,11 @@ export default defineComponent({
           type: 'error',
           message: msg,
         })
+      } else {
+        await this.userStore.getUserRooms()
       }
     },
   },
-  watch: {
-    toTime() {
-      console.log(this.fromDate, this.fromTime, '>>', this.toDate, this.toTime)
-    }
-  }
 })
 </script>
 
@@ -111,18 +101,23 @@ export default defineComponent({
       </el-icon>
       <div v-show="packEnter==='enter'" class="container-in">
         <el-input placeholder="房间名" v-model="roomName"/>
-        <el-input placeholder="你的昵称" v-model="newName" :disabled="!hideName"/>
+        <br/>
+        <el-input style="width: 200px;margin-right: 5px" placeholder="你的昵称" v-model="newName"
+                  :disabled="!hideName"/>
+        <el-checkbox style="position: relative;top:7px" label="开启匿名" v-model="hideName"
+                     @click="newName=userStore.nickname"/>
         <div>
           从
-          <input type="date" class="date-picker" v-model="fromDate"/>
-          <input type="time" class="date-picker" v-model="fromTime"/>
+          <el-date-picker style="width: 180px;margin-right: 5px" type="datetime" class="date-picker"
+                          v-model="fromDatetime" :disabled="startNow" format="YYYY-MM-DD HH:mm"
+                          value-format="YYYY-MM-DD HH:mm"/>
+          <el-checkbox label="从现在开始" v-model="startNow"/>
           <br/>
           到
-          <input type="date" class="date-picker" v-model="toDate"/>
-          <input type="time" class="date-picker" v-model="toTime"/>
+          <el-date-picker style="width: 180px;margin-top: 10px" type="datetime" class="date-picker"
+                          v-model="toDatetime" format="YYYY-MM-DD HH:mm" value-format="YYYY-MM-DD HH:mm"/>
         </div>
         <p class="buttons">
-          <el-checkbox label="开启匿名" v-model="hideName" @click="newName=userStore.nickname"/>
           <el-button type="primary" @click="createRoom">创建</el-button>
         </p>
       </div>
@@ -131,7 +126,9 @@ export default defineComponent({
   <div class="my-room">
     <p>我的房间</p>
     <div>
-      <RoomEntry v-for="room in userStore.myRooms" :key="room.id" :room="room"/>
+      <RoomEntry
+        v-for="room in userStore.myRooms.filter((r)=>dayjs().isBetween(r.setting.startTime, r.setting.endTime))"
+        :key="room.id" :room="room"/>
     </div>
   </div>
 </template>
@@ -141,9 +138,10 @@ export default defineComponent({
   border: 1px solid lightgray;
   box-shadow: 0 0 20px 0 lightgray;
   border-radius: 30px;
-  height: 270px;
+  height: 300px;
   overflow: hidden;
   display: flex;
+  min-width: 490px;
 }
 
 .container > * {
@@ -176,11 +174,12 @@ export default defineComponent({
   margin-top: 10px;
   font-size: 50px;
 }
-
-.container-in > * {
-  margin-top: 12px;
+.container-in{
   white-space: nowrap;
   overflow: hidden;
+}
+.container-in > * {
+  margin-top: 12px;
 }
 
 .date-picker {
@@ -192,12 +191,13 @@ export default defineComponent({
 }
 
 .my-room {
-  margin-left: 20px;
+  margin-left: 60px;
   border: 1px solid lightgray;
   box-shadow: 0 0 20px 0 lightgray;
   border-radius: 30px;
   max-height: 80vh;
   padding: 30px;
   overflow-y: auto;
+  min-width: 400px;
 }
 </style>

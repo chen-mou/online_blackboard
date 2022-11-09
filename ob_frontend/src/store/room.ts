@@ -3,26 +3,20 @@ import request from "@/utils/request";
 
 export const useRoomStore = defineStore('room', {
   state: () => ({
-    roomId: '1000288',
+    roomId: '123',
     name: '',
     isShare: 0,
     creatorId: 0,
     startTime: '',
     endTime: '',
     allowAnonymous: 0,
+    userAnonymous: 0,
   }),
   actions: {
-    async joinRoom(data: any) {
-      const res = await request({
-        method: 'post',
-        data,
-        url: '/room/join'
-      })
-      if (res.code != 200) {
-        return res.msg
-      }
-      this._loadRoom(res.data)
-      return false
+    joinRoom(roomId: string, userAnonymous: number) {
+      console.log(roomId,userAnonymous)
+      this.roomId = roomId
+      this.userAnonymous = userAnonymous
     },
     async createRoom(data: any) {
       const res = await request({
@@ -56,7 +50,19 @@ export const useRoomStore = defineStore('room', {
       if (res.code != 200) {
         return res.msg
       }
+      return false
     },
+    async updateRoom(data: any) {
+      const res = await request({
+        data,
+        url: '/room/update_setting',
+        method: 'post',
+      })
+      if (res.code != 200) {
+        return res.msg
+      }
+      return false
+    }
   },
   getters: {}
 })

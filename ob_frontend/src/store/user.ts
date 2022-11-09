@@ -3,10 +3,10 @@ import request from "@/utils/request";
 
 export const useUserStore = defineStore('user', {
     state: () => ({
-      hasLogin: false,
+      hasLogin: true,
       userId: 0,
       nickname: '鲲鲲',
-      myRooms: [],
+      myRooms: [] as Array<any>,
     }),
     actions: {
       async login(username: string, password: string, onfail: (...args: any[]) => void): Promise<void> {
@@ -77,16 +77,19 @@ export const useUserStore = defineStore('user', {
           return false
         }
         this._loginSuccess(data, false)
+        await this.getUserRooms()
+        return true
+      },
+      async getUserRooms() {
         const roomRes = await request({
           method: 'get',
           url: '/room/my_room',
         })
         // console.log(roomRes)
         if (roomRes.code != 200) {
-          return true
+          return
         }
         this.myRooms = roomRes.data
-        return true
       },
       async logout() {
         await request({
