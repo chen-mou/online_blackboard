@@ -18,35 +18,30 @@ export const useCanvasStore = defineStore('canvas', {
     _cacheData: [] as Array<ShapeDataType>
   }),
   actions: {
-    connect (roomId: string, isAnonymous: number) {
-      this.ws = useWs(roomId, isAnonymous, [
-        {
-          channel: `/exchange/room/${roomId}`,
-          callback: this._wsRoomReceive
-        },
-        {
-          channel: '/user/queue/info',
-          callback: this._wsUserReceive
-        },
-        {
-          channel: '/user/queue/error',
-          callback: this._wsErrReceive
-        }
-      ])
-      this.ws.send('/app/room_info', { roomId })
+    connect(roomId: string, isAnonymous: number) {
+      this.ws = useWs(roomId, isAnonymous, [{
+        channel: `/exchange/room/${roomId}`,
+        callback: this._wsRoomReceive
+      }, {
+        channel: '/user/queue/info',
+        callback: this._wsUserReceive
+      }, {
+        channel: '/user/queue/error',
+        callback: this._wsErrReceive
+      }])
     },
-    _wsRoomReceive (frame: IFrame) {
+    _wsRoomReceive(frame: IFrame) {
       console.log(frame)
     },
-    _wsUserReceive (frame: IFrame) {
+    _wsUserReceive(frame: IFrame) {
       console.log(frame)
     },
-    _wsErrReceive (frame: IFrame) {
+    _wsErrReceive(frame: IFrame) {
       ElMessage.error({
         message: frame.body
       })
     },
-    initCanvas () {
+    initCanvas() {
       // let PointData = []
       let beforePosition = [0, 0]
       let AfterPosition = [0, 0]
@@ -88,7 +83,7 @@ export const useCanvasStore = defineStore('canvas', {
           // 如果距离小于一定值且显示实时线条，则擦除线条
           if (showLine) {
             showLine = false
-            console.log('nonono')
+            // console.log('nonono')
             canvas.drawData()
           }
         }
@@ -97,10 +92,10 @@ export const useCanvasStore = defineStore('canvas', {
             /**
              * 传入点并lineto
              */
-             (canvas.DrawClass as FreeLine).data.push({
-              x:AfterPosition[0],
-              y:AfterPosition[1]
-             })
+            (canvas.DrawClass as FreeLine).data.push({
+              x: AfterPosition[0],
+              y: AfterPosition[1]
+            })
           }
           /**
            * 清空之后全部重新绘制
@@ -138,8 +133,8 @@ export const useCanvasStore = defineStore('canvas', {
         canvas.drawControlBorder(e.pageX - x, e.pageY - y)
       })
     },
-    cacheCanvasData () {
-      console.log('cache')
+    cacheCanvasData() {
+      // console.log('cache')
       this._cacheData = this.canvas.data
     }
   },

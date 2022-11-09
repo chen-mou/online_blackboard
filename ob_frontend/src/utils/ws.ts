@@ -14,6 +14,7 @@ export function useWs(roomId: string, isAnonymous: number, channels: Array<{ cha
       for (const { channel, callback } of channels) {
         client.subscribe(channel, callback)
       }
+      client.send('/app/room_info', {}, JSON.stringify({ roomId }))
     },
   )
   return {

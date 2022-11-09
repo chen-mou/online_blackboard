@@ -11,6 +11,7 @@ import NavBar from './components/NavBar.vue'
 import { onMounted, ref, reactive, provide, onBeforeUnmount } from 'vue'
 import Canvas from '@/utils/Canvas/canvas'
 import { useCanvasStore } from "@/store/canvas";
+import { useRoomStore } from "@/store/room";
 
 const canvasRef = ref(null)
 const canvasProvide = ref<Canvas>()
@@ -23,6 +24,8 @@ provide("canvas__", canvasProvide)
 onBeforeUnmount(() => {
   canvasStore.cacheCanvasData()
 })
+const roomStore = useRoomStore()
+canvasStore.connect(roomStore.roomId, roomStore.userAnonymous)
 /**
  * 绑定mouse事件
  */
