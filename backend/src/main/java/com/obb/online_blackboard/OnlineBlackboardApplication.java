@@ -18,7 +18,7 @@ public class OnlineBlackboardApplication {
     private static final File file = new File("./file");
 
     public static void main(String[] args) {
-        if(file.exists() && !file.isDirectory()){
+        if(!file.exists() || !file.isDirectory()){
             file.mkdir();
         }
         SpringApplication.run(OnlineBlackboardApplication.class, args);

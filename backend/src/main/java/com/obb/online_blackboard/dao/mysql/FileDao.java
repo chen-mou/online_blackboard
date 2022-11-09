@@ -1,9 +1,8 @@
 package com.obb.online_blackboard.dao.mysql;
 
 import com.obb.online_blackboard.entity.FileEntity;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
+import com.obb.online_blackboard.entity.FileRoleEntity;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -19,10 +18,21 @@ public interface FileDao {
     @Select("select * from file where md5 = #{md5}")
     FileEntity getByMd5(String md5);
 
-    @Insert("insert into file value(#{id}, #{filename}, #{path}, #{uri}, #{uploader}, #{md5}, #{machine})")
+    @Insert("insert into file value(#{id}, #{filename}, #{path}, #{uri}, #{md5}, #{machine})")
     void insert(FileEntity file);
 
-    @Select("select filename, path, uri, uploader where uploader = #{userId} and type = #{type}")
+    @Insert("insert into file_role(user_id, file_id, type) value(#{userId}, #{fileId}, #{type})")
+    void insertRole(FileRoleEntity fileRoleEntity);
+
+    @Select("select file_id where uploader = #{userId} and type = #{type}")
+    @Results({
+            @Result(column = "file_id", property = "fileId"),
+            @Result(column = "file_id", property = "file",
+                    one = @One(select = "com.obb.online_blackboard.dao.mysql.FileDao.getByFileId"))
+    })
     List<FileEntity> getByUploader(long userId, String type);
+
+    @Select("select * from file where id = #{fileId}")
+    FileEntity getByFileId(long fileId);
 
 }

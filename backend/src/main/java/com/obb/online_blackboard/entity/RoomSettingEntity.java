@@ -32,6 +32,7 @@ public class RoomSettingEntity extends Date {
     @Min(value = 0)
     private Integer isShare;
 
+    // 1：可以匿名 0：不可以匿名
     @Max(value = 1)
     @Min(value = 0)
     private Integer allowAnonymous;

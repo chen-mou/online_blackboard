@@ -2,7 +2,11 @@ package com.obb.online_blackboard.model;
 
 import com.obb.online_blackboard.dao.mysql.FileDao;
 import com.obb.online_blackboard.entity.FileEntity;
+import com.obb.online_blackboard.entity.FileRoleEntity;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+import tool.util.id.Id;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -19,9 +23,35 @@ public class FileModel {
     @Resource
     FileDao fileDao;
 
+    @Resource
+    Id id;
 
-    public void insert(FileEntity file){
-        fileDao.insert(file);
+    @Value("${server.uri_pre}")
+    String pre;
+
+    private final String machine = System.getenv().get("COMPUTERNAME");
+
+    @Transactional
+    public FileEntity insert(long userId, String md5, String filename, String filePath, String type) {
+        FileEntity fileEntity = new FileEntity();
+        fileEntity.setMd5(md5);
+        fileEntity.setId(id.getId("file"));
+        fileEntity.setUri(pre + "/file/get/" + md5);
+        fileEntity.setMachine(machine);
+        fileEntity.setFilename(filename);
+        fileEntity.setPath(filePath);
+        fileDao.insert(fileEntity);
+        insertRole(userId, fileEntity.getId(), type);
+        return fileEntity;
+    }
+
+    public FileRoleEntity insertRole(long userId, long fileId, String type){
+        FileRoleEntity fileRoleEntity = new FileRoleEntity();
+        fileRoleEntity.setUserId(userId);
+        fileRoleEntity.setType(type);
+        fileRoleEntity.setFileId(fileId);
+        fileDao.insertRole(fileRoleEntity);
+        return fileRoleEntity;
     }
 
     public List<FileEntity> getByUserId(long userId, String type){

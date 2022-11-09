@@ -33,11 +33,14 @@ mybatis:
 
 spring:
   profile: dev
-  uri_pre: http://47.112.184.57/
+
+server:
+  uri_pre: http://47.112.184.57
 
 ---
 
+
 spring:
   profile: local
-  uri_pre: http://localhost:18888/
-
+server:
+  uri_pre: http://localhost:18888

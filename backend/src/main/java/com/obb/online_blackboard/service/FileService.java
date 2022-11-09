@@ -1,11 +1,14 @@
 package com.obb.online_blackboard.service;
 
+import com.obb.online_blackboard.config.ThreadPool;
 import com.obb.online_blackboard.entity.FileEntity;
 import com.obb.online_blackboard.exception.OperationException;
 import com.obb.online_blackboard.model.FileModel;
+import org.jboss.marshalling.ByteWriter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.xerial.snappy.Snappy;
 import tool.encrypt.MD5;
 import tool.util.id.Id;
 
@@ -17,6 +20,7 @@ import java.nio.channels.FileChannel;
 import java.nio.file.Path;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * @author 陈桢梁
@@ -34,32 +38,39 @@ public class FileService {
     @Resource
     FileModel fileModel;
 
-    @Value("server.uri_pre")
-    String pre;
+    @Resource
+    ThreadPoolExecutor pool;
 
     private final String path = "./file/";
 
-    private final String machine = System.getenv().get("COMPUTERNAME");
-
     public FileEntity upload(MultipartFile file, long userId, String type) {
-        String name = file.getName();
-        String md5 = MD5.salt(userId + name + new Date().getTime() + machine);
-        String filePath = path + md5;
-        try {
-            file.transferTo(new File(filePath));
+        String name = file.getOriginalFilename();
+        byte[] b;
+        byte[] zip;
+        try{
+            b = file.getBytes();
+            zip = Snappy.compress(b);
         }catch (IOException e){
             throw new OperationException(500, "上传有误");
         }
-        FileEntity fileEntity = new FileEntity();
-        fileEntity.setUploader(userId);
-        fileEntity.setMd5(md5);
-        fileEntity.setId(id.getId("file"));
-        fileEntity.setUri(pre + "/file/get/" + md5);
-        fileEntity.setMachine(machine);
-        fileEntity.setFilename(name);
-        fileEntity.setPath(filePath);
-        fileEntity.setType(type);
-        fileModel.insert(fileEntity);
+        String md5 = MD5.salt(new String(zip));
+        String filePath = path + md5;
+
+        FileEntity fileEntity = fileModel.getByMd5(md5);
+        if(fileEntity == null){
+            fileModel.insert(userId, md5, name, filePath, type);
+            pool.execute(() -> {
+                try {
+                    BufferedOutputStream w = new BufferedOutputStream(new FileOutputStream(filePath));
+                    w.write(zip);
+                    w.close();
+                }catch (IOException e){
+
+                }
+            });
+        }else{
+            fileModel.insertRole(userId, fileEntity.getId(), type);
+        }
         return fileEntity;
     }
 
@@ -70,7 +81,9 @@ public class FileService {
         res.setContentType("image/" + suffix);
         InputStream is = new FileInputStream(file.getPath());
         OutputStream ops = res.getOutputStream();
-        ops.write(is.readAllBytes());
+        byte[] b = is.readAllBytes();
+        byte[] unzip = Snappy.uncompress(b);
+        ops.write(unzip);
     }
 
     public List<FileEntity> getUploadFile(long userId, String type){

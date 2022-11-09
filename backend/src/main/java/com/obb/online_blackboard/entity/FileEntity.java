@@ -13,8 +13,6 @@ public class FileEntity {
 
     private long id;
 
-    private long uploader;
-
     private String filename;
 
     private String machine;
@@ -24,7 +22,5 @@ public class FileEntity {
     private String uri;
 
     private String md5;
-
-    private String type;
 
 }

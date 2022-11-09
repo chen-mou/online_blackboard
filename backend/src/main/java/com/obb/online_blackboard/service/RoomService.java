@@ -78,6 +78,9 @@ public class RoomService {
         if(setting.getAllowAnonymous() == 0 && isAnonymous == 1){
             throw new OperationException(403, "目标房间不能匿名");
         }
+        if(isAnonymous == 1 && r.getCreatorId() == userId){
+            throw new OperationException(500, "创建者不能匿名");
+        }
         UserDataEntity user = userModel.getUserById(userId);
         user.setIsAnonymous(isAnonymous);
         user.setStatus("online");

@@ -27,25 +27,29 @@ import java.util.Set;
 @RequestMapping("/file")
 public class FileController {
 
-    Set<String> allowSuffix = new HashSet<>(){
+    private final Set<String> allowSuffix = new HashSet<>(){
         {
             addAll(List.of(new String[]{"jpg", "png", "bmp", "jpeg"}));
         }
     };
 
+    private final Set<String> types = new HashSet<>(List.of(new String[]{"avatar", "photo"}));
 
     @Resource
     FileService fileService;
 
     @PostMapping("/upload")
-    public Result upload(MultipartFile file, @UserInfo UserEntity userData, String type){
+    public Result upload(@RequestParam(name = "file") MultipartFile file, @UserInfo UserEntity userData, @RequestParam(name = "type") String type){
         if(file.getSize() > 5 * 1024 * 1024){
             throw new OperationException(500, "文件过大");
         }
         String filename = file.getOriginalFilename();
         String typ = file.getContentType();
-        if(!allowSuffix.contains(filename.split("\\.")[1]) || !typ.split("/").equals("image")){
+        if(!allowSuffix.contains(filename.split("\\.")[1]) || !typ.split("/")[0].equals("image")){
             throw new OperationException(500, "文件类型有误");
+        }
+        if(!types.contains(type)){
+            throw new OperationException(500, "类型有误");
         }
         fileService.upload(file, userData.getId(), type);
         return Result.success("上传成功", null);
