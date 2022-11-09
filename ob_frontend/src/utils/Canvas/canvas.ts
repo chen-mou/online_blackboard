@@ -36,7 +36,7 @@ class Canvas {
     this.canvas =
       (document.getElementById(canvas) as HTMLCanvasElement) ||
       (canvas as HTMLCanvasElement)
-    console.log(options)
+    // console.log(options)
     this.target = document.getElementById(target) as HTMLElement
     this.after = after
     this.data = data
