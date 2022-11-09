@@ -1,45 +1,53 @@
-import { defineStore } from "pinia";
-import Canvas from "@/utils/Canvas/canvas";
-import { distance, getElPagePos } from "@/utils/Canvas/math";
-import { deepCopy } from "@/utils";
-import { useWs } from "@/utils/ws";
-import { IFrame } from "@stomp/stompjs";
-import { ElMessage } from "element-plus";
-import { ShapeDataType } from "@/utils/Canvas/type/CanvasType";
-
+import { defineStore } from 'pinia'
+import Canvas from '@/utils/Canvas/canvas'
+import { distance, getElPagePos } from '@/utils/Canvas/math'
+import { deepCopy } from '@/utils'
+import { useWs } from '@/utils/ws'
+import { IFrame } from '@stomp/stompjs'
+import { ElMessage } from 'element-plus'
+import { ShapeDataType } from '@/utils/Canvas/type/CanvasType'
+import { FreeLine } from '@/utils/Canvas/shape'
 
 export const useCanvasStore = defineStore('canvas', {
   state: () => ({
     canvas: {} as Canvas,
-    ws: {} as { send: (channel: string, data: unknown) => void, close: () => void },
+    ws: {} as {
+      send: (channel: string, data: unknown) => void
+      close: () => void
+    },
     _cacheData: [] as Array<ShapeDataType>
   }),
   actions: {
-    connect(roomId: string, isAnonymous: number) {
-      this.ws = useWs(roomId, isAnonymous, [{
-        channel: `/exchange/room/${roomId}`,
-        callback: this._wsRoomReceive
-      }, {
-        channel: '/user/queue/info',
-        callback: this._wsUserReceive
-      }, {
-        channel: '/user/queue/error',
-        callback: this._wsErrReceive
-      }])
+    connect (roomId: string, isAnonymous: number) {
+      this.ws = useWs(roomId, isAnonymous, [
+        {
+          channel: `/exchange/room/${roomId}`,
+          callback: this._wsRoomReceive
+        },
+        {
+          channel: '/user/queue/info',
+          callback: this._wsUserReceive
+        },
+        {
+          channel: '/user/queue/error',
+          callback: this._wsErrReceive
+        }
+      ])
       this.ws.send('/app/room_info', { roomId })
     },
-    _wsRoomReceive(frame: IFrame) {
+    _wsRoomReceive (frame: IFrame) {
       console.log(frame)
     },
-    _wsUserReceive(frame: IFrame) {
+    _wsUserReceive (frame: IFrame) {
       console.log(frame)
     },
-    _wsErrReceive(frame: IFrame) {
+    _wsErrReceive (frame: IFrame) {
       ElMessage.error({
         message: frame.body
       })
     },
-    initCanvas() {
+    initCanvas () {
+      // let PointData = []
       let beforePosition = [0, 0]
       let AfterPosition = [0, 0]
       let IsDrawing = false
@@ -54,7 +62,9 @@ export const useCanvasStore = defineStore('canvas', {
         this.canvas = canvas
       }
 
-      const { x, y } = getElPagePos(document.getElementById('canvas') as HTMLElement)
+      const { x, y } = getElPagePos(
+        document.getElementById('canvas') as HTMLElement
+      )
 
       canvas.canvas.addEventListener('mousedown', e => {
         /**
@@ -83,6 +93,15 @@ export const useCanvasStore = defineStore('canvas', {
           }
         }
         if (IsDrawing) {
+          if (canvas.DrawClass.type == 'freeLine') {
+            /**
+             * 传入点并lineto
+             */
+             (canvas.DrawClass as FreeLine).data.push({
+              x:AfterPosition[0],
+              y:AfterPosition[1]
+             })
+          }
           /**
            * 清空之后全部重新绘制
            */
@@ -112,17 +131,17 @@ export const useCanvasStore = defineStore('canvas', {
       /**
        * 监听双击事件可选中和可拖动
        */
-      canvas.canvas.addEventListener("dblclick", (e) => {
+      canvas.canvas.addEventListener('dblclick', e => {
         /**
          * 判断点是否在data的图形里面在的话拿出那一个图形并绘制
          */
         canvas.drawControlBorder(e.pageX - x, e.pageY - y)
       })
     },
-    cacheCanvasData() {
+    cacheCanvasData () {
       console.log('cache')
       this._cacheData = this.canvas.data
     }
   },
-  getters: {},
+  getters: {}
 })

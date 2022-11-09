@@ -22,3 +22,12 @@ export type Pen={
     fillStyle:string
     lineStyle?:number
 }
+
+/**
+ * Point
+ */
+
+export type Point = {
+    x:number
+    y:number
+}

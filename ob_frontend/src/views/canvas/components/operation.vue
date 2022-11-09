@@ -1,46 +1,54 @@
 <template>
-  <div style="display: grid;   grid-template-columns: repeat(2, 50px);">
-    <div>
-      <el-icon @click="cleanCanvas">
-        <DeleteFilled/>
-      </el-icon>
-      <span>
+    <div style="display: grid;   grid-template-columns: repeat(3, 50px);">
+        <div>
+            <el-icon @click="cleanCanvas">
+                <DeleteFilled />
+            </el-icon>
+            <span>
                 清空
             </span>
-    </div>
-    <div>
-      <el-icon @click="turnBack">
-        <Refresh/>
-      </el-icon>
-      <span>
+        </div>
+        <div>
+            <el-icon @click="turnBack">
+                <Refresh />
+            </el-icon>
+            <span>
                 回退
             </span>
-    </div>
-    <div>
-      <el-icon @click="exportAsPng">
-        <Picture/>
-      </el-icon>
-      <span>
+        </div>
+        <div>
+            <el-icon @click="exportAsPng">
+                <Picture />
+            </el-icon>
+            <span>
                 导出
             </span>
-    </div>
+        </div>
 
-    <div>
-      <div>
-        <el-icon class="upload">
-          <FolderOpened/>
-        </el-icon>
-        <input type="file" @change="importPng" accept="image/*">
-      </div>
-      <span>
+        <div>
+            <div>
+                <el-icon class="upload">
+                    <FolderOpened />
+                </el-icon>
+                <input type="file" @change="importPng" accept="image/*">
+            </div>
+            <span>
                 导入
             </span>
+        </div>
+        <div>
+            <svg t="1667916145025" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
+                p-id="3130" xmlns:xlink="http://www.w3.org/1999/xlink" width="40" height="35">
+                <path
+                    d="M898.56 432.64c10.24-10.24 10.24-25.6 0-35.84l-238.08-230.4c-10.24-10.24-25.6-10.24-35.84 0L125.44 680.96c-10.24 10.24-10.24 25.6 0 35.84l99.84 97.28 53.76 51.2h576c15.36 0 25.6-10.24 25.6-25.6s-10.24-25.6-25.6-25.6H529.92l368.64-381.44zM179.2 698.88l248.32-258.56 202.24 194.56-171.52 179.2h-161.28L179.2 698.88z"
+                    fill="#515151" p-id="3131"></path>
+            </svg>
+            <span>橡皮</span>
+        </div>
     </div>
-  </div>
 </template>
 
 <script lang="ts" setup>
-import ShapeMap from "@/utils/Canvas/ShapeMap";
 import Canvas from "@/utils/Canvas/canvas";
 import { inject, nextTick, onMounted, reactive, ref } from "vue"
 import { bytesToInt32, int32ToBytes } from "@/utils/convert";
@@ -73,7 +81,7 @@ const exportAsPng = () => {
   let data = JSON.stringify(canvas.value?.data)
   // 把数据长度（32位int）转成二进制（byte*4）
   let dataLen = int32ToBytes(data.length)
-  // console.log('原数据', dataLen, '转换后', bytesToInt32(int32ToBytes(dataLen)))
+//   console.log('原数据', dataLen, '转换后', bytesToInt32(int32ToBytes(dataLen)))
 
   // 把数据和图片的二进制流合并，转回 base64
   el.href = 'data:image/png;base64,' + btoa(bytes + data + dataLen)
@@ -105,6 +113,7 @@ const importPng = (e: any) => {
       // 转成对象
       let data = JSON.parse(bytes)
       canvas.value?.data.push(...data)
+      console.log(data)
       canvas.value?.drawData()
       console.log('ok')
     } catch (e) {
@@ -134,17 +143,17 @@ export default defineComponent({
 
 <style lang="less" scoped>
 .upload {
-  position: absolute;
-  width: 30px;
+    position: absolute;
+    width: 30px;
 }
 
 .el-icon {
-  font-size: 30px;
+    font-size: 30px;
 }
 
 input {
-  opacity: 0;
-  width: 40px;
-  height: 35px;
+    opacity: 0;
+    width: 40px;
+    height: 38px;
 }
 </style>

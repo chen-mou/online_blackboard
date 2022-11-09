@@ -1,5 +1,6 @@
 import Canvas from "./canvas"
 import {getRadiusByTwoPoints,getCenterByTwoPoints} from "./math"
+import { Point } from "./type/CanvasType"
 /**
  * ShapeClass
  */
@@ -96,10 +97,11 @@ class ShapeImg extends BaseShape{
                 const blob = new Blob([buffer],{type:'image/jpg'})
                 const imgObj = new Image()
                 imgObj.src = URL.createObjectURL(blob)
-                imgObj.onload=()=>{
+                imgObj.onload=async ()=>{
                     const w=imgObj.width,
                     h=imgObj.height;
-                    canvas.context.drawImage(imgObj,100,100,(w+100)/3,(h+100)/3);
+                 canvas.context.drawImage(imgObj,100,100,(w+100)/3,(h+100)/3);
+                 debugger
                 }
             },false)    
             reader.readAsArrayBuffer(file)
@@ -109,18 +111,27 @@ class ShapeImg extends BaseShape{
     }
 }
 
+
 class FreeLine extends BaseShape{
-    data: never[]
+    
+    data: Array<Point>
     constructor(BeforePosition:Array<number>=[0,0],AfterPosition:Array<number>=[0,0]){
         super(BeforePosition,AfterPosition)
-        this.type="img"
+        this.type="freeLine"
         this.data=[]
+        this.icon="/canvsShapeImg/rect.png"
     }
-    draw(){
+    draw(canvas:Canvas){
         /**
          * 获取到的数据为move节流获取到的data
          */
-        console.log()
+        for(let i=0;i<this.data.length;i++)
+        {   
+            console.log(this.data)
+            canvas.context.beginPath()
+            canvas.context.moveTo(this.data[i].x,this.data[i].y);
+            canvas.context.stroke();
+        }
     }
 }
 export {
