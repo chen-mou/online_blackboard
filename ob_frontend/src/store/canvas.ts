@@ -97,7 +97,7 @@ export const useCanvasStore = defineStore('canvas', {
             /**
              * 传入点并lineto
              */
-             (canvas.DrawClass as FreeLine).data.push({
+                 (canvas.DrawClass as FreeLine).data.push({
               x:AfterPosition[0],
               y:AfterPosition[1]
              })

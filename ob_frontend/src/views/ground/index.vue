@@ -131,7 +131,7 @@ export default defineComponent({
   <div class="my-room">
     <p>我的房间</p>
     <div>
-      <RoomEntry v-for="room in userStore.myRooms" :key="room.id" :room="room"/>
+      <RoomEntry v-for="room in userStore.myRooms as Array<any>" :key="room.id" :room="room"/>
     </div>
   </div>
 </template>

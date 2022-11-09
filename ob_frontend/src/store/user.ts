@@ -3,7 +3,7 @@ import request from "@/utils/request";
 
 export const useUserStore = defineStore('user', {
     state: () => ({
-      hasLogin: false,
+      hasLogin: true  ,
       userId: 0,
       nickname: '鲲鲲',
       myRooms: [],
