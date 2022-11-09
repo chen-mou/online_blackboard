@@ -33,8 +33,9 @@ canvasStore.connect(roomStore.roomId, roomStore.userAnonymous)
 <template>
   <div class="main">
     <nav-bar></nav-bar>
-    <canvas id="canvas" ref="canvasRef" width="1600" height="800"></canvas>
     <canvas id="canvas2" ref="canvas2Ref" width="1600" height="800"></canvas>
+    <canvas id="canvas" ref="canvasRef" width="1600" height="800"></canvas>
+
   </div>
 </template>
 

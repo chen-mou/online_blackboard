@@ -6,7 +6,7 @@ import { useWs } from '@/utils/ws'
 import { IFrame } from '@stomp/stompjs'
 import { ElMessage } from 'element-plus'
 import { ShapeDataType } from '@/utils/Canvas/type/CanvasType'
-import { FreeLine } from '@/utils/Canvas/shape'
+import ShapeMap from '@/utils/Canvas/ShapeMap'
 
 export const useCanvasStore = defineStore('canvas', {
   state: () => ({
@@ -51,9 +51,10 @@ export const useCanvasStore = defineStore('canvas', {
       let canvas = {} as Canvas
       if (this.canvas.canvas) {
         canvas = this.canvas.reload()
-        this.canvas.drawData()
+        this.canvas.layers.drawData()
       } else {
         canvas = new Canvas({ canvas: 'canvas' })
+        canvas.layers=new Canvas({ canvas: 'canvas2' })
         this.canvas = canvas
       }
 
@@ -83,24 +84,14 @@ export const useCanvasStore = defineStore('canvas', {
           // 如果距离小于一定值且显示实时线条，则擦除线条
           if (showLine) {
             showLine = false
-            // console.log('nonono')
-            canvas.drawData()
           }
         }
         if (IsDrawing) {
-          if (canvas.DrawClass.type == 'freeLine') {
-            /**
-             * 传入点并lineto
-             */
-            (canvas.DrawClass as FreeLine).data.push({
-              x: AfterPosition[0],
-              y: AfterPosition[1]
-            })
-          }
           /**
            * 清空之后全部重新绘制
            */
-          canvas.drawData()
+          // canvas.drawData()
+          canvas.context.clearRect(0,0,1600,1600)
           canvas.DrawClass.BeforePosition = beforePosition
           canvas.DrawClass.AfterPosition = AfterPosition
           canvas.DrawClass.draw(canvas)
@@ -115,13 +106,20 @@ export const useCanvasStore = defineStore('canvas', {
         if (!IsDrawing) {
           return
         }
-        canvas.data.push({
+        canvas.layers.data.push({
           type: canvas.DrawClass.type,
           BeforePosition: beforePosition,
           AfterPosition: AfterPosition,
           pen: deepCopy(canvas.pen)
         })
         IsDrawing = false
+        /**
+         * 鼠标画完之后画入第二层
+         * 画入后清空上一层画布
+         */
+        ShapeMap.get(canvas.DrawClass.type)?.draw(canvas.layers)
+        canvas.context.clearRect(0,0,1600,1600)
+        console.log(canvas)
       })
       /**
        * 监听双击事件可选中和可拖动

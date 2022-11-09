@@ -24,7 +24,7 @@ class Canvas {
   DrawClass: ShapeClassTypeT // 默认类型为矩形// 默认类型为矩形
   after: any
   pen: Pen | null
-  layers: any
+  layers!: Canvas
   context: CanvasRenderingContext2D
   data: Array<ShapeDataType>
   constructor (options: Object) {
@@ -40,8 +40,7 @@ class Canvas {
     this.target = document.getElementById(target) as HTMLElement
     this.after = after
     this.data = data
-    this.DrawClass = ShapeMap.get('line') as ShapeClassTypeT
-    this.layers = [] // 画布的层
+    this.DrawClass = ShapeMap.get('line') as ShapeClassTypeT // 画布的层
     this.pen = {
       icon: '',
       linewidth: 1,
@@ -55,7 +54,7 @@ class Canvas {
     this.context.strokeStyle = this.pen.strokeStyle
     this.context.fillStyle = this.pen.fillStyle
   }
-  reload():Canvas{
+  reload (): Canvas {
     const { canvas, target, after, data = [], list = null } = this.options
     this.canvas =
       (document.getElementById(canvas) as HTMLCanvasElement) ||
@@ -79,26 +78,43 @@ class Canvas {
 
   // }
   drawData () {
+    let t = false
     const pen = deepCopy(this.pen)
-    this.canvas.height=this.canvas.height+0
+    this.canvas.height = this.canvas.height + 0
     for (let i = 0; i < this.data.length; i++) {
       if (this.data[i].type == 'img') {
-          console.log(this.data[i])
-          ShapeMap.get(this.data[i].type)?.draw(this, this.data[i].file)  
+        console.log(this.data[i])
+        ShapeMap.get(this.data[i].type)?.draw(this, this.data[i].file)
+        t = true
       } else {
-        const { strokeStyle, fillStyle } = this.data[i].pen as Pen
-        this.context.strokeStyle = strokeStyle
-        this.context.fillStyle = fillStyle
-        ShapeMap.get(this.data[i].type)!.BeforePosition = this.data[
-          i
-        ].BeforePosition
-        ShapeMap.get(this.data[i].type)!.AfterPosition = this.data[
-          i
-        ].AfterPosition
-        ShapeMap.get(this.data[i].type)?.draw(this)
+        {
+          setTimeout(() => {
+            const { strokeStyle, fillStyle } = this.data[i].pen as Pen
+            this.context.strokeStyle = strokeStyle
+            this.context.fillStyle = fillStyle
+            ShapeMap.get(this.data[i].type)!.BeforePosition = this.data[
+              i
+            ].BeforePosition
+            ShapeMap.get(this.data[i].type)!.AfterPosition = this.data[
+              i
+            ].AfterPosition
+            ShapeMap.get(this.data[i].type)?.draw(this)
+            t = false
+          })
+          const { strokeStyle, fillStyle } = this.data[i].pen as Pen
+          this.context.strokeStyle = strokeStyle
+          this.context.fillStyle = fillStyle
+          ShapeMap.get(this.data[i].type)!.BeforePosition = this.data[
+            i
+          ].BeforePosition
+          ShapeMap.get(this.data[i].type)!.AfterPosition = this.data[
+            i
+          ].AfterPosition
+          ShapeMap.get(this.data[i].type)?.draw(this)
+        }
       }
     }
-    this.context.strokeStyle=pen?.strokeStyle as any
+    this.context.strokeStyle = pen?.strokeStyle as any
   }
 
   drawControlBorder (positionX: number, positionY: number) {
