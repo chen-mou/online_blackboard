@@ -16,7 +16,7 @@ export default defineComponent({
 })
 </script>
 <script lang="ts" setup>
-import { ref,reactive, onMounted, inject } from 'vue';
+import { ref, onMounted, inject } from 'vue';
 import ShapeMap from '@/utils/Canvas/ShapeMap';
 
 let canvas =ref()
