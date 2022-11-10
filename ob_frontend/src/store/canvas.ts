@@ -15,37 +15,33 @@ export const useCanvasStore = defineStore('canvas', {
       send: (channel: string, data: unknown) => void
       close: () => void
     },
-    _cacheData: [] as Array<ShapeDataType>
+    _otherUsers: [] as any[]
   }),
   actions: {
-    connect (roomId: string, isAnonymous: number) {
-      this.ws = useWs(roomId, isAnonymous, [
-        {
-          channel: `/exchange/room/${roomId}`,
-          callback: this._wsRoomReceive
-        },
-        {
-          channel: '/user/queue/info',
-          callback: this._wsUserReceive
-        },
-        {
-          channel: '/user/queue/error',
-          callback: this._wsErrReceive
-        }
-      ])
+    connect(roomId: string, isAnonymous: number, onDisconnect: (frame: IFrame) => void) {
+      this.ws = useWs(roomId, isAnonymous, [{
+        channel: `/exchange/room/${roomId}`,
+        callback: this._wsRoomReceive
+      }, {
+        channel: '/user/queue/info',
+        callback: this._wsUserReceive
+      }, {
+        channel: '/user/queue/error',
+        callback: this._wsErrReceive
+      }], onDisconnect)
     },
-    _wsRoomReceive (frame: IFrame) {
-      console.log(frame)
+    _wsRoomReceive(frame: IFrame) {
+      console.log('room', frame.body)
     },
-    _wsUserReceive (frame: IFrame) {
-      console.log(frame)
+    _wsUserReceive(frame: IFrame) {
+      console.log('user', frame.body)
     },
-    _wsErrReceive (frame: IFrame) {
+    _wsErrReceive(frame: IFrame) {
       ElMessage.error({
         message: frame.body
       })
     },
-    initCanvas () {
+    initCanvas() {
       // let PointData = []
       let beforePosition = [0, 0]
       let AfterPosition = [0, 0]
@@ -55,6 +51,7 @@ export const useCanvasStore = defineStore('canvas', {
       let canvas = {} as Canvas
       if (this.canvas.canvas) {
         canvas = this.canvas.reload()
+        canvas.layers = canvas.layers.reload()
         this.canvas.layers.drawData()
       } else {
         canvas = new Canvas({ canvas: 'canvas' })
@@ -95,15 +92,9 @@ export const useCanvasStore = defineStore('canvas', {
            * 清空之后全部重新绘制
            */
           // canvas.drawData()
-          if (canvas.DrawClass.type !== 'freeLine') {
-            canvas.context.clearRect(0, 0, 1600, 1600)
-            canvas.DrawClass.BeforePosition = beforePosition
-            canvas.DrawClass.AfterPosition = AfterPosition
-          } else {
-            canvas.DrawClass.BeforePosition = canvas.DrawClass.AfterPosition
-            canvas.DrawClass.AfterPosition = AfterPosition
-          }
-
+          canvas.context.clearRect(0, 0, 1600, 1600)
+          canvas.DrawClass.BeforePosition = beforePosition
+          canvas.DrawClass.AfterPosition = AfterPosition
           canvas.DrawClass.draw(canvas)
         }
       })
@@ -116,28 +107,18 @@ export const useCanvasStore = defineStore('canvas', {
         if (!IsDrawing) {
           return
         }
-        if (canvas.DrawClass.type !== 'freeLine') {
-            canvas.layers.data.push({
-            type: canvas.DrawClass.type,
-            BeforePosition: beforePosition,
-            AfterPosition: AfterPosition,
-            pen: deepCopy(canvas.pen)
-          })
-        }else{
-          canvas.layers.data.push({
-            type: canvas.DrawClass.type,
-            BeforePosition: beforePosition,
-            AfterPosition: AfterPosition,
-            file:canvas.context.getImageData(0, 0, 1600, 1600),
-            pen: deepCopy(canvas.pen)
-          })
-        }
+        canvas.layers.data.push({
+          type: canvas.DrawClass.type,
+          BeforePosition: beforePosition,
+          AfterPosition: AfterPosition,
+          pen: deepCopy(canvas.pen)
+        })
         IsDrawing = false
         /**
          * 鼠标画完之后画入第二层
          * 画入后清空上一层画布
          */
-        ShapeMap.get(canvas.DrawClass.type)?.draw(canvas.layers,canvas.context.getImageData(0, 0, 1600, 1600))
+        ShapeMap.get(canvas.DrawClass.type)?.draw(canvas.layers)
         canvas.context.clearRect(0, 0, 1600, 1600)
         console.log(canvas)
       })
@@ -153,10 +134,6 @@ export const useCanvasStore = defineStore('canvas', {
         canvas.data = []
       })
     },
-    cacheCanvasData () {
-      // console.log('cache')
-      this._cacheData = this.canvas.data
-    }
   },
   getters: {}
 })

@@ -3,7 +3,7 @@ import request from "@/utils/request";
 
 export const useRoomStore = defineStore('room', {
   state: () => ({
-    roomId: '123',
+    roomId: '',
     name: '',
     isShare: 0,
     creatorId: 0,
@@ -14,7 +14,7 @@ export const useRoomStore = defineStore('room', {
   }),
   actions: {
     joinRoom(roomId: string, userAnonymous: number) {
-      console.log(roomId,userAnonymous)
+      // console.log(roomId,userAnonymous)
       this.roomId = roomId
       this.userAnonymous = userAnonymous
     },

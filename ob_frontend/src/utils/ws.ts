@@ -1,12 +1,19 @@
 import { IFrame, Stomp } from "@stomp/stompjs";
 import Socket from 'sockjs-client'
 
-export function useWs(roomId: string, isAnonymous: number, channels: Array<{ channel: string, callback: (data: IFrame) => void }>) {
-  const client = Stomp.over(new Socket('http://47.112.184.57:18888/connect'))
+export function useWs(
+  roomId: string,
+  isAnonymous: number,
+  channels: Array<{ channel: string, callback: (data: IFrame) => void }>,
+  onDisconnect: (frame: IFrame) => void
+) {
+  const client = Stomp.over(() => new Socket('http://47.112.184.57:18888/connect'))
+  client.onStompError = onDisconnect
+
   const headers = {
     Authorization: localStorage.getItem('token'),
     'Room-Id': roomId,
-    isAnonymous,
+    'Is-Anonymous': isAnonymous,
   }
   client.connect(
     headers,

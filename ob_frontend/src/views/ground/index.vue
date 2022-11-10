@@ -52,7 +52,7 @@ export default defineComponent({
   },
   methods: {
     async joinRoom() {
-      console.log(this.whiteboardCode, this.hideName)
+      // console.log(this.whiteboardCode, this.hideName)
       this.roomStore.joinRoom(this.whiteboardCode, Number(this.hideName));
       await this.$router.replace('/canvas')
     },
@@ -125,6 +125,7 @@ export default defineComponent({
   </div>
   <div class="my-room">
     <p>我的房间</p>
+    <div style="margin-top: 20px" v-show="userStore.myRooms.length===0">还没有创建房间哦</div>
     <div>
       <RoomEntry
         v-for="room in userStore.myRooms.filter((r)=>dayjs().isBetween(r.setting.startTime, r.setting.endTime))"
