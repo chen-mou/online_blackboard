@@ -84,10 +84,10 @@ public class RoomService {
         user.setIsAnonymous(isAnonymous);
         user.setStatus("online");
         user.setNowRoom(roomId);
-        userModel.saveData(user);
         if(isAnonymous == 1){
             user.setNickname("匿名用户");
         }
+        userModel.saveData(user);
         if(!inRoom(r.getId(), userId)){
             template.convertAndSend("/exchange/room/" + roomId, Message.def("user_join", user));
         }
@@ -127,6 +127,12 @@ public class RoomService {
         }
         template.convertAndSendToUser(String.valueOf(userId), "/queue/info", Message.def("room_info", r));
         return r;
+    }
+
+    public List<UserDataEntity> getRoomUser(long userId){
+        UserDataEntity userData = userModel.getUserById(userId);
+        List<UserDataEntity> roomUser = userModel.getUserDataByRoomId(userData.getNowRoom());
+        return roomUser;
     }
 
     public List<RoomEntity> getUserRoom(long userId){

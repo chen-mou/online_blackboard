@@ -6,11 +6,13 @@ import com.obb.online_blackboard.entity.UserEntity;
 import com.obb.online_blackboard.exception.OperationException;
 import com.obb.online_blackboard.service.RoomService;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import tool.annotation.JsonKey;
 import tool.annotation.UserInfo;
+import tool.result.Message;
 import tool.result.Result;
 import tool.util.ParamError;
 
@@ -80,6 +82,13 @@ public class RoomController {
     public void quit(Principal p, @JsonKey long roomId){
         long userId = Long.parseLong(p.getName());
         roomService.quit(userId, roomId);
+    }
+
+    @MessageMapping("/users")
+    @SendToUser("/queue/info")
+    public Message users(Principal p){
+        long userId = Long.parseLong(p.getName());
+        return Message.def("users", roomService.getRoomUser(userId));
     }
 
 }
