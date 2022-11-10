@@ -66,7 +66,7 @@ canvasStore.connect(roomStore.roomId, roomStore.userAnonymous, (frame) => {
 
 #canvas2 {
   position: absolute;
-  top: 15vh;
+  top: 70px;
   left: 0px;
 }
 </style>
