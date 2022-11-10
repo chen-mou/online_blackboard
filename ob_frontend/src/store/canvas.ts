@@ -7,7 +7,6 @@ import { IFrame } from '@stomp/stompjs'
 import { ElMessage } from 'element-plus'
 import { ShapeDataType } from '@/utils/Canvas/type/CanvasType'
 import ShapeMap from '@/utils/Canvas/ShapeMap'
-import { FreeLine } from '@/utils/Canvas/shape'
 
 export const useCanvasStore = defineStore('canvas', {
   state: () => ({

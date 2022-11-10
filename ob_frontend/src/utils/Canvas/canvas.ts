@@ -41,6 +41,7 @@ class Canvas {
     this.after = after
     this.data = data
     this.DrawClass = ShapeMap.get('line') as ShapeClassTypeT // 画布的层
+
     this.pen = {
       icon: '',
       linewidth: 1,
@@ -53,9 +54,10 @@ class Canvas {
     this.context = this.canvas.getContext('2d') as CanvasRenderingContext2D // 画布的上下文
     this.context.strokeStyle = this.pen.strokeStyle
     this.context.fillStyle = this.pen.fillStyle
+
   }
   reload (): Canvas {
-    const { canvas, target, after, data = [], list = null } = this.options
+    const { canvas, target, after, data = [], list = null } = this.options 
     this.canvas =
       (document.getElementById(canvas) as HTMLCanvasElement) ||
       (canvas as HTMLCanvasElement)
@@ -72,6 +74,7 @@ class Canvas {
     }
     this.context.strokeStyle = this.pen.strokeStyle
     this.context.fillStyle = this.pen.fillStyle
+    this.layers.context.globalCompositeOperation ="destination-over"
     return this
   }
   // init(){
