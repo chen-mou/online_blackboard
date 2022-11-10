@@ -28,16 +28,16 @@ public class Modify implements Operate {
 
     long to;
     @Override
-    public void rollback(Set<Long> shapes, long sheetId,String roomId, Save save) {
+    public void rollback(Set<Long> shapes, long sheetId,long roomId, Save save) {
         Modify(shapes, roomId, from, to, save, sheetId);
     }
 
     @Override
-    public void redo(Set<Long> shapes, long sheetId,String roomId, Save save) {
+    public void redo(Set<Long> shapes, long sheetId,long roomId, Save save) {
         Modify(shapes, roomId, to, from, save, sheetId);
     }
 
-    private void Modify(Set<Long> shapes, String roomId, long to, long from, Save save, long sheetId) {
+    private void Modify(Set<Long> shapes, long roomId, long to, long from, Save save, long sheetId) {
         shapes.remove(to);
         shapes.add(from);
         SimpMessagingTemplate s = Context.getContext().getBean(SimpMessagingTemplate.class);

@@ -58,14 +58,14 @@ public class RoomService {
         room.setCreatorId(userId);
         room.setCreatorName(user.getNickname());
         //创建并获取房间ID
-        String roomId = roomModel.createRoom(room);
+        long roomId = roomModel.createRoom(room);
 
         roomModel.createSetting(setting, userId, roomId);
         room.setSetting(setting);
         return room;
     }
 
-    public RoomEntity joinRoom(String roomId, long userId, int isAnonymous){
+    public RoomEntity joinRoom(long roomId, long userId, int isAnonymous){
         RoomEntity r = roomModel.getRoomById(roomId);
         if(r == null) {
             throw new OperationException(404, "目标房间不存在");
@@ -94,7 +94,7 @@ public class RoomService {
         return r;
     }
 
-    public void over(String roomId, long userId){
+    public void over(long roomId, long userId){
         RoomEntity room = roomModel.getRoomById(roomId);
         if(!room.getStatus().equals("meeting")){
             throw new OperationException(404, "会议未开始或已经结束");
@@ -114,7 +114,7 @@ public class RoomService {
 
     }
 
-    public RoomEntity roomInfo(long userId, String roomId){
+    public RoomEntity roomInfo(long userId, long roomId){
         RoomEntity r = roomModel.getRoomById(roomId);
         if(r == null) {
             throw new OperationException(404, "目标房间不存在");
@@ -151,7 +151,7 @@ public class RoomService {
         }
     }
 
-    public void quit(long userId, String roomId){
+    public void quit(long userId, long roomId){
         if(!inRoom(roomId, userId)){
             throw new OperationException(403, "你不在这个房间中");
         }
@@ -181,7 +181,7 @@ public class RoomService {
         redis.delete("session:" + sessionID);
     }
 
-    private boolean inRoom(String roomId, long userId){
+    private boolean inRoom(long roomId, long userId){
         UserDataEntity data = userModel.getUserById(userId);
         return data.getNowRoom().equals(roomId);
     }

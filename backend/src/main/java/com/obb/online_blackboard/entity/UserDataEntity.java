@@ -28,7 +28,7 @@ public class UserDataEntity extends Date {
 
     private String status;
 
-    private String nowRoom;
+    private Long nowRoom;
 
     private FileEntity entity;
 

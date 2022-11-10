@@ -26,7 +26,7 @@ public class Delete implements Operate {
 
     long shapeId;
     @Override
-    public void rollback(Set<Long> shapes, long sheetId,String roomId, Save save) {
+    public void rollback(Set<Long> shapes, long sheetId,long roomId, Save save) {
         shapes.add(shapeId);
         ApplicationContext app = Context.getContext();
         SimpMessagingTemplate s = app.getBean(SimpMessagingTemplate.class);
@@ -37,7 +37,7 @@ public class Delete implements Operate {
     }
 
     @Override
-    public void redo(Set<Long> shapes, long sheetId, String roomId, Save save) {
+    public void redo(Set<Long> shapes, long sheetId, long roomId, Save save) {
         shapes.remove(shapeId);
         SimpMessagingTemplate s = Context.getContext().getBean(SimpMessagingTemplate.class);
         save.save();

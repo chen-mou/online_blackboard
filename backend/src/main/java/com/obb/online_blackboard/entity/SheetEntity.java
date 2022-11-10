@@ -36,7 +36,7 @@ public class SheetEntity {
     private String name;
 
     @Indexed
-    private final String roomId;
+    private final long roomId;
 
     //操作栈,只最多保存三十个操作
 
@@ -47,7 +47,7 @@ public class SheetEntity {
     private List<Shape> shapeEntities;
 
 
-    public SheetEntity(long id, String roomId) {
+    public SheetEntity(long id, long roomId) {
         this.id = id;
         this.roomId = roomId;
         shapes = new HashSet<>();

@@ -18,7 +18,7 @@ import java.util.List;
 @Mapper
 public interface RoomDbDao {
 
-    @Insert("insert into room value(#{id}, #{creatorId}, #{creatorName}, #{name}, #{status}, #{loaded})")
+    @Insert("insert into room value(#{id}, #{creatorId}, #{creatorName}, #{status}, #{loaded})")
     int insert(RoomEntity room);
 
     @Select("select * from room where creator_id = #{creatorId}")
@@ -47,7 +47,6 @@ public interface RoomDbDao {
     @Update("<script>" +
             "update room set " +
             "<if test = 'loaded != null'>loaded = #{loaded},</if> " +
-            "<if test = 'name != null'>name = #{name},</if> " +
             "<if test = 'status != null'>status = #{status},</if> " +
             "creator_name = creator_name " +
             "where id = #{id}" +

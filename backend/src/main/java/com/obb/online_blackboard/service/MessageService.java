@@ -37,7 +37,7 @@ public class MessageService {
         UserDataEntity senderEntity = userModel.getDataById(sender);
         message.setSenderName(senderEntity.getNickname());
         message.setTime(new Date());
-        String roomId = senderEntity.getNowRoom();
+        long roomId = senderEntity.getNowRoom();
         if(message.getType().equals("emoji")){
             String msg = message.getMsg();
             Pattern p = Pattern.compile("\\[file_id=(.*?)]");

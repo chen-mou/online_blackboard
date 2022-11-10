@@ -17,7 +17,7 @@ import java.util.List;
 public interface RoomSettingDao {
 
     @Insert("insert into room_setting " +
-            "value(#{id}, #{roomId}, #{creatorId}, #{isShare}, #{allowAnonymous}, #{startTime}, #{endTime})")
+            "value(#{id}, #{roomId}, #{creatorId}, #{isShare}, #{allowAnonymous}, #{name}, #{startTime}, #{endTime})")
     int createSetting(RoomSettingEntity setting);
 
     @Select("select * from room_setting where room_id = #{roomId}")

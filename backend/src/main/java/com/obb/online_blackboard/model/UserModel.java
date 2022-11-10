@@ -85,7 +85,7 @@ public class UserModel {
         userDao.updateNickname(newName);
     }
 
-    public List<UserDataEntity> getUserDataByRoomId(String roomId){
+    public List<UserDataEntity> getUserDataByRoomId(long roomId){
         UserDataEntity userData = new UserDataEntity();
         userData.setNowRoom(roomId);
         ExampleMatcher matcher = ExampleMatcher.matching().withIgnoreNullValues();

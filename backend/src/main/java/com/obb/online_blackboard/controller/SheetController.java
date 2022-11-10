@@ -24,39 +24,39 @@ public class SheetController {
     SheetService sheetService;
 
     @MessageMapping("/create")
-    public void create(Principal principal, @JsonKey String name, @JsonKey String roomId){
+    public void create(Principal principal, @JsonKey String name, @JsonKey long roomId){
         sheetService.createSheet(roomId, name, Long.parseLong(principal.getName()));
     }
 
     @MessageMapping("/draw")
-    public void draw(Principal p, @JsonKey Shape shape, @JsonKey String roomId, @JsonKey long sheetId){
+    public void draw(Principal p, @JsonKey Shape shape, @JsonKey long roomId, @JsonKey long sheetId){
         sheetService.draw(Long.parseLong(p.getName()), shape, roomId, sheetId);
     }
 
     @MessageMapping("/redo")
-    public void redo(Principal p, @JsonKey String roomId, @JsonKey long sheetId){
+    public void redo(Principal p, @JsonKey long roomId, @JsonKey long sheetId){
         sheetService.redo(Long.parseLong(p.getName()), roomId, sheetId);
     }
 
     @MessageMapping("/rollback")
-    public void rollback(Principal p, @JsonKey String roomId, @JsonKey long sheetId){
+    public void rollback(Principal p, @JsonKey long roomId, @JsonKey long sheetId){
         sheetService.rollback(Long.parseLong(p.getName()), roomId, sheetId);
     }
 
     @MessageMapping("/modify")
-    public void modify(Principal p, @JsonKey Shape shape, @JsonKey String roomId, @JsonKey long sheetId) {
+    public void modify(Principal p, @JsonKey Shape shape, @JsonKey long roomId, @JsonKey long sheetId) {
         sheetService.modify(Long.parseLong(p.getName()), shape, roomId, sheetId);
     }
 
     @MessageMapping("/delete")
-    public void delete(Principal p, @JsonKey long shapeId, @JsonKey String roomId, @JsonKey long sheetId){
+    public void delete(Principal p, @JsonKey long shapeId, @JsonKey long roomId, @JsonKey long sheetId){
         sheetService.delete(Long.parseLong(p.getName()), roomId, sheetId, shapeId);
     }
 
 
     @MessageMapping("/change_sheet")
     @SendToUser("/queue/info")
-    public Message changeSheet(Principal p, @JsonKey long sheetId, @JsonKey String roomId){
+    public Message changeSheet(Principal p, @JsonKey long sheetId, @JsonKey long roomId){
         return Message.def("change_sheet",
                 sheetService.getSheetById(sheetId, roomId, Long.parseLong(p.getName())));
     }

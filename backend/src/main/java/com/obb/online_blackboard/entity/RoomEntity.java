@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 public class RoomEntity {
 
     @Id
-    private String id;
+    private long id;
 
     private long creatorId;
 

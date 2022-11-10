@@ -37,7 +37,7 @@ public class SheetModel {
     @Resource
     Id id;
 
-    public SheetEntity createSheet(String name, String roomId){
+    public SheetEntity createSheet(String name, long roomId){
         SheetEntity sheetEntity = new SheetEntity(id.getId("sheet"), roomId);
         sheetEntity.setName(name);
 //        sheetIdDao.updateId(sheetEntity.getId());
@@ -89,7 +89,7 @@ public class SheetModel {
         return res;
     }
 
-    public List<SheetEntity> getAllByRoomId(String roomId){
+    public List<SheetEntity> getAllByRoomId(long roomId){
         List<SheetEntity> sheetEntities = sheetDao.findAllByRoomId(roomId);
         sheetEntities.forEach(item -> item.setShapes(null));
         return sheetEntities;

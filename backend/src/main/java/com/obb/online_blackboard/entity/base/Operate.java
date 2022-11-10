@@ -17,9 +17,9 @@ import java.util.Set;
  */
 public interface Operate {
 
-    void rollback(Set<Long> shapes, long sheetId,String roomId, Save save);
+    void rollback(Set<Long> shapes, long sheetId,long roomId, Save save);
 
-    void redo(Set<Long> shapes, long sheetId, String roomId, Save save);
+    void redo(Set<Long> shapes, long sheetId, long roomId, Save save);
 
 
 

@@ -21,7 +21,7 @@ public class RoomSettingEntity extends Date {
 
     private String id;
 
-    private String roomId;
+    private long roomId;
 
     private long creatorId;
 

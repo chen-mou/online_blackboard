@@ -59,7 +59,7 @@ public class RoomController {
     @Deprecated
 //    @PostMapping("/join")
     public Result joinRoom(@UserInfo UserEntity user,
-                           @JsonKey String roomId,
+                           @JsonKey long roomId,
                            @JsonKey int isAnonymous){
         RoomEntity room = roomService.joinRoom(roomId, user.getId(), isAnonymous);
         return Result.success("加入成功", room);
@@ -67,17 +67,17 @@ public class RoomController {
 
     //结束会议
     @MessageMapping("/over")
-    public void over(Principal p, @JsonKey String roomId){
+    public void over(Principal p, @JsonKey long roomId){
         roomService.over(roomId, Long.parseLong(p.getName()));
     }
 
     @MessageMapping("/room_info")
-    public Result roomInfo(Principal p, @JsonKey String roomId){
+    public Result roomInfo(Principal p, @JsonKey long roomId){
         return Result.success("获取成功", roomService.roomInfo(Long.parseLong(p.getName()), roomId));
     }
 
     @MessageMapping("/quit")
-    public void quit(Principal p, @JsonKey String roomId){
+    public void quit(Principal p, @JsonKey long roomId){
         long userId = Long.parseLong(p.getName());
         roomService.quit(userId, roomId);
     }

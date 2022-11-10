@@ -49,7 +49,7 @@ public class SheetService {
      * @param roomId 房间号
      * @param sheetId 画布ID
      */
-    private void verifyCreator(long userId, String roomId, long sheetId){
+    private void verifyCreator(long userId, long roomId, long sheetId){
         RoomEntity room = roomModel.getVerifyRoom(roomId);
         if(room == null){
             throw new OperationException(404, "房间不存在");
@@ -72,13 +72,13 @@ public class SheetService {
         }
     }
 
-    public void createSheet(String roomId, String name, long userId){
+    public void createSheet(long roomId, String name, long userId){
         RoomEntity room = roomModel.getRoomById(roomId);
         if(!room.getStatus().equals("meeting")){
             throw new OperationException(403, "会议已经结束或者还未开始");
         }
         UserDataEntity user = userModel.getUserById(userId);
-        if(!user.getNowRoom().equals(roomId)){
+        if(user.getNowRoom() != roomId){
             throw new OperationException(403, "你不在房间中");
         }
         SheetEntity sheet = sheetModel.createSheet(name, room.getId());
@@ -88,7 +88,7 @@ public class SheetService {
     }
 
     @Lock(key = "SHEET_WRITE_", argName = "sheetId")
-    public void draw(long userId, Shape shape, String roomId, long sheetId){
+    public void draw(long userId, Shape shape, long roomId, long sheetId){
         verifyCreator(userId, roomId, sheetId);
         SheetEntity sheet = sheetModel.getSheetById(sheetId);
         shape.setSheetId(sheetId);
@@ -99,14 +99,14 @@ public class SheetService {
     }
 
     @Lock(key = "SHEET_WRITE_", argName = "sheetId")
-    public void rollback(long userId, String roomId, long sheetId){
+    public void rollback(long userId, long roomId, long sheetId){
         verifyCreator(userId, roomId, sheetId);
         SheetEntity sheet = sheetModel.getSheetById(sheetId);
         sheet.rollback(() -> sheetModel.save(sheet));
     }
 
     @Lock(key = "SHEET_WRITE_", argName = "sheetId")
-    public void redo(long userId, String roomId, long sheetId) {
+    public void redo(long userId, long roomId, long sheetId) {
         verifyCreator(userId, roomId, sheetId);
         SheetEntity sheet = sheetModel.getSheetById(sheetId);
         sheet.redo(() -> {
@@ -116,7 +116,7 @@ public class SheetService {
     }
 
     @Lock(key = "SHEET_WRITE_", argName = "sheetId")
-    public void modify(long userId, Shape shape, String roomId, long sheetId){
+    public void modify(long userId, Shape shape, long roomId, long sheetId){
         verifyCreator(userId, roomId, sheetId);
         long id = shape.getId();
         shape.setSheetId(sheetId);
@@ -132,7 +132,7 @@ public class SheetService {
     }
 
     @Lock(key = "SHEET_WRITE_", argName = "sheetId")
-    public void delete(long userId, String roomId, long sheetId, long shapeId){
+    public void delete(long userId, long roomId, long sheetId, long shapeId){
         verifyCreator(userId, roomId, sheetId);
         Shape s = shapeModel.getById(shapeId);
         if(s == null){
@@ -145,7 +145,7 @@ public class SheetService {
     }
 
 
-    public void updateNowSheet(String roomId, long userId, long sheetId){
+    public void updateNowSheet(long roomId, long userId, long sheetId){
         RoomEntity room = roomModel.getRoomById(roomId);
         if(room.getCreatorId() != userId){
             return;
@@ -160,7 +160,7 @@ public class SheetService {
     }
 
 
-    public SheetEntity getSheetById(long sheetId,  String roomId, long userId){
+    public SheetEntity getSheetById(long sheetId,  long roomId, long userId){
         RoomEntity r = roomModel.getRoomById(roomId);
         if(!r.getStatus().equals("meeting")){
             throw new OperationException(500, "会议未开始或已结束");
