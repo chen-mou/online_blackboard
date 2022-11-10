@@ -52,6 +52,7 @@ export const useCanvasStore = defineStore('canvas', {
       let canvas = {} as Canvas
       if (this.canvas.canvas) {
         canvas = this.canvas.reload()
+        canvas.layers = canvas.layers.reload()
         this.canvas.layers.drawData()
       } else {
         canvas = new Canvas({ canvas: 'canvas' })
@@ -129,9 +130,9 @@ export const useCanvasStore = defineStore('canvas', {
         /**
          * 判断点是否在data的图形里面在的话拿出那一个图形并绘制
          */
-        canvas.data=canvas.layers.data
+        canvas.data = canvas.layers.data
         canvas.drawControlBorder(e.pageX - x, e.pageY - y)
-        canvas.data=[]
+        canvas.data = []
       })
     },
     cacheCanvasData() {
