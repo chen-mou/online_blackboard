@@ -15,7 +15,8 @@ export const useCanvasStore = defineStore('canvas', {
       send: (channel: string, data: unknown) => void
       close: () => void
     },
-    _cacheData: [] as Array<ShapeDataType>
+    _cacheData: [] as Array<ShapeDataType>,
+    _otherUsers: [] as any[]
   }),
   actions: {
     connect(roomId: string, isAnonymous: number) {
@@ -31,10 +32,10 @@ export const useCanvasStore = defineStore('canvas', {
       }])
     },
     _wsRoomReceive(frame: IFrame) {
-      console.log(frame)
+      console.log(frame.body)
     },
     _wsUserReceive(frame: IFrame) {
-      console.log(frame)
+      console.log(frame.body)
     },
     _wsErrReceive(frame: IFrame) {
       ElMessage.error({
@@ -54,7 +55,7 @@ export const useCanvasStore = defineStore('canvas', {
         this.canvas.layers.drawData()
       } else {
         canvas = new Canvas({ canvas: 'canvas' })
-        canvas.layers=new Canvas({ canvas: 'canvas2' })
+        canvas.layers = new Canvas({ canvas: 'canvas2' })
         this.canvas = canvas
       }
 
@@ -91,7 +92,7 @@ export const useCanvasStore = defineStore('canvas', {
            * 清空之后全部重新绘制
            */
           // canvas.drawData()
-          canvas.context.clearRect(0,0,1600,1600)
+          canvas.context.clearRect(0, 0, 1600, 1600)
           canvas.DrawClass.BeforePosition = beforePosition
           canvas.DrawClass.AfterPosition = AfterPosition
           canvas.DrawClass.draw(canvas)
@@ -118,7 +119,7 @@ export const useCanvasStore = defineStore('canvas', {
          * 画入后清空上一层画布
          */
         ShapeMap.get(canvas.DrawClass.type)?.draw(canvas.layers)
-        canvas.context.clearRect(0,0,1600,1600)
+        canvas.context.clearRect(0, 0, 1600, 1600)
         console.log(canvas)
       })
       /**
