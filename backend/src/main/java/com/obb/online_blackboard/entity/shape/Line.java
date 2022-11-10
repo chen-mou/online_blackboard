@@ -18,16 +18,10 @@ import java.util.Map;
 @NoArgsConstructor
 public class Line extends Shape {
 
-    int endX;
 
-    int endY;
 
     public Line(Map<String, Object> map){
         super(map);
-        if(!map.containsKey("endX") || !map.containsKey("endY")){
-            throw new OperationException(500, "缺少参数");
-        }
-        Shape.set(this, map);
     }
 
     @Override

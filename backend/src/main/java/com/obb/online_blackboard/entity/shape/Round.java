@@ -18,28 +18,10 @@ import java.util.Map;
 @NoArgsConstructor
 public class Round extends Shape {
 
-    private double radius;
 
-    public Round(Shape s){
-        super(s);
-        Round r = (Round) s;
-        this.radius = r.radius;
-    }
 
     public Round(Map<String, Object> map) {
         super(map);
-        if (!map.containsKey("radius")) {
-            throw new OperationException(500, "缺少参数radius");
-        }
-        try {
-            Field field = this.getClass().getDeclaredField("radius");
-            field.setAccessible(true);
-            field.set(this, map.get("radius"));
-        }catch (NoSuchFieldException e){
-            throw new OperationException(500, "不存在属性radius");
-        } catch (IllegalAccessException e) {
-            throw new OperationException(500, e.getMessage());
-        }
     }
 
     @Override

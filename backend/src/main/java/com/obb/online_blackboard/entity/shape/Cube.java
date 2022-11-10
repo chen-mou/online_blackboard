@@ -18,25 +18,9 @@ import java.util.Map;
 @NoArgsConstructor
 public class Cube extends Shape {
 
-    private double width;
-
-    private double height;
-
-    public Cube(Shape shape){
-        super(shape);
-        if(shape.getType().equals("Cube")){
-            Cube t = (Cube)shape;
-            this.width = t.width;
-            this.height = t.height;
-        }
-    }
 
     public Cube(Map<String, Object> map)  {
         super(map);
-        if(!map.containsKey("width") || !map.containsKey("height")){
-            throw new OperationException(500, "缺少参数");
-        }
-        Shape.set(this, map);
     }
 
 
