@@ -25,7 +25,7 @@ public interface UserDao {
     @Select("select * from user where id = #{id}")
     UserEntity getById(long id);
 
-    @Insert("insert into user_data value(#{id}, #{userId}, #{nickname})")
+    @Insert("insert into user_data value(NULL, #{userId}, #{nickname}, #{avatar})")
     int createData(UserDataEntity userData);
 
     @Update("update user_data set nickname=#{newName}")

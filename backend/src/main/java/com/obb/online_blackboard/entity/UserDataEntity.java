@@ -1,5 +1,6 @@
 package com.obb.online_blackboard.entity;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.obb.online_blackboard.entity.base.Date;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
@@ -13,6 +14,7 @@ import org.springframework.data.redis.core.RedisHash;
  */
 @Data
 @RedisHash("user_data")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserDataEntity extends Date {
 
     private long id;
