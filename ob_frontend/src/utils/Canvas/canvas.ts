@@ -78,17 +78,13 @@ class Canvas {
 
   // }
   drawData () {
-    let t = false
     const pen = deepCopy(this.pen)
     this.canvas.height = this.canvas.height + 0
     for (let i = 0; i < this.data.length; i++) {
       if (this.data[i].type == 'img') {
         console.log(this.data[i])
         ShapeMap.get(this.data[i].type)?.draw(this, this.data[i].file)
-        t = true
       } else {
-        {
-          setTimeout(() => {
             const { strokeStyle, fillStyle } = this.data[i].pen as Pen
             this.context.strokeStyle = strokeStyle
             this.context.fillStyle = fillStyle
@@ -99,19 +95,7 @@ class Canvas {
               i
             ].AfterPosition
             ShapeMap.get(this.data[i].type)?.draw(this)
-            t = false
-          })
-          const { strokeStyle, fillStyle } = this.data[i].pen as Pen
-          this.context.strokeStyle = strokeStyle
-          this.context.fillStyle = fillStyle
-          ShapeMap.get(this.data[i].type)!.BeforePosition = this.data[
-            i
-          ].BeforePosition
-          ShapeMap.get(this.data[i].type)!.AfterPosition = this.data[
-            i
-          ].AfterPosition
-          ShapeMap.get(this.data[i].type)?.draw(this)
-        }
+        
       }
     }
     this.context.strokeStyle = pen?.strokeStyle as any
