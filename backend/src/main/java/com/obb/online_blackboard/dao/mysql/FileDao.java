@@ -35,4 +35,7 @@ public interface FileDao {
     @Select("select * from file where id = #{fileId}")
     FileEntity getByFileId(long fileId);
 
+    @Update("update file set status = #{status} where id = #{id}")
+    void updateStatus(String status, long id);
+
 }
