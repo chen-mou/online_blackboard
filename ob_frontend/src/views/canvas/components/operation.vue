@@ -1,51 +1,40 @@
 <template>
-    <div style="display: grid;   grid-template-columns: repeat(3, 50px);">
-        <div>
-            <el-icon @click="cleanCanvas">
-                <DeleteFilled />
-            </el-icon>
-            <span>
-                清空
-            </span>
-        </div>
-        <div>
-            <el-icon @click="turnBack">
-                <Refresh />
-            </el-icon>
-            <span>
-                回退
-            </span>
-        </div>
-        <div>
-            <el-icon @click="exportAsPng">
-                <Picture />
-            </el-icon>
-            <span>
-                导出
-            </span>
-        </div>
-
-        <div>
-            <div>
-                <el-icon class="upload">
-                    <FolderOpened />
-                </el-icon>
-                <input type="file" @change="importPng" accept="image/*">
-            </div>
-            <span>
-                导入
-            </span>
-        </div>
-        <div>
-            <svg t="1667916145025" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
-                p-id="3130" xmlns:xlink="http://www.w3.org/1999/xlink" width="40" height="35">
-                <path
-                    d="M898.56 432.64c10.24-10.24 10.24-25.6 0-35.84l-238.08-230.4c-10.24-10.24-25.6-10.24-35.84 0L125.44 680.96c-10.24 10.24-10.24 25.6 0 35.84l99.84 97.28 53.76 51.2h576c15.36 0 25.6-10.24 25.6-25.6s-10.24-25.6-25.6-25.6H529.92l368.64-381.44zM179.2 698.88l248.32-258.56 202.24 194.56-171.52 179.2h-161.28L179.2 698.88z"
-                    fill="#515151" p-id="3131"></path>
-            </svg>
-            <span>删除</span>
-        </div>
+  <div class="operations">
+    <div @click="cleanCanvas">
+      <el-icon>
+        <Delete/>
+      </el-icon>
+      <span>清空</span>
     </div>
+    <div @click="turnBack">
+      <el-icon>
+        <Refresh/>
+      </el-icon>
+      <span>回退</span>
+    </div>
+    <div @click="exportAsPng">
+      <el-icon>
+        <Picture/>
+      </el-icon>
+      <span>导出</span>
+    </div>
+    <div class="load-img">
+      <el-icon>
+        <FolderOpened/>
+      </el-icon>
+      <span>导入</span>
+      <input type="file" @change="importPng" accept="image/*">
+    </div>
+    <div>
+      <svg t="1667916145025" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
+           p-id="3130" xmlns:xlink="http://www.w3.org/1999/xlink" width="40" height="35">
+        <path
+          d="M898.56 432.64c10.24-10.24 10.24-25.6 0-35.84l-238.08-230.4c-10.24-10.24-25.6-10.24-35.84 0L125.44 680.96c-10.24 10.24-10.24 25.6 0 35.84l99.84 97.28 53.76 51.2h576c15.36 0 25.6-10.24 25.6-25.6s-10.24-25.6-25.6-25.6H529.92l368.64-381.44zM179.2 698.88l248.32-258.56 202.24 194.56-171.52 179.2h-161.28L179.2 698.88z"
+          fill="#515151" p-id="3131"></path>
+      </svg>
+      <span>橡皮</span>
+    </div>
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -134,27 +123,40 @@ const turnBack = () => {
   canvas.value?.layers.drawData()
 }
 </script>
-<script lang="ts">
-import { defineComponent } from 'vue';
-
-export default defineComponent({
-  name: "operation"
-})
-</script>
 
 <style lang="less" scoped>
-.upload {
-    position: absolute;
-    width: 30px;
-}
 
 .el-icon {
-    font-size: 30px;
+  font-size: 30px;
+  display: block;
 }
 
 input {
-    opacity: 0;
-    width: 40px;
-    height: 38px;
+  opacity: 0;
+  width: 40px;
+  height: 38px;
+}
+
+.operations {
+  display: flex;
+}
+
+.operations > * {
+  flex: fit-content;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.load-img {
+  position: relative;
+}
+
+.load-img > input[type='file'] {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
 }
 </style>

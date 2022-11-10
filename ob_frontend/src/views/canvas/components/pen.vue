@@ -49,7 +49,7 @@ input {
     border: solid 2px gray;
 }
 .grid{
-    height: 15vh;
+    height: 70px;
     width: 200px;
     border: 1px black solid;
 }
