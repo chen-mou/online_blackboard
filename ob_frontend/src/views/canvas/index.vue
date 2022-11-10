@@ -12,20 +12,26 @@ import { onMounted, ref, reactive, provide, onBeforeUnmount } from 'vue'
 import Canvas from '@/utils/Canvas/canvas'
 import { useCanvasStore } from "@/store/canvas";
 import { useRoomStore } from "@/store/room";
+import { useRouter } from "vue-router";
+import { ElMessage } from "element-plus";
 
 const canvasRef = ref(null)
 const canvasProvide = ref<Canvas>()
 const canvasStore = useCanvasStore();
+const router = useRouter()
 onMounted(() => {
   canvasStore.initCanvas()
   canvasProvide.value = canvasStore.canvas
 })
 provide("canvas__", canvasProvide)
-onBeforeUnmount(() => {
-  canvasStore.cacheCanvasData()
-})
 const roomStore = useRoomStore()
-canvasStore.connect(roomStore.roomId, roomStore.userAnonymous)
+canvasStore.connect(roomStore.roomId, roomStore.userAnonymous, (frame) => {
+  console.log('ws disconnected:', frame)
+  ElMessage.error({
+    message: frame.headers.message
+  })
+  router.replace('/')
+})
 /**
  * 绑定mouse事件
  */

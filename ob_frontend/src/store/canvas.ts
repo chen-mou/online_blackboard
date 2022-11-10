@@ -15,11 +15,10 @@ export const useCanvasStore = defineStore('canvas', {
       send: (channel: string, data: unknown) => void
       close: () => void
     },
-    _cacheData: [] as Array<ShapeDataType>,
     _otherUsers: [] as any[]
   }),
   actions: {
-    connect(roomId: string, isAnonymous: number) {
+    connect(roomId: string, isAnonymous: number, onDisconnect: (frame: IFrame) => void) {
       this.ws = useWs(roomId, isAnonymous, [{
         channel: `/exchange/room/${roomId}`,
         callback: this._wsRoomReceive
@@ -29,13 +28,13 @@ export const useCanvasStore = defineStore('canvas', {
       }, {
         channel: '/user/queue/error',
         callback: this._wsErrReceive
-      }])
+      }], onDisconnect)
     },
     _wsRoomReceive(frame: IFrame) {
-      console.log(frame.body)
+      console.log('room', frame.body)
     },
     _wsUserReceive(frame: IFrame) {
-      console.log(frame.body)
+      console.log('user', frame.body)
     },
     _wsErrReceive(frame: IFrame) {
       ElMessage.error({
@@ -135,10 +134,6 @@ export const useCanvasStore = defineStore('canvas', {
         canvas.data = []
       })
     },
-    cacheCanvasData() {
-      // console.log('cache')
-      this._cacheData = this.canvas.data
-    }
   },
   getters: {}
 })

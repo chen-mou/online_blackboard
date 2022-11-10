@@ -31,7 +31,7 @@ function copyId() {
 }
 
 async function joinRoom() {
-  roomStore.joinRoom(props.room?.id, props.room?.allowAnonymous)
+  roomStore.joinRoom(props.room?.id, props.room?.setting.allowAnonymous)
   await router.replace('/canvas')
 }
 
@@ -49,17 +49,18 @@ async function editRoom() {
       message: msg
     })
   } else {
+    openDialog.value = false
     userStore.getUserRooms()
   }
 }
 
-const roomName = ref<string>(props.room?.name)
+const roomName = ref<string>(props.room?.setting.name)
 const startTime = ref<string>(props.room?.setting.startTime)
 const endTime = ref<string>(props.room?.setting.endTime)
 const allowAnonymous = ref<number>(props.room?.setting.allowAnonymous)
 
 const changeSth = computed(() => {
-  return roomName.value != props.room?.name ||
+  return roomName.value != props.room?.setting.name ||
     startTime.value != props.room?.setting.startTime ||
     endTime.value != props.room?.setting.endTime ||
     allowAnonymous.value != props.room?.setting.allowAnonymous
@@ -71,7 +72,7 @@ const openDialog = ref(false)
 <template>
   <div class="room">
     <div class="room-info">
-      <p style="max-width: 120px;
+      <p style="max-width: 150px;
         max-height:30px;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -79,9 +80,11 @@ const openDialog = ref(false)
         -webkit-line-clamp: 1;
         -webkit-box-orient: vertical;
         display: -webkit-box;">
-        {{ room.name }}</p>
-      <el-button @click="copyId" :disabled="isOpen">复制房间号</el-button>
-      <el-button @click="joinRoom" type="primary" :disabled="isOpen">进入房间</el-button>
+        {{ room.setting.name }}</p>
+      <div style="position: absolute;right: 0;top: 0;">
+        <el-button @click="copyId" :disabled="isOpen">复制房间号</el-button>
+        <el-button @click="joinRoom" type="primary" :disabled="isOpen">进入房间</el-button>
+      </div>
     </div>
     <div>
       <span>{{ room.setting.startTime }} ~ {{ room.setting.endTime }}</span>
@@ -121,11 +124,9 @@ const openDialog = ref(false)
 }
 
 .room-info {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   height: 30px;
   margin-bottom: 10px;
+  position: relative;
 }
 
 .room-info > * {

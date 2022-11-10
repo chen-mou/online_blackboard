@@ -52,7 +52,7 @@ export default defineComponent({
   },
   methods: {
     async joinRoom() {
-      console.log(this.whiteboardCode, this.hideName)
+      // console.log(this.whiteboardCode, this.hideName)
       this.roomStore.joinRoom(this.whiteboardCode, Number(this.hideName));
       await this.$router.replace('/canvas')
     },
