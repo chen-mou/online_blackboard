@@ -1,5 +1,6 @@
 package com.obb.online_blackboard.controller;
 
+import com.obb.online_blackboard.entity.FileEntity;
 import com.obb.online_blackboard.entity.UserDataEntity;
 import com.obb.online_blackboard.entity.UserEntity;
 import com.obb.online_blackboard.exception.OperationException;
@@ -51,8 +52,8 @@ public class FileController {
         if(!types.contains(type)){
             throw new OperationException(500, "类型有误");
         }
-        fileService.upload(file, userData.getId(), type);
-        return Result.success("上传成功", null);
+        FileEntity fileEntity = fileService.upload(file, userData.getId(), type);
+        return Result.success("上传成功", fileEntity);
     }
 
     @GetMapping("/get/{md5}")

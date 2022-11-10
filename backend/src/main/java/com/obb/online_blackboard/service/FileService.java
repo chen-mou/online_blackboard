@@ -67,7 +67,7 @@ public class FileService {
         }
         String md5 = MD5.salt(new String(zip));
         String filePath = path + md5;
-        RLock rLock = redissonClient.getLock("lock");
+        RLock rLock = redissonClient.getLock(lock + md5);
         rLock.lock(5, TimeUnit.SECONDS);
         FileEntity fileEntity = fileModel.getByMd5(md5);
         if(fileEntity == null){
@@ -113,11 +113,12 @@ public class FileService {
         }
         String suffix = file.getFilename().split("\\.")[1];
         res.setContentType("image/" + suffix);
-        InputStream is = new FileInputStream(file.getPath());
-        OutputStream ops = res.getOutputStream();
-        byte[] b = is.readAllBytes();
-        byte[] unzip = Snappy.uncompress(b);
-        ops.write(unzip);
+        try (InputStream is = new FileInputStream(file.getPath())) {
+            OutputStream ops = res.getOutputStream();
+            byte[] b = is.readAllBytes();
+            byte[] unzip = Snappy.uncompress(b);
+            ops.write(unzip);
+        }
     }
 
     public List<FileEntity> getUploadFile(long userId, String type){
