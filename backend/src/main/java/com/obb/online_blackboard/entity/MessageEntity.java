@@ -2,6 +2,9 @@ package com.obb.online_blackboard.entity;
 
 import lombok.Data;
 
+import java.util.Date;
+import java.util.Map;
+
 /**
  * @desc     MessageEntity.java
  * @author  陈桢梁
@@ -13,6 +16,19 @@ public class MessageEntity {
 
     private long sender;
 
-    private long type;
+    private long getter;
 
+    private String type;
+
+    private String msg;
+
+    private String senderName;
+
+    private String getterName;
+
+    private boolean broadcast;
+
+    private Date time;
+
+    private FileEntity file;
 }

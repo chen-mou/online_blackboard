@@ -1,7 +1,18 @@
 package com.obb.online_blackboard.service;
 
+import com.obb.online_blackboard.entity.FileEntity;
 import com.obb.online_blackboard.entity.MessageEntity;
+import com.obb.online_blackboard.entity.UserDataEntity;
+import com.obb.online_blackboard.model.FileModel;
+import com.obb.online_blackboard.model.UserModel;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import tool.result.Message;
+
+import javax.annotation.Resource;
+import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @desc     MessageService.java
@@ -12,7 +23,36 @@ import org.springframework.stereotype.Service;
 @Service
 public class MessageService {
 
+    @Resource
+    UserModel userModel;
+
+    @Resource
+    FileModel file;
+
+    @Resource
+    SimpMessagingTemplate template;
+
     public void send(long sender, MessageEntity message){
+        message.setSender(sender);
+        UserDataEntity senderEntity = userModel.getDataById(sender);
+        message.setSenderName(senderEntity.getNickname());
+        message.setTime(new Date());
+        String roomId = senderEntity.getNowRoom();
+        if(message.getType().equals("emoji")){
+            String msg = message.getMsg();
+            Pattern p = Pattern.compile("\\[file_id=(.*?)]");
+            Matcher m = p.matcher(msg);
+            FileEntity fileEntity = file.getById(Long.parseLong(m.group(1)));
+            message.setMsg("[url=" + fileEntity.getUri() + "]");
+        }
+        if(message.isBroadcast()){
+            template.convertAndSend("/exchage/room/" + roomId, Message.def("message", message));
+        }else{
+            UserDataEntity getterEntity = userModel.getDataById(message.getGetter());
+            message.setGetterName(getterEntity.getNickname());
+            template.convertAndSendToUser(String.valueOf(getterEntity.getUserId()),
+                    "/queue/info", Message.def("message", message));
+        }
 
     }
 

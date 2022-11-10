@@ -46,7 +46,7 @@ public class FileModel {
         FileEntity fileEntity = new FileEntity();
         fileEntity.setMd5(md5);
         fileEntity.setId(id.getId("file"));
-        fileEntity.setUri(pre + "/file/get/" + md5);
+        fileEntity.setUri(pre + "/"+ machine + "/file/get/" + md5);
         fileEntity.setMachine(machine);
         fileEntity.setFilename(filename);
         fileEntity.setPath(filePath);
@@ -73,6 +73,10 @@ public class FileModel {
     public FileEntity getByMd5(String md5){
         return lock.getLock(key + md5, "GET_FILE_LOCK:" + md5,
                 () -> fileDao.getByMd5(md5), 5);
+    }
+
+    public FileEntity getById(long fileId){
+        return fileDao.getByFileId(fileId);
     }
 
     public FileEntity updateStatus(long fileId, String status){
