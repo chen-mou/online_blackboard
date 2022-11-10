@@ -7,7 +7,7 @@ export type ShapeDataType ={
     BeforePosition:Array<number> // mousedown position
     AfterPosition:Array<number>// mouseup position
     pen:Pen|null
-    file?:File
+    file?:ImageData
     text?:string
     
 }
