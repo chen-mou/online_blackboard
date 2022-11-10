@@ -44,6 +44,7 @@ public interface RoomSettingDao {
                     "<if test='endTime != null'>end_time = #{endTime},</if>" +
 //                    "<if test='allowAnonymous != null'>allow_anonymous = #{allowAnonymous},</if>" +
                     "<if test='isShare != null'>is_share = #{isShare},</if>" +
+                    "<if test='name != null'>name = #{name},</if>" +
                     "allow_anonymous = allow_anonymous " +
                     "where room_id = #{roomId}" +
             "</script>")

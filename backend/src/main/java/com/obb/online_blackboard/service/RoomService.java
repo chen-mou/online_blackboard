@@ -57,7 +57,6 @@ public class RoomService {
         UserDataEntity user = userModel.getDataById(userId);
         room.setCreatorId(userId);
         room.setCreatorName(user.getNickname());
-        room.setName(setting.getName());
         //创建并获取房间ID
         String roomId = roomModel.createRoom(room);
 

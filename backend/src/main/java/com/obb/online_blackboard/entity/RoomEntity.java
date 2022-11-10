@@ -30,7 +30,6 @@ public class RoomEntity {
 
     private String creatorName;
 
-    private String name;
 
     private Integer loaded;
 

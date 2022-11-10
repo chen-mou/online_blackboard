@@ -40,6 +40,7 @@ public class FileModel {
         fileEntity.setMachine(machine);
         fileEntity.setFilename(filename);
         fileEntity.setPath(filePath);
+        fileEntity.setStatus("pending");
         fileDao.insert(fileEntity);
         insertRole(userId, fileEntity.getId(), type);
         return fileEntity;

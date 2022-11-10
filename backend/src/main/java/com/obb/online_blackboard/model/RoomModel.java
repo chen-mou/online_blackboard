@@ -71,10 +71,6 @@ public class RoomModel {
     public String createRoom(RoomEntity room){
         room.setId(String.valueOf(id.getId("room")));
         room.setStatus("no_start");
-        String name = room.getName();
-        if(name == null || name.equals("")){
-            room.setName(room.getCreatorName() + "的会议");
-        }
         room.setLoaded(0);
         roomDbDao.insert(room);
         return room.getId();
@@ -93,6 +89,11 @@ public class RoomModel {
         setting.setId(String.valueOf(id.getId("room_setting")));
         setting.setCreatorId(userId);
         setting.setRoomId(roomId);
+        String name = setting.getName();
+        if(name == null || name.equals("")){
+            UserDataEntity user = userModel.getDataById(userId);
+            setting.setName(user.getNickname() + "的会议");
+        }
         roomSettingDao.createSetting(setting);
         return setting.getId();
     }

@@ -23,4 +23,7 @@ public class FileEntity {
 
     private String md5;
 
+    //uploaded 上传成功 fail 上传失败 delete 删除 pending 上传中
+    private String status;
+
 }

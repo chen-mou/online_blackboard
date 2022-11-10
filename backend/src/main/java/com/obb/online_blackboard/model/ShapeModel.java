@@ -1,13 +1,17 @@
 package com.obb.online_blackboard.model;
 
 import com.obb.online_blackboard.dao.redis.ShapeDao;
+import com.obb.online_blackboard.entity.SheetEntity;
 import com.obb.online_blackboard.entity.base.Shape;
+import org.springframework.data.redis.core.PartialUpdate;
+import org.springframework.data.redis.core.RedisKeyValueTemplate;
 import org.springframework.stereotype.Repository;
 import tool.util.id.Id;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -26,6 +30,8 @@ public class ShapeModel {
     Id id;
 
 
+    @Resource
+    RedisKeyValueTemplate template;
     public Shape createShape(Shape shape){
         long id = this.id.getId("shape");
         shape.setId(id);
@@ -62,6 +68,14 @@ public class ShapeModel {
 
     public void delete(long shapeId){
         shapeDao.deleteById(shapeId);
+    }
+
+    public void update(long shapeId, Map<String, Object> values){
+        PartialUpdate<SheetEntity> update = new PartialUpdate<>(shapeId, SheetEntity.class);
+        values.forEach((key, value) -> {
+            update.set(key, value);
+        });
+        template.update(update);
     }
 
 }

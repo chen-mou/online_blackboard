@@ -33,7 +33,7 @@ public class FileController {
         }
     };
 
-    private final Set<String> types = new HashSet<>(List.of(new String[]{"avatar", "photo"}));
+    private final Set<String> types = new HashSet<>(List.of(new String[]{"avatar", "photo", "emoji", "message"}));
 
     @Resource
     FileService fileService;

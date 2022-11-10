@@ -176,4 +176,11 @@ public class SheetService {
         return sheet;
     }
 
+    @Lock()
+    public void click(){
+
+    }
+
+    public void unclick(){}
+
 }

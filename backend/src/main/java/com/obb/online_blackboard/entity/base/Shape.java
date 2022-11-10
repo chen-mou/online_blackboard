@@ -40,6 +40,8 @@ public class Shape implements Special{
 
     protected double lineWidth;
 
+    protected long userId;
+
     public Shape(Shape s){
         this.type = s.type;
         this.sheetId = s.sheetId;

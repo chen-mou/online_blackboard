@@ -5,6 +5,8 @@ import com.obb.online_blackboard.entity.FileEntity;
 import com.obb.online_blackboard.exception.OperationException;
 import com.obb.online_blackboard.model.FileModel;
 import org.jboss.marshalling.ByteWriter;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,6 +23,7 @@ import java.nio.file.Path;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author 陈桢梁
@@ -41,7 +44,14 @@ public class FileService {
     @Resource
     ThreadPoolExecutor pool;
 
+    @Resource
+    RedissonClient redissonClient;
+
+    private final String machine = System.getenv().get("COMPUTERNAME");
+
     private final String path = "./file/";
+
+    private final String lock = "INSERT_FILE_LOCK:";
 
     public FileEntity upload(MultipartFile file, long userId, String type) {
         String name = file.getOriginalFilename();
@@ -55,28 +65,35 @@ public class FileService {
         }
         String md5 = MD5.salt(new String(zip));
         String filePath = path + md5;
-
+        RLock rLock = redissonClient.getLock("lock");
+        rLock.lock(5, TimeUnit.SECONDS);
         FileEntity fileEntity = fileModel.getByMd5(md5);
         if(fileEntity == null){
             fileModel.insert(userId, md5, name, filePath, type);
+            rLock.unlock();
             pool.execute(() -> {
                 try {
                     BufferedOutputStream w = new BufferedOutputStream(new FileOutputStream(filePath));
                     w.write(zip);
                     w.close();
                 }catch (IOException e){
-
+                    throw new OperationException(500, "上传失败");
                 }
             });
         }else{
+            rLock.unlock();
             fileModel.insertRole(userId, fileEntity.getId(), type);
         }
         return fileEntity;
     }
 
 
+    public void error(int code, String msg, HttpServletResponse res){}
+
     public void get(HttpServletResponse res, String md5) throws IOException {
         FileEntity file = fileModel.getByMd5(md5);
+        if(!file.getMachine().equals(machine)){
+        }
         String suffix = file.getFilename().split("\\.")[1];
         res.setContentType("image/" + suffix);
         InputStream is = new FileInputStream(file.getPath());
