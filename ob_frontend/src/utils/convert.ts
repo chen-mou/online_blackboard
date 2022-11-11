@@ -20,30 +20,46 @@ const shapeTypeMap = {
   line: 'line',
 }
 
-export function shapeToWSShape(shape: any): any {
+export function shapeToWSShape(shape: any, sheetId: number, roomId: number): any {
   return {
     "shape": {
       "type": (shapeTypeMap as any)[shape.type],
       "color": ".",
       "start": {
-        "x": 2,
-        "y": 2
+        "x": shape.BeforePosition[0],
+        "y": shape.BeforePosition[1],
       },
       "end": {
-        "x": 0,
-        "y": 0
+        "x": shape.AfterPosition[0],
+        "y": shape.AfterPosition[1],
       },
       "pen": {
-        "lineWidth": 5,
-        "strokeStyle": "",
-        "fillStyle": ""
+        "lineWidth": shape.pen.linewidth,
+        "strokeStyle": shape.pen.strokeStyle,
+        "fillStyle": shape.pen.fillStyle,
       }
     },
-    "sheetId": 1000672,
-    "roomId": 1000408
+    "sheetId": sheetId,
+    "roomId": roomId,
   }
 }
 
 export function wsShapeToShape(wsShape: any): any {
-''
+  return {
+    "type": wsShape.shape.type,
+    "BeforePosition": [
+      wsShape.shape.start.x,
+      wsShape.shape.start.y,
+    ],
+    "AfterPosition": [
+      wsShape.shape.end.x,
+      wsShape.shape.end.y,
+    ],
+    "pen": {
+      "icon": "",
+      "linewidth": wsShape.shape.pen.lineWidth,
+      "strokeStyle": wsShape.shape.pen.strokeStyle,
+      "fillStyle": wsShape.shape.pen.fillStyle,
+    }
+  }
 }

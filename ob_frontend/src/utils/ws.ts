@@ -4,7 +4,7 @@ import Socket from 'sockjs-client'
 export function useWs(
   roomId: string,
   isAnonymous: number,
-  channels: Array<{ channel: string, callback: (data: IFrame) => void }>,
+  channels: Array<{ id: string, channel: string, callback: (data: IFrame) => void }>,
   onDisconnect: (frame: IFrame) => void
 ) {
   const client = Stomp.over(() => new Socket('http://47.112.184.57:18888/connect'))
@@ -25,8 +25,8 @@ export function useWs(
     },
   )
   return {
-    send(channel: string, data: unknown) {
-      client.send(channel, {}, JSON.stringify(data))
+    send(id: string, data: unknown) {
+      client.send((channels.find(e => e.id === id) as any).channel, {}, JSON.stringify(data))
     },
     close() {
       client.deactivate()

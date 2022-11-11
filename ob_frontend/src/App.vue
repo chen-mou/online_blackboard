@@ -8,7 +8,7 @@ const userStore = useUserStore()
 const roomStore = useRoomStore()
 
 const showCanvas = computed(() => {
-  return roomStore.roomId !== ''
+  return roomStore.roomId !== 0
 })
 </script>
 

@@ -159,7 +159,7 @@ class FreeLine extends BaseShape {
       if(data){
         this.data=data
       }
-      console.log(this.data)
+      // console.log(this.data)
       for(let i=1;i<this.data.length;i++)
       {
         canvas.context.beginPath()
