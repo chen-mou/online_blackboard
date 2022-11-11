@@ -3,7 +3,7 @@ import request from "@/utils/request";
 
 export const useRoomStore = defineStore('room', {
   state: () => ({
-    roomId: '',
+    roomId: 0,
     name: '',
     isShare: 0,
     creatorId: 0,
@@ -13,7 +13,7 @@ export const useRoomStore = defineStore('room', {
     userAnonymous: 0,
   }),
   actions: {
-    joinRoom(roomId: string, userAnonymous: number) {
+    joinRoom(roomId: number, userAnonymous: number) {
       // console.log(roomId,userAnonymous)
       this.roomId = roomId
       this.userAnonymous = userAnonymous
@@ -46,7 +46,7 @@ export const useRoomStore = defineStore('room', {
         method: 'post',
         url: '/room/over',
       })
-      this.roomId = ''
+      this.roomId = 0
       if (res.code != 200) {
         return res.msg
       }

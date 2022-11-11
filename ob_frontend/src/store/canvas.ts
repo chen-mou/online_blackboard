@@ -15,7 +15,8 @@ export const useCanvasStore = defineStore('canvas', {
       send: (channel: string, data: unknown) => void
       close: () => void
     },
-    _otherUsers: [] as any[]
+    _otherUsers: [] as any[],
+    sheetId: 0,
   }),
   actions: {
     connect(roomId: string, isAnonymous: number, onDisconnect: (frame: IFrame) => void) {
