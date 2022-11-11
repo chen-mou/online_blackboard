@@ -7,6 +7,7 @@ import { IFrame } from '@stomp/stompjs'
 import { ElMessage } from 'element-plus'
 import { ShapeDataType } from '@/utils/Canvas/type/CanvasType'
 import ShapeMap from '@/utils/Canvas/ShapeMap'
+import { FreeLine } from '@/utils/Canvas/shape'
 
 export const useCanvasStore = defineStore('canvas', {
   state: () => ({
@@ -88,6 +89,12 @@ export const useCanvasStore = defineStore('canvas', {
         canvas.DrawClass.BeforePosition = beforePosition
         prepareDrawing = true
         showLine = true
+        if (canvas.DrawClass.type === 'freeLine') {
+            (canvas.DrawClass as FreeLine).data.push({
+              x:e.pageX - x,
+              y:e.pageY - y
+            })
+        }
       })
 
       canvas.canvas.addEventListener('mousemove', e => {
@@ -113,8 +120,13 @@ export const useCanvasStore = defineStore('canvas', {
             canvas.DrawClass.BeforePosition = beforePosition
             canvas.DrawClass.AfterPosition = AfterPosition
           }else{
-            canvas.DrawClass.BeforePosition = canvas.DrawClass.AfterPosition
-            canvas.DrawClass.AfterPosition = AfterPosition
+            /**
+             * 存入data
+             */
+             (canvas.DrawClass as FreeLine).data.push({
+              x:e.pageX - x,
+              y:e.pageY - y
+            })
           }
 
           canvas.DrawClass.draw(canvas)
@@ -143,7 +155,7 @@ export const useCanvasStore = defineStore('canvas', {
             BeforePosition: beforePosition,
             AfterPosition: AfterPosition,
             pen: deepCopy(canvas.pen),
-            file: canvas.context.getImageData(0, 0, 1600, 1600)
+            data:(canvas.DrawClass as FreeLine).data
           })
         }
         IsDrawing = false
@@ -154,7 +166,8 @@ export const useCanvasStore = defineStore('canvas', {
         if (canvas.DrawClass.type !== 'freeLine') {
           ShapeMap.get(canvas.DrawClass.type)?.draw(canvas.layers)
         }else{
-        ShapeMap.get(canvas.DrawClass.type)?.draw(canvas.layers, canvas.context.getImageData(0, 0, 1600, 1600))
+        ShapeMap.get(canvas.DrawClass.type)?.draw(canvas.layers);
+        (canvas.DrawClass as FreeLine).data=[]
         }
         canvas.context.clearRect(0, 0, 1600, 1600)
         console.log(canvas)
