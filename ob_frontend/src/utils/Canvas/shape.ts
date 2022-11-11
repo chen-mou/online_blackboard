@@ -161,13 +161,35 @@ class FreeLine extends BaseShape {
        */
       canvas.context.putImageData(file, 0, 0)
     } else {
-        canvas.context.beginPath()
-        canvas.context.moveTo(this.BeforePosition[0], this.BeforePosition[1])
-        canvas.context.lineTo(this.AfterPosition[0],this.AfterPosition[1])
-        canvas.context.stroke()
-        canvas.context.closePath()
-      }
+      canvas.context.beginPath()
+      canvas.context.moveTo(this.BeforePosition[0], this.BeforePosition[1])
+      canvas.context.lineTo(this.AfterPosition[0], this.AfterPosition[1])
+      canvas.context.stroke()
+      canvas.context.closePath()
     }
   }
-
-export { BaseShape, Rectangle, Line, Circle, ShapeImg, FreeLine }
+}
+class Ellipse extends BaseShape {
+  constructor (
+    BeforePosition: Array<number> = [0, 0],
+    AfterPosition: Array<number> = [0, 0]
+  ) {
+    super(BeforePosition, AfterPosition)
+    this.type = 'ellipse'
+    this.icon = '/canvsShapeImg/rect.png'
+  }
+  draw (canvas: Canvas) {
+    canvas.context.beginPath()
+    canvas.context.ellipse(
+      100,
+      100,
+      50,
+      75,
+      (45 * Math.PI) / 180,
+      0,
+      2 * Math.PI
+    )
+    canvas.context.stroke()
+  }
+}
+export { BaseShape, Rectangle, Line, Circle, ShapeImg, FreeLine, Ellipse }
