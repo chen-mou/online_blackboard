@@ -83,9 +83,8 @@ class Canvas {
     const pen = deepCopy(this.pen)
     this.canvas.height = this.canvas.height + 0
     for (let i = 0; i < this.data.length; i++) {
-      if (this.data[i].type == 'freeLine') {
-        console.log(this.data[i].file)
-        ShapeMap.get(this.data[i].type)?.draw(this, this.data[i].file)
+      if (this.data[i].type === 'freeLine') {
+        ShapeMap.get(this.data[i].type)?.draw(this,this.data[i].data)
       } else {
             const { strokeStyle, fillStyle } = this.data[i].pen as Pen
             this.context.strokeStyle = strokeStyle

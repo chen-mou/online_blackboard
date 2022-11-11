@@ -152,10 +152,14 @@ class FreeLine extends BaseShape {
     this.type = 'freeLine'
     this.icon = '/canvsShapeImg/rect.png'
   }
-  draw (canvas: Canvas ) {
+  draw (canvas: Canvas ,data?:Array<Point>) {
       /**
        * 从data中读取数据
        */
+      if(data){
+        this.data=data
+      }
+      console.log(this.data)
       for(let i=1;i<this.data.length;i++)
       {
         canvas.context.beginPath()
