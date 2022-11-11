@@ -5,7 +5,7 @@ import { deepCopy } from '@/utils'
 import { useWs } from '@/utils/ws'
 import { IFrame } from '@stomp/stompjs'
 import { ElMessage } from 'element-plus'
-import { ShapeDataType } from '@/utils/Canvas/type/CanvasType'
+import { Pen, ShapeDataType } from '@/utils/Canvas/type/CanvasType'
 import ShapeMap from '@/utils/Canvas/ShapeMap'
 import { FreeLine } from '@/utils/Canvas/shape'
 import { userInfoMessageResolver } from "@/utils/messageResolver";
@@ -171,9 +171,14 @@ export const useCanvasStore = defineStore('canvas', {
          * 鼠标画完之后画入第二层
          * 画入后清空上一层画布
          */
+         const { strokeStyle, fillStyle,linewidth} = canvas.pen as Pen
+         canvas.layers.context.strokeStyle = strokeStyle
+         canvas.layers.context.fillStyle = fillStyle
+         canvas.layers.context.lineWidth=linewidth
         if (canvas.DrawClass.type !== 'freeLine') {
           ShapeMap.get(canvas.DrawClass.type)?.draw(canvas.layers)
         }else{
+
         ShapeMap.get(canvas.DrawClass.type)?.draw(canvas.layers);
         console.log(   "aaaaaaaaaaaaaa", (canvas.DrawClass as FreeLine).data);
         (canvas.DrawClass as FreeLine).data=[]
