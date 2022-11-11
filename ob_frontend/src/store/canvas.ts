@@ -8,55 +8,62 @@ import { ElMessage } from 'element-plus'
 import { ShapeDataType } from '@/utils/Canvas/type/CanvasType'
 import ShapeMap from '@/utils/Canvas/ShapeMap'
 import { FreeLine } from '@/utils/Canvas/shape'
+import { userInfoMessageResolver } from "@/utils/messageResolver";
+import { shapeToWSShape, wsShapeToShape } from "@/utils/convert";
+import { useRoomStore } from "@/store/room";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import snappy from 'snappyjs'
+
+const roomStore = useRoomStore();
 
 export const useCanvasStore = defineStore('canvas', {
   state: () => ({
     canvas: {} as Canvas,
     ws: {} as {
-      send: (channel: string, data: unknown) => void
+      send: (id: string, data: unknown) => void
       close: () => void
     },
     _otherUsers: [] as any[],
-    sheetId: 0
+    sheetId: 0,
   }),
   actions: {
-    connect (
-      roomId: string,
-      isAnonymous: number,
-      onDisconnect: (frame: IFrame) => void
-    ) {
-      this.ws = useWs(
-        roomId,
-        isAnonymous,
-        [
-          {
-            channel: `/exchange/room/${roomId}`,
-            callback: this._wsRoomReceive
-          },
-          {
-            channel: '/user/queue/info',
-            callback: this._wsUserReceive
-          },
-          {
-            channel: '/user/queue/error',
-            callback: this._wsErrReceive
-          }
-        ],
-        onDisconnect
-      )
+    connect(roomId: string, isAnonymous: number, onDisconnect: (frame: IFrame) => void) {
+      this.ws = useWs(roomId, isAnonymous, [{
+        id: 'room',
+        channel: `/exchange/room/${roomId}`,
+        callback: this._wsRoomReceive
+      }, {
+        id: 'user',
+        channel: '/user/queue/info',
+        callback: this._wsUserReceive
+      }, {
+        id: 'err',
+        channel: '/user/queue/error',
+        callback: this._wsErrReceive
+      }], onDisconnect)
     },
-    _wsRoomReceive (frame: IFrame) {
-      console.log('room', frame.body)
+    _wsRoomReceive(frame: IFrame) {
+      const d = JSON.parse(frame.body);
+      if (d.sheetId !== this.sheetId) {
+        return
+      }
+      this.canvas.layers.data.push(wsShapeToShape(d))
     },
-    _wsUserReceive (frame: IFrame) {
-      console.log('user', frame.body)
+    _wsUserReceive(frame: IFrame) {
+      const d = JSON.parse(frame.body)
+      if (d.zip) {
+        d.data = snappy.uncompress(new TextEncoder().encode(d.data)).toString()
+      }
+      d.data = JSON.parse(d.data)
+      ;(userInfoMessageResolver as any)[d.type](this, d)
     },
-    _wsErrReceive (frame: IFrame) {
+    _wsErrReceive(frame: IFrame) {
       ElMessage.error({
         message: frame.body
       })
     },
-    initCanvas () {
+    initCanvas() {
       // let PointData = []
       let beforePosition = [0, 0]
       let AfterPosition = [0, 0]
@@ -89,12 +96,12 @@ export const useCanvasStore = defineStore('canvas', {
         canvas.DrawClass.BeforePosition = beforePosition
         prepareDrawing = true
         showLine = true
-        if (canvas.DrawClass.type === 'freeLine') {
-            (canvas.DrawClass as FreeLine).data.push({
-              x:e.pageX - x,
-              y:e.pageY - y
-            })
-        }
+        // if (canvas.DrawClass.type === 'freeLine') {
+        //     (canvas.DrawClass as FreeLine).data.push({
+        //       x:e.pageX - x,
+        //       y:e.pageY - y
+        //     })
+        // }
       })
 
       canvas.canvas.addEventListener('mousemove', e => {
@@ -185,7 +192,7 @@ export const useCanvasStore = defineStore('canvas', {
         canvas.drawControlBorder(e.pageX - x, e.pageY - y)
         canvas.data = []
       })
-    }
+    },
   },
   getters: {}
 })
