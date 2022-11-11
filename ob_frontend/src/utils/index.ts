@@ -55,7 +55,7 @@ export function IsArray(obj: any) {
  * @param options 
  */
 
-export function changePen(context:CanvasRenderingContext2D,options?:penNeed){
+export function changePen(context:CanvasRenderingContext2D,options?:penNeed|Pen){
     if(options){
         const {
             linewidth,

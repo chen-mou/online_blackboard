@@ -9,7 +9,7 @@
                 </div>
                 <el-color-picker v-model="penColor  " />
             </div>
-            <el-slider v-model="penSize" vertical height="60px" />
+            <el-slider v-model="penSize" vertical height="60px" :min="1" :max="100"   />
         </div>
 
     </div>
