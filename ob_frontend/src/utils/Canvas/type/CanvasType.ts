@@ -22,7 +22,7 @@ export type Pen={
     fillStyle:string
     lineStyle?:number
 }
-
+export  type penNeed = Omit<Pen, 'icon' >
 /**
  * Point
  */
