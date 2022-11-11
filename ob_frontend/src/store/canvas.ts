@@ -28,7 +28,7 @@ export const useCanvasStore = defineStore('canvas', {
     sheetId: 0,
   }),
   actions: {
-    connect(roomId: string, isAnonymous: number, onDisconnect: (frame: IFrame) => void) {
+    connect(roomId: number, isAnonymous: number, onDisconnect: (frame: IFrame) => void) {
       this.ws = useWs(roomId, isAnonymous, [{
         id: 'room',
         channel: `/exchange/room/${roomId}`,

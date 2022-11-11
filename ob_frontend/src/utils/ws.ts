@@ -2,7 +2,7 @@ import { IFrame, Stomp } from "@stomp/stompjs";
 import Socket from 'sockjs-client'
 
 export function useWs(
-  roomId: string,
+  roomId: number,
   isAnonymous: number,
   channels: Array<{ id: string, channel: string, callback: (data: IFrame) => void }>,
   onDisconnect: (frame: IFrame) => void

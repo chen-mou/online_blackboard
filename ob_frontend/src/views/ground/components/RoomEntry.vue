@@ -88,7 +88,7 @@ const openDialog = ref(false)
     </div>
     <div>
       <span>{{ room.setting.startTime }} ~ {{ room.setting.endTime }}</span>
-      <el-button style="margin-left: 10px" type="primary" plain @click="openDialog=true">编辑房间</el-button>
+      <el-button style="margin-left: 10px;font-size: 24px;width: 30px;height: 30px;" type="primary" plain @click="openDialog=true"><el-icon><Setting /></el-icon></el-button>
     </div>
   </div>
   <el-dialog style="width: 250px;height: 280px;text-align: center;border-radius: 20px" v-model="openDialog"
