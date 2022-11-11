@@ -86,9 +86,10 @@ class Canvas {
       if (this.data[i].type === 'freeLine') {
         ShapeMap.get(this.data[i].type)?.draw(this,this.data[i].data)
       } else {
-            const { strokeStyle, fillStyle } = this.data[i].pen as Pen
+            const { strokeStyle, fillStyle,linewidth} = this.data[i].pen as Pen
             this.context.strokeStyle = strokeStyle
             this.context.fillStyle = fillStyle
+            this.context.lineWidth=linewidth
             ShapeMap.get(this.data[i].type)!.BeforePosition = this.data[
               i
             ].BeforePosition
