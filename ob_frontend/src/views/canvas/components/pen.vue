@@ -9,9 +9,9 @@
                 </div>
                 <el-color-picker v-model="penColor  " />
             </div>
-            <hr>
+            <el-slider v-model="penSize" vertical height="60px" :min="1" :max="100"   />
         </div>
-        <el-slider v-model="penSize" vertical height="200px" />
+
     </div>
 </template>
 
@@ -58,5 +58,9 @@ input {
     height: 70px;
     width: 200px;
     border: 1px black solid;
+}
+.el-slider{
+    left: 270px;
+    bottom: 70px;
 }
 </style>

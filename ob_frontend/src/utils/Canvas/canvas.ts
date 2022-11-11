@@ -23,7 +23,7 @@ class Canvas {
   target: HTMLElement // 接收事件的元素
   DrawClass: ShapeClassTypeT // 默认类型为矩形// 默认类型为矩形
   after: any
-  pen: Pen | null
+  pen: Pen
   layers!: Canvas
   context: CanvasRenderingContext2D
   data: Array<ShapeDataType>

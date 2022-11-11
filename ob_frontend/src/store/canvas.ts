@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import Canvas from '@/utils/Canvas/canvas'
 import { distance, getElPagePos } from '@/utils/Canvas/math'
-import { deepCopy } from '@/utils'
+import { changePen, deepCopy } from '@/utils'
 import { useWs } from '@/utils/ws'
 import { IFrame } from '@stomp/stompjs'
 import { ElMessage } from 'element-plus'
@@ -130,13 +130,13 @@ export const useCanvasStore = defineStore('canvas', {
             canvas.context.clearRect(0, 0, 1600, 1600)
             canvas.DrawClass.BeforePosition = beforePosition
             canvas.DrawClass.AfterPosition = AfterPosition
-          } else {
+          }else{
             /**
              * 存入data
              */
-            (canvas.DrawClass as FreeLine).data.push({
-              x: e.pageX - x,
-              y: e.pageY - y
+             (canvas.DrawClass as FreeLine).data.push({
+              x:e.pageX - x,
+              y:e.pageY - y
             })
           }
 
@@ -181,17 +181,13 @@ export const useCanvasStore = defineStore('canvas', {
          * 鼠标画完之后画入第二层
          * 画入后清空上一层画布
          */
-        const { strokeStyle, fillStyle, linewidth } = canvas.pen as Pen
-        canvas.layers.context.strokeStyle = strokeStyle
-        canvas.layers.context.fillStyle = fillStyle
-        canvas.layers.context.lineWidth = linewidth
+        changePen(canvas.layers.context,canvas.pen)
         if (canvas.DrawClass.type !== 'freeLine') {
           ShapeMap.get(canvas.DrawClass.type)?.draw(canvas.layers)
-        } else {
+        }else{
 
-          ShapeMap.get(canvas.DrawClass.type)?.draw(canvas.layers);
-          console.log("aaaaaaaaaaaaaa", (canvas.DrawClass as FreeLine).data);
-          (canvas.DrawClass as FreeLine).data = []
+        ShapeMap.get(canvas.DrawClass.type)?.draw(canvas.layers);
+        (canvas.DrawClass as FreeLine).data=[]
         }
         canvas.context.clearRect(0, 0, 1600, 1600)
         console.log(canvas)
