@@ -7,12 +7,20 @@ import { IFrame } from '@stomp/stompjs'
 import { ElMessage } from 'element-plus'
 import { ShapeDataType } from '@/utils/Canvas/type/CanvasType'
 import ShapeMap from '@/utils/Canvas/ShapeMap'
+import { userInfoMessageResolver } from "@/utils/messageResolver";
+import { shapeToWSShape, wsShapeToShape } from "@/utils/convert";
+import { useRoomStore } from "@/store/room";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import snappy from 'snappyjs'
+
+const roomStore = useRoomStore();
 
 export const useCanvasStore = defineStore('canvas', {
   state: () => ({
     canvas: {} as Canvas,
     ws: {} as {
-      send: (channel: string, data: unknown) => void
+      send: (id: string, data: unknown) => void
       close: () => void
     },
     _otherUsers: [] as any[],
@@ -21,21 +29,33 @@ export const useCanvasStore = defineStore('canvas', {
   actions: {
     connect(roomId: string, isAnonymous: number, onDisconnect: (frame: IFrame) => void) {
       this.ws = useWs(roomId, isAnonymous, [{
+        id: 'room',
         channel: `/exchange/room/${roomId}`,
         callback: this._wsRoomReceive
       }, {
+        id: 'user',
         channel: '/user/queue/info',
         callback: this._wsUserReceive
       }, {
+        id: 'err',
         channel: '/user/queue/error',
         callback: this._wsErrReceive
       }], onDisconnect)
     },
     _wsRoomReceive(frame: IFrame) {
-      console.log('room', frame.body)
+      const d = JSON.parse(frame.body);
+      if (d.sheetId !== this.sheetId) {
+        return
+      }
+      this.canvas.layers.data.push(wsShapeToShape(d))
     },
     _wsUserReceive(frame: IFrame) {
-      console.log('user', frame.body)
+      const d = JSON.parse(frame.body)
+      if (d.zip) {
+        d.data = snappy.uncompress(new TextEncoder().encode(d.data)).toString()
+      }
+      d.data = JSON.parse(d.data)
+      ;(userInfoMessageResolver as any)[d.type](this, d)
     },
     _wsErrReceive(frame: IFrame) {
       ElMessage.error({
@@ -108,12 +128,20 @@ export const useCanvasStore = defineStore('canvas', {
         if (!IsDrawing) {
           return
         }
-        canvas.layers.data.push({
+        // 发送到 ws
+        this.ws.send('room', shapeToWSShape({
           type: canvas.DrawClass.type,
           BeforePosition: beforePosition,
           AfterPosition: AfterPosition,
           pen: deepCopy(canvas.pen)
-        })
+        }, this.sheetId, roomStore.roomId))
+
+        // canvas.layers.data.push({
+        //   type: canvas.DrawClass.type,
+        //   BeforePosition: beforePosition,
+        //   AfterPosition: AfterPosition,
+        //   pen: deepCopy(canvas.pen)
+        // })
         IsDrawing = false
         /**
          * 鼠标画完之后画入第二层
