@@ -42,9 +42,20 @@ public class RoomController {
                              Errors errors){
         ParamError.handlerError(errors);
         Date start = setting.getStartTime();
-        if(start.getTime() < new Date().getTime() - 5 * 60 * 10000){
+        Date end = setting.getEndTime();
+        if(setting.isNow()){
+            start = new Date();
+        }
+        if(!setting.isNow() && start.getTime() < new Date().getTime() - 5 * 60 * 10000){
             throw new OperationException(500, "开始时间不能小于当前时间");
         }
+        if(start.getTime() > end.getTime()){
+            throw new OperationException(500, "开始时间不能大于结束时间");
+        }
+        if(end.getTime() - start.getTime() > 24 * 3600 * 1000){
+            throw new OperationException(500, "会议时长不能大于1天");
+        }
+
         RoomEntity room = roomService.createRoom(setting, user.getId());
 //        System.out.println("成功");
         return Result.success("创建成功", room);
