@@ -35,8 +35,10 @@ spring:
   profile: dev
 
 server:
-  uri_pre: http://47.112.184.57
-
+  uri_pre: http://47.112.184.57:18888
+  voice:
+    key: LAL_SERVER_KEY
+    url: 47.112.184.57:18889
 ---
 
 
@@ -44,3 +46,6 @@ spring:
   profile: local
 server:
   uri_pre: http://localhost:18888
+  voice:
+    key: LAL_SERVER_KEY
+    url: localhost:18889
