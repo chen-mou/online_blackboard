@@ -5,7 +5,6 @@ import { deepCopy } from '@/utils'
 import { useWs } from '@/utils/ws'
 import { IFrame } from '@stomp/stompjs'
 import { ElMessage } from 'element-plus'
-import { ShapeDataType } from '@/utils/Canvas/type/CanvasType'
 import ShapeMap from '@/utils/Canvas/ShapeMap'
 import { FreeLine } from '@/utils/Canvas/shape'
 
@@ -156,8 +155,7 @@ export const useCanvasStore = defineStore('canvas', {
             AfterPosition: AfterPosition,
             pen: deepCopy(canvas.pen),
             data:(canvas.DrawClass as FreeLine).data
-          });
-
+          })
         }
         IsDrawing = false
         /**
@@ -168,7 +166,6 @@ export const useCanvasStore = defineStore('canvas', {
           ShapeMap.get(canvas.DrawClass.type)?.draw(canvas.layers)
         }else{
         ShapeMap.get(canvas.DrawClass.type)?.draw(canvas.layers);
-        console.log(   "aaaaaaaaaaaaaa", (canvas.DrawClass as FreeLine).data);
         (canvas.DrawClass as FreeLine).data=[]
         }
         canvas.context.clearRect(0, 0, 1600, 1600)
