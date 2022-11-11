@@ -63,6 +63,7 @@ export default defineComponent({
         startTime: this.fromDatetime,
         endTime: this.toDatetime,
         startNow: this.startNow,
+        name: this.roomName,
       }
       let msg: string = await this.roomStore.createRoom(data)
       if (msg) {
@@ -128,7 +129,7 @@ export default defineComponent({
     <div style="margin-top: 20px" v-show="userStore.myRooms.length===0">还没有创建房间哦</div>
     <div>
       <RoomEntry
-        v-for="room in userStore.myRooms.filter((r)=>dayjs().isBetween(r.setting.startTime, r.setting.endTime))"
+        v-for="room in userStore.myRooms.filter((r)=>dayjs().isBefore(r.setting.endTime))"
         :key="room.id" :room="room"/>
     </div>
   </div>
@@ -175,10 +176,12 @@ export default defineComponent({
   margin-top: 10px;
   font-size: 50px;
 }
-.container-in{
+
+.container-in {
   white-space: nowrap;
   overflow: hidden;
 }
+
 .container-in > * {
   margin-top: 12px;
 }

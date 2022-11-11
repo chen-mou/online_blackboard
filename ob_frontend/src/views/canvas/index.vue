@@ -25,7 +25,7 @@ onMounted(() => {
 })
 provide("canvas__", canvasProvide)
 const roomStore = useRoomStore()
-canvasStore.connect(roomStore.roomId.toString(), roomStore.userAnonymous, (frame) => {
+canvasStore.connect(roomStore.roomId, roomStore.userAnonymous, (frame) => {
   console.log('ws disconnected:', frame)
   ElMessage.error({
     message: frame.headers.message
