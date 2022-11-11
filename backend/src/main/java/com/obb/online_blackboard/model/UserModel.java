@@ -60,6 +60,7 @@ public class UserModel {
 
     /**
      * 只能获取数据库的用户数据
+     *
      * @param userId 用户ID
      * @return
      */
@@ -81,17 +82,17 @@ public class UserModel {
     }
 
     @Transactional(rollbackFor = {Exception.class})
-    public void updateNickname(String newName) {
-        userDao.updateNickname(newName);
+    public void updateNickname(long id, String newName) {
+        userDao.updateNickname(id, newName);
     }
 
-    public List<UserDataEntity> getUserDataByRoomId(long roomId){
+    public List<UserDataEntity> getUserDataByRoomId(long roomId) {
         UserDataEntity userData = new UserDataEntity();
         userData.setNowRoom(roomId);
         ExampleMatcher matcher = ExampleMatcher.matching().withIgnoreNullValues();
         Example<UserDataEntity> example = Example.of(userData, matcher);
         Iterable<UserDataEntity> data = userDataDao.findAll(example);
-        ArrayList<UserDataEntity> res = new ArrayList<>(){
+        ArrayList<UserDataEntity> res = new ArrayList<>() {
             {
                 data.forEach(item -> {
                     add(item);
@@ -101,19 +102,19 @@ public class UserModel {
         return res;
     }
 
-    public UserDataEntity getUserById(long userId){
+    public UserDataEntity getUserById(long userId) {
         Optional<UserDataEntity> op = userDataDao.findById(userId);
-        if(op.isEmpty()){
+        if (op.isEmpty()) {
             return userDao.getByUserId(userId);
         }
         return op.get();
     }
 
-    public void saveData(UserDataEntity userData){
+    public void saveData(UserDataEntity userData) {
         userDataDao.save(userData);
     }
 
-    public void saveAllData(List<UserDataEntity> userDataEntities){
+    public void saveAllData(List<UserDataEntity> userDataEntities) {
         userDataEntities.forEach(item -> saveData(item));
     }
 }

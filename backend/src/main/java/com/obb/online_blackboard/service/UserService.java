@@ -28,20 +28,20 @@ public class UserService {
     private final int SALT_COUNT = 5;
 
     //登录并防止缓存穿透和缓存击穿
-    public UserDataEntity login(String username, String password){
+    public UserDataEntity login(String username, String password) {
         UserEntity user = userModel.getUserByName(username);
-        if(user == null){
-           throw new OperationException(500, "用户名不存在");
+        if (user == null) {
+            throw new OperationException(500, "用户名不存在");
         }
-        if(MD5.salt(password, SALT_COUNT).equals(user.getPassword())){
+        if (MD5.salt(password, SALT_COUNT).equals(user.getPassword())) {
             return userModel.getDataById(user.getId());
         }
         throw new OperationException(500, "密码有误");
     }
 
-    public UserDataEntity register(String username, String password){
+    public UserDataEntity register(String username, String password) {
         UserEntity user = userModel.getUserByName(username);
-        if(user != null){
+        if (user != null) {
             throw new OperationException(500, "用户名已经被人用了");
         }
         user = new UserEntity();
@@ -52,19 +52,19 @@ public class UserService {
         return userModel.getDataById(user.getId());
     }
 
-    public void logout(long userId){
-        String token = (String)redis.opsForValue().get("token:" + userId);
-        if(token == null){
+    public void logout(long userId) {
+        String token = (String) redis.opsForValue().get("token:" + userId);
+        if (token == null) {
             throw new OperationException(404, "你已经登出了");
         }
         redis.delete("token:" + userId);
     }
 
-    public UserDataEntity getUserInfo(long userId){
+    public UserDataEntity getUserInfo(long userId) {
         return userModel.getDataById(userId);
     }
 
-    public void updateNickname(String newName) {
-        userModel.updateNickname(newName);
+    public void updateNickname(long id, String newName) {
+        userModel.updateNickname(id, newName);
     }
 }
