@@ -30,6 +30,8 @@ export function useWs(
     },
     close() {
       client.deactivate()
+      this.active = false
     },
+    active: true,
   }
 }

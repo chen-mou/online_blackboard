@@ -11,7 +11,7 @@ export function bytesToInt32(b: string): number {
   return (((((b.charCodeAt(0) << 8) + b.charCodeAt(1)) << 8) + b.charCodeAt(2)) << 8) + b.charCodeAt(3)
 }
 
-const shapeTypeMap = {
+const shapeTypeMap: { [k: string]: string } = {
   Cube: 'Rect',
   Round: 'circle',
   Line: 'line',
@@ -23,7 +23,7 @@ const shapeTypeMap = {
 export function shapeToWSShape(shape: any, sheetId: number, roomId: number): any {
   return {
     "shape": {
-      "type": (shapeTypeMap as any)[shape.type],
+      "type": shapeTypeMap[shape.type],
       "color": ".",
       "start": {
         "x": shape.BeforePosition[0],
@@ -46,7 +46,7 @@ export function shapeToWSShape(shape: any, sheetId: number, roomId: number): any
 
 export function wsShapeToShape(wsShape: any): any {
   return {
-    "type": wsShape.shape.type,
+    "type": shapeTypeMap[wsShape.shape.type],
     "BeforePosition": [
       wsShape.shape.start.x,
       wsShape.shape.start.y,

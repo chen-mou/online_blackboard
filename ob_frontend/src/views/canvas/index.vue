@@ -25,13 +25,15 @@ onMounted(() => {
 })
 provide("canvas__", canvasProvide)
 const roomStore = useRoomStore()
-canvasStore.connect(roomStore.roomId, roomStore.userAnonymous, (frame) => {
-  console.log('ws disconnected:', frame)
-  ElMessage.error({
-    message: frame.headers.message
+if (!canvasStore.ws.active) {
+  canvasStore.connect(roomStore.roomId, roomStore.userAnonymous, (frame) => {
+    console.log('ws disconnected:', frame)
+    ElMessage.error({
+      message: frame.headers.message
+    })
+    router.replace('/')
   })
-  router.replace('/')
-})
+}
 /**
  * 绑定mouse事件
  */

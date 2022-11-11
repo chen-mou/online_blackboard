@@ -20,9 +20,10 @@ const roomStore = useRoomStore();
 export const useCanvasStore = defineStore('canvas', {
   state: () => ({
     canvas: {} as Canvas,
-    ws: {} as {
+    ws: { active: false } as {
       send: (id: string, data: unknown) => void
-      close: () => void
+      close: () => void,
+      active: boolean,
     },
     _otherUsers: [] as any[],
     sheetId: 0,
@@ -41,7 +42,10 @@ export const useCanvasStore = defineStore('canvas', {
         id: 'err',
         channel: '/user/queue/error',
         callback: this._wsErrReceive
-      }], onDisconnect)
+      }], (frame) => {
+        onDisconnect(frame)
+        this.ws.active = false
+      })
     },
     _wsRoomReceive(frame: IFrame) {
       const d = JSON.parse(frame.body);
@@ -49,6 +53,7 @@ export const useCanvasStore = defineStore('canvas', {
         return
       }
       this.canvas.layers.data.push(wsShapeToShape(d))
+      this.canvas.layers.drawData()
     },
     _wsUserReceive(frame: IFrame) {
       const d = JSON.parse(frame.body)
@@ -56,7 +61,7 @@ export const useCanvasStore = defineStore('canvas', {
         d.data = snappy.uncompress(new TextEncoder().encode(d.data)).toString()
       }
       d.data = JSON.parse(d.data)
-      ;(userInfoMessageResolver as any)[d.type](this, d)
+      userInfoMessageResolver[d.type](this, d)
     },
     _wsErrReceive(frame: IFrame) {
       ElMessage.error({
@@ -64,7 +69,6 @@ export const useCanvasStore = defineStore('canvas', {
       })
     },
     initCanvas() {
-      // let PointData = []
       let beforePosition = [0, 0]
       let AfterPosition = [0, 0]
       let IsDrawing = false
@@ -126,13 +130,13 @@ export const useCanvasStore = defineStore('canvas', {
             canvas.context.clearRect(0, 0, 1600, 1600)
             canvas.DrawClass.BeforePosition = beforePosition
             canvas.DrawClass.AfterPosition = AfterPosition
-          }else{
+          } else {
             /**
              * 存入data
              */
-             (canvas.DrawClass as FreeLine).data.push({
-              x:e.pageX - x,
-              y:e.pageY - y
+            (canvas.DrawClass as FreeLine).data.push({
+              x: e.pageX - x,
+              y: e.pageY - y
             })
           }
 
@@ -150,19 +154,25 @@ export const useCanvasStore = defineStore('canvas', {
         }
 
         if (canvas.DrawClass.type !== 'freeLine') {
-          canvas.layers.data.push({
+          // canvas.layers.data.push({
+          //   type: canvas.DrawClass.type,
+          //   BeforePosition: beforePosition,
+          //   AfterPosition: AfterPosition,
+          //   pen: deepCopy(canvas.pen)
+          // })
+          this.ws.send('room', shapeToWSShape({
             type: canvas.DrawClass.type,
             BeforePosition: beforePosition,
             AfterPosition: AfterPosition,
             pen: deepCopy(canvas.pen)
-          })
+          }, this.sheetId, roomStore.roomId))
         } else {
           canvas.layers.data.push({
             type: canvas.DrawClass.type,
             BeforePosition: beforePosition,
             AfterPosition: AfterPosition,
             pen: deepCopy(canvas.pen),
-            data:(canvas.DrawClass as FreeLine).data
+            data: (canvas.DrawClass as FreeLine).data
           });
 
         }
@@ -171,17 +181,17 @@ export const useCanvasStore = defineStore('canvas', {
          * 鼠标画完之后画入第二层
          * 画入后清空上一层画布
          */
-         const { strokeStyle, fillStyle,linewidth} = canvas.pen as Pen
-         canvas.layers.context.strokeStyle = strokeStyle
-         canvas.layers.context.fillStyle = fillStyle
-         canvas.layers.context.lineWidth=linewidth
+        const { strokeStyle, fillStyle, linewidth } = canvas.pen as Pen
+        canvas.layers.context.strokeStyle = strokeStyle
+        canvas.layers.context.fillStyle = fillStyle
+        canvas.layers.context.lineWidth = linewidth
         if (canvas.DrawClass.type !== 'freeLine') {
           ShapeMap.get(canvas.DrawClass.type)?.draw(canvas.layers)
-        }else{
+        } else {
 
-        ShapeMap.get(canvas.DrawClass.type)?.draw(canvas.layers);
-        console.log(   "aaaaaaaaaaaaaa", (canvas.DrawClass as FreeLine).data);
-        (canvas.DrawClass as FreeLine).data=[]
+          ShapeMap.get(canvas.DrawClass.type)?.draw(canvas.layers);
+          console.log("aaaaaaaaaaaaaa", (canvas.DrawClass as FreeLine).data);
+          (canvas.DrawClass as FreeLine).data = []
         }
         canvas.context.clearRect(0, 0, 1600, 1600)
         console.log(canvas)
