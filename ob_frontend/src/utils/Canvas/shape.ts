@@ -181,11 +181,12 @@ class Ellipse extends BaseShape {
   draw (canvas: Canvas) {
     canvas.context.beginPath()
     canvas.context.ellipse(
-      100,
-      100,
-      50,
-      75,
-      (45 * Math.PI) / 180,
+      this.BeforePosition[0],
+      this.BeforePosition[1],
+      Math.abs(   this.AfterPosition[1]-this.BeforePosition[1]),
+      Math.abs(this.AfterPosition[0]-this.BeforePosition[0]),
+
+      (90 * Math.PI) / 180,
       0,
       2 * Math.PI
     )
