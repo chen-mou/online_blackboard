@@ -1,7 +1,6 @@
 package com.obb.online_blackboard.config;
 
 import com.obb.online_blackboard.handler.JsonMessageHandler;
-import com.obb.online_blackboard.handler.ShapeHandler;
 import com.obb.online_blackboard.interceptor.MessageInterceptor;
 import com.obb.online_blackboard.interceptor.PrincipalInterceptor;
 import lombok.extern.slf4j.Slf4j;
@@ -84,7 +83,6 @@ public class Websocket implements WebSocketMessageBrokerConfigurer {
         /*注意这个顺序和执行顺序要是一致的*/
 
         argumentResolvers.add(new JsonMessageHandler());
-        argumentResolvers.add(new ShapeHandler());
     }
 
     @Override

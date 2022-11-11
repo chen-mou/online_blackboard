@@ -107,10 +107,10 @@ public class RoomService {
         if(isAnonymous == 1){
             user.setNickname("匿名用户");
         }
-        userModel.saveData(user);
         if(!inRoom(r.getId(), userId)){
             template.convertAndSend("/exchange/room/" + roomId, Message.def("user_join", user));
         }
+        userModel.saveData(user);
         return r;
     }
 
@@ -145,9 +145,9 @@ public class RoomService {
         if(!inRoom(r.getId(), userId)){
             throw new OperationException(403, "不在房间中不能获取房间信息");
         }
-        String url = getVoiceUrl(roomId, userId);
+//        String url = getVoiceUrl(roomId, userId);
         template.convertAndSendToUser(String.valueOf(userId), "/queue/info", Message.def("room_info", r));
-        template.convertAndSendToUser(String.valueOf(userId), "/queue/info", Message.def("voice_url", url));
+//        template.convertAndSendToUser(String.valueOf(userId), "/queue/info", Message.def("voice_url", url));
         return r;
     }
 

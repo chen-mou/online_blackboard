@@ -28,6 +28,12 @@ public interface UserDao {
     @Insert("insert into user_data value(NULL, #{userId}, #{nickname}, #{avatar})")
     int createData(UserDataEntity userData);
 
-    @Update("update user_data set nickname=#{newName}")
-    int updateNickname(String newName);
+    @Update("<script>" +
+            "update user_data set " +
+            "<if test='newName != null'> nickname=#{newName},</if>" +
+            "<if test='avatar != null'> avatar=#{avatar},</if>" +
+            "id = id" +
+            " where user_id = #{userId}" +
+            "</script>")
+    int updateNickname(String newName, Integer avatar, long userId);
 }

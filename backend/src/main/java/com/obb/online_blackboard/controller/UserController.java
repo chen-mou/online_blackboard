@@ -78,8 +78,8 @@ public class UserController {
     }
 
     @PostMapping("/nickname")
-    public Result updateNickname(@RequestBody UserDataEntity userData) {
-        userService.updateNickname(userData.getNickname());
+    public Result update(@RequestBody UserDataEntity userData, @UserInfo UserEntity user) {
+        userService.updateNickname(userData.getNickname(), userData.getAvatar(), user.getId());
         return Result.success("修改成功", null);
     }
 }

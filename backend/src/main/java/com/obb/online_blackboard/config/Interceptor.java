@@ -1,7 +1,6 @@
 package com.obb.online_blackboard.config;
 
 import com.obb.online_blackboard.handler.JsonKeyHandler;
-import com.obb.online_blackboard.handler.ShapeHandler;
 import com.obb.online_blackboard.handler.UserInfoHandler;
 import com.obb.online_blackboard.interceptor.CrossInterceptor;
 import com.obb.online_blackboard.interceptor.LoginInterceptor;

@@ -1,9 +1,12 @@
 package com.obb.online_blackboard.model;
 
+import com.obb.online_blackboard.dao.mysql.FileDao;
 import com.obb.online_blackboard.dao.mysql.UserDao;
 import com.obb.online_blackboard.dao.redis.UserDataDao;
+import com.obb.online_blackboard.entity.FileRoleEntity;
 import com.obb.online_blackboard.entity.UserDataEntity;
 import com.obb.online_blackboard.entity.UserEntity;
+import com.obb.online_blackboard.exception.OperationException;
 import org.apache.catalina.User;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.domain.Example;
@@ -41,6 +44,9 @@ public class UserModel {
 
     @Resource
     UserDataDao userDataDao;
+
+    @Resource
+    FileDao fileDao;
 
     @Resource
     Id id;
@@ -81,8 +87,14 @@ public class UserModel {
     }
 
     @Transactional(rollbackFor = {Exception.class})
-    public void updateNickname(String newName) {
-        userDao.updateNickname(newName);
+    public void updateNickname(String newName, Integer avatar, long userId) {
+        if(avatar != null){
+            FileRoleEntity fileRole = fileDao.userRoleFile("avatar", userId, avatar);
+            if(fileRole == null){
+                throw new OperationException(403, "这不是你的头像");
+            }
+        }
+        userDao.updateNickname(newName, avatar, userId);
     }
 
     public List<UserDataEntity> getUserDataByRoomId(long roomId){
