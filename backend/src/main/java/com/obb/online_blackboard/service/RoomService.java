@@ -9,6 +9,7 @@ import com.obb.online_blackboard.exception.OperationException;
 import com.obb.online_blackboard.model.RoomModel;
 import com.obb.online_blackboard.model.SheetModel;
 import com.obb.online_blackboard.model.UserModel;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -17,10 +18,12 @@ import org.springframework.web.server.WebSession;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.handler.ConcurrentWebSocketSessionDecorator;
 import tool.result.Message;
+import tool.util.JWT;
 import tool.util.WebSocketSession;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -50,6 +53,23 @@ public class RoomService {
 
     @Resource
     SimpMessagingTemplate template;
+
+    @Value("${server.voice.key}")
+    String VOICE_KEY;
+
+    @Value("${server.voice.url}")
+    String baseURL;
+
+    public void verifyRoom(long roomId, long userId){
+        RoomEntity r = roomModel.getRoomById(roomId);
+        if(!r.getStatus().equals("meeting")){
+            throw new OperationException(500, "会议未开始或已结束");
+        }
+        UserDataEntity user = userModel.getUserById(userId);
+        if(user.getNowRoom() != roomId){
+            throw new OperationException(500, "你不在当前房间内");
+        }
+    }
 
     @Transactional
     public RoomEntity createRoom(RoomSettingEntity setting, long userId){
@@ -125,7 +145,9 @@ public class RoomService {
         if(!inRoom(r.getId(), userId)){
             throw new OperationException(403, "不在房间中不能获取房间信息");
         }
+        String url = getVoiceUrl(roomId, userId);
         template.convertAndSendToUser(String.valueOf(userId), "/queue/info", Message.def("room_info", r));
+        template.convertAndSendToUser(String.valueOf(userId), "/queue/info", Message.def("voice_url", url));
         return r;
     }
 
@@ -190,6 +212,16 @@ public class RoomService {
     private boolean inRoom(long roomId, long userId){
         UserDataEntity data = userModel.getUserById(userId);
         return data.getNowRoom().equals(roomId);
+    }
+
+    private String getVoiceUrl(long roomId, long userId){
+        String token = JWT.encode(new HashMap<>(){
+            {
+                put("roomId", String.valueOf(roomId));
+                put("userId", String.valueOf(userId));
+            }
+        }, "", VOICE_KEY);
+        return baseURL + "/live/" + roomId+"?token=" + token;
     }
 
 }
