@@ -16,33 +16,46 @@ export const useCanvasStore = defineStore('canvas', {
       close: () => void
     },
     _otherUsers: [] as any[],
-    sheetId: 0,
+    sheetId: 0
   }),
   actions: {
-    connect(roomId: string, isAnonymous: number, onDisconnect: (frame: IFrame) => void) {
-      this.ws = useWs(roomId, isAnonymous, [{
-        channel: `/exchange/room/${roomId}`,
-        callback: this._wsRoomReceive
-      }, {
-        channel: '/user/queue/info',
-        callback: this._wsUserReceive
-      }, {
-        channel: '/user/queue/error',
-        callback: this._wsErrReceive
-      }], onDisconnect)
+    connect (
+      roomId: string,
+      isAnonymous: number,
+      onDisconnect: (frame: IFrame) => void
+    ) {
+      this.ws = useWs(
+        roomId,
+        isAnonymous,
+        [
+          {
+            channel: `/exchange/room/${roomId}`,
+            callback: this._wsRoomReceive
+          },
+          {
+            channel: '/user/queue/info',
+            callback: this._wsUserReceive
+          },
+          {
+            channel: '/user/queue/error',
+            callback: this._wsErrReceive
+          }
+        ],
+        onDisconnect
+      )
     },
-    _wsRoomReceive(frame: IFrame) {
+    _wsRoomReceive (frame: IFrame) {
       console.log('room', frame.body)
     },
-    _wsUserReceive(frame: IFrame) {
+    _wsUserReceive (frame: IFrame) {
       console.log('user', frame.body)
     },
-    _wsErrReceive(frame: IFrame) {
+    _wsErrReceive (frame: IFrame) {
       ElMessage.error({
         message: frame.body
       })
     },
-    initCanvas() {
+    initCanvas () {
       // let PointData = []
       let beforePosition = [0, 0]
       let AfterPosition = [0, 0]
@@ -58,8 +71,8 @@ export const useCanvasStore = defineStore('canvas', {
         canvas = new Canvas({ canvas: 'canvas' })
         canvas.layers = new Canvas({ canvas: 'canvas2' })
         this.canvas = canvas
-          this.canvas.layers.context.globalCompositeOperation ="destination-over"
-
+        this.canvas.layers.context.globalCompositeOperation = 'destination-over'
+        this.canvas.context.globalCompositeOperation = 'destination-over'
       }
 
       const { x, y } = getElPagePos(
@@ -95,9 +108,15 @@ export const useCanvasStore = defineStore('canvas', {
            * 清空之后全部重新绘制
            */
           // canvas.drawData()
-          canvas.context.clearRect(0, 0, 1600, 1600)
-          canvas.DrawClass.BeforePosition = beforePosition
-          canvas.DrawClass.AfterPosition = AfterPosition
+          if (canvas.DrawClass.type !== 'freeLine') {
+            canvas.context.clearRect(0, 0, 1600, 1600)
+            canvas.DrawClass.BeforePosition = beforePosition
+            canvas.DrawClass.AfterPosition = AfterPosition
+          }else{
+            canvas.DrawClass.BeforePosition = canvas.DrawClass.AfterPosition
+            canvas.DrawClass.AfterPosition = AfterPosition
+          }
+
           canvas.DrawClass.draw(canvas)
         }
       })
@@ -110,18 +129,33 @@ export const useCanvasStore = defineStore('canvas', {
         if (!IsDrawing) {
           return
         }
-        canvas.layers.data.push({
-          type: canvas.DrawClass.type,
-          BeforePosition: beforePosition,
-          AfterPosition: AfterPosition,
-          pen: deepCopy(canvas.pen)
-        })
+
+        if (canvas.DrawClass.type !== 'freeLine') {
+          canvas.layers.data.push({
+            type: canvas.DrawClass.type,
+            BeforePosition: beforePosition,
+            AfterPosition: AfterPosition,
+            pen: deepCopy(canvas.pen)
+          })
+        } else {
+          canvas.layers.data.push({
+            type: canvas.DrawClass.type,
+            BeforePosition: beforePosition,
+            AfterPosition: AfterPosition,
+            pen: deepCopy(canvas.pen),
+            file: canvas.context.getImageData(0, 0, 1600, 1600)
+          })
+        }
         IsDrawing = false
         /**
          * 鼠标画完之后画入第二层
          * 画入后清空上一层画布
          */
-        ShapeMap.get(canvas.DrawClass.type)?.draw(canvas.layers)
+        if (canvas.DrawClass.type !== 'freeLine') {
+          ShapeMap.get(canvas.DrawClass.type)?.draw(canvas.layers)
+        }else{
+        ShapeMap.get(canvas.DrawClass.type)?.draw(canvas.layers, canvas.context.getImageData(0, 0, 1600, 1600))
+        }
         canvas.context.clearRect(0, 0, 1600, 1600)
         console.log(canvas)
       })
@@ -136,7 +170,7 @@ export const useCanvasStore = defineStore('canvas', {
         canvas.drawControlBorder(e.pageX - x, e.pageY - y)
         canvas.data = []
       })
-    },
+    }
   },
   getters: {}
 })
