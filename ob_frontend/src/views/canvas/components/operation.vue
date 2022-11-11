@@ -55,7 +55,7 @@ onMounted(() => {
  */
 const cleanCanvas = () => {
   if (canvas.value) {
-    canvas.value.data = []
+    canvas.value.layers.data = []
     // canvas.value?.drawData()
     canvas.value.layers.drawData()
   }

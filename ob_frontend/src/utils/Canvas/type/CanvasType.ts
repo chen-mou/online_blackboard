@@ -9,7 +9,7 @@ export type ShapeDataType ={
     pen:Pen|null
     file?:ImageData
     text?:string
-    
+    data?:Array<Point>
 }
 
 /**

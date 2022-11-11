@@ -7,6 +7,7 @@ import { IFrame } from '@stomp/stompjs'
 import { ElMessage } from 'element-plus'
 import { ShapeDataType } from '@/utils/Canvas/type/CanvasType'
 import ShapeMap from '@/utils/Canvas/ShapeMap'
+import { FreeLine } from '@/utils/Canvas/shape'
 import { userInfoMessageResolver } from "@/utils/messageResolver";
 import { shapeToWSShape, wsShapeToShape } from "@/utils/convert";
 import { useRoomStore } from "@/store/room";
@@ -78,6 +79,8 @@ export const useCanvasStore = defineStore('canvas', {
         canvas = new Canvas({ canvas: 'canvas' })
         canvas.layers = new Canvas({ canvas: 'canvas2' })
         this.canvas = canvas
+        this.canvas.layers.context.globalCompositeOperation = 'destination-over'
+        this.canvas.context.globalCompositeOperation = 'destination-over'
       }
 
       const { x, y } = getElPagePos(
@@ -93,6 +96,12 @@ export const useCanvasStore = defineStore('canvas', {
         canvas.DrawClass.BeforePosition = beforePosition
         prepareDrawing = true
         showLine = true
+        if (canvas.DrawClass.type === 'freeLine') {
+            (canvas.DrawClass as FreeLine).data.push({
+              x:e.pageX - x,
+              y:e.pageY - y
+            })
+        }
       })
 
       canvas.canvas.addEventListener('mousemove', e => {
@@ -113,9 +122,20 @@ export const useCanvasStore = defineStore('canvas', {
            * 清空之后全部重新绘制
            */
           // canvas.drawData()
-          canvas.context.clearRect(0, 0, 1600, 1600)
-          canvas.DrawClass.BeforePosition = beforePosition
-          canvas.DrawClass.AfterPosition = AfterPosition
+          if (canvas.DrawClass.type !== 'freeLine') {
+            canvas.context.clearRect(0, 0, 1600, 1600)
+            canvas.DrawClass.BeforePosition = beforePosition
+            canvas.DrawClass.AfterPosition = AfterPosition
+          }else{
+            /**
+             * 存入data
+             */
+             (canvas.DrawClass as FreeLine).data.push({
+              x:e.pageX - x,
+              y:e.pageY - y
+            })
+          }
+
           canvas.DrawClass.draw(canvas)
         }
       })
@@ -128,26 +148,34 @@ export const useCanvasStore = defineStore('canvas', {
         if (!IsDrawing) {
           return
         }
-        // 发送到 ws
-        this.ws.send('room', shapeToWSShape({
-          type: canvas.DrawClass.type,
-          BeforePosition: beforePosition,
-          AfterPosition: AfterPosition,
-          pen: deepCopy(canvas.pen)
-        }, this.sheetId, roomStore.roomId))
 
-        // canvas.layers.data.push({
-        //   type: canvas.DrawClass.type,
-        //   BeforePosition: beforePosition,
-        //   AfterPosition: AfterPosition,
-        //   pen: deepCopy(canvas.pen)
-        // })
+        if (canvas.DrawClass.type !== 'freeLine') {
+          canvas.layers.data.push({
+            type: canvas.DrawClass.type,
+            BeforePosition: beforePosition,
+            AfterPosition: AfterPosition,
+            pen: deepCopy(canvas.pen)
+          })
+        } else {
+          canvas.layers.data.push({
+            type: canvas.DrawClass.type,
+            BeforePosition: beforePosition,
+            AfterPosition: AfterPosition,
+            pen: deepCopy(canvas.pen),
+            data:(canvas.DrawClass as FreeLine).data
+          })
+        }
         IsDrawing = false
         /**
          * 鼠标画完之后画入第二层
          * 画入后清空上一层画布
          */
-        ShapeMap.get(canvas.DrawClass.type)?.draw(canvas.layers)
+        if (canvas.DrawClass.type !== 'freeLine') {
+          ShapeMap.get(canvas.DrawClass.type)?.draw(canvas.layers)
+        }else{
+        ShapeMap.get(canvas.DrawClass.type)?.draw(canvas.layers);
+        (canvas.DrawClass as FreeLine).data=[]
+        }
         canvas.context.clearRect(0, 0, 1600, 1600)
         console.log(canvas)
       })
