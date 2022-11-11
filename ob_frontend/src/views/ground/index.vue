@@ -64,6 +64,7 @@ export default defineComponent({
         endTime: this.toDatetime,
         startNow: this.startNow,
         name: this.roomName,
+        now: this.startNow,
       }
       let msg: string = await this.roomStore.createRoom(data)
       if (msg) {

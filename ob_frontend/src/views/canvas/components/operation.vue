@@ -6,11 +6,17 @@
       </el-icon>
       <span>清空</span>
     </div>
-    <div @click="turnBack">
+    <div @click="undo">
       <el-icon>
-        <Refresh/>
+        <Back/>
       </el-icon>
-      <span>回退</span>
+      <span>撤销</span>
+    </div>
+    <div @click="redo">
+      <el-icon>
+        <Right/>
+      </el-icon>
+      <span>恢复</span>
     </div>
     <div @click="exportAsPng">
       <el-icon>
@@ -42,6 +48,7 @@ import Canvas from "@/utils/Canvas/canvas";
 import { inject, nextTick, onMounted, reactive, ref } from "vue"
 import { bytesToInt32, int32ToBytes } from "@/utils/convert";
 import { ElMessage } from "element-plus";
+import { useCanvasStore } from "@/store/canvas";
 
 let canvas = ref<Canvas>()
 onMounted(() => {
@@ -118,9 +125,13 @@ const importPng = (e: any) => {
 /**
  * 实现回退功能
  */
-const turnBack = () => {
-  canvas.value!.layers.data = canvas.value!.layers.data.slice(0, canvas.value!.data.length - 1)
-  canvas.value?.layers.drawData()
+const canvasStore = useCanvasStore()
+const undo = () => {
+  canvasStore.undo()
+}
+
+const redo = () => {
+  canvasStore.redo()
 }
 </script>
 
@@ -147,6 +158,11 @@ input {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+}
+
+.operations > *:hover {
+  cursor: pointer;
+  background-color: #dcefff;
 }
 
 .load-img {

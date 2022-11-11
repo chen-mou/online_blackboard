@@ -8,7 +8,7 @@ import { ElMessage } from 'element-plus'
 import { Pen, ShapeDataType } from '@/utils/Canvas/type/CanvasType'
 import ShapeMap from '@/utils/Canvas/ShapeMap'
 import { FreeLine } from '@/utils/Canvas/shape'
-import { userInfoMessageResolver } from "@/utils/messageResolver";
+import { roomMessageResolver, userInfoMessageResolver } from "@/utils/messageResolver";
 import { shapeToWSShape, wsShapeToShape } from "@/utils/convert";
 import { useRoomStore } from "@/store/room";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -22,6 +22,7 @@ export const useCanvasStore = defineStore('canvas', {
     canvas: {} as Canvas,
     ws: { active: false } as {
       send: (id: string, data: unknown) => void
+      sendRaw: (destination: string, headers: { [p: string]: any }, body: string) => void,
       close: () => void,
       active: boolean,
     },
@@ -48,11 +49,12 @@ export const useCanvasStore = defineStore('canvas', {
       })
     },
     _wsRoomReceive(frame: IFrame) {
-      const d = JSON.parse(frame.body);
-      if (d.sheetId !== this.sheetId) {
-        return
+      const d = JSON.parse(frame.body)
+      if (d.zip) {
+        d.data = snappy.uncompress(new TextEncoder().encode(d.data)).toString()
       }
-      this.canvas.layers.data.push(wsShapeToShape(d))
+      d.data = JSON.parse(d.data)
+      roomMessageResolver[d.type](this, d)
       this.canvas.layers.drawData()
     },
     _wsUserReceive(frame: IFrame) {
@@ -130,13 +132,13 @@ export const useCanvasStore = defineStore('canvas', {
             canvas.context.clearRect(0, 0, 1600, 1600)
             canvas.DrawClass.BeforePosition = beforePosition
             canvas.DrawClass.AfterPosition = AfterPosition
-          }else{
+          } else {
             /**
              * 存入data
              */
-             (canvas.DrawClass as FreeLine).data.push({
-              x:e.pageX - x,
-              y:e.pageY - y
+            (canvas.DrawClass as FreeLine).data.push({
+              x: e.pageX - x,
+              y: e.pageY - y
             })
           }
 
@@ -181,13 +183,13 @@ export const useCanvasStore = defineStore('canvas', {
          * 鼠标画完之后画入第二层
          * 画入后清空上一层画布
          */
-        changePen(canvas.layers.context,canvas.pen)
+        changePen(canvas.layers.context, canvas.pen)
         if (canvas.DrawClass.type !== 'freeLine') {
           ShapeMap.get(canvas.DrawClass.type)?.draw(canvas.layers)
-        }else{
+        } else {
 
-        ShapeMap.get(canvas.DrawClass.type)?.draw(canvas.layers);
-        (canvas.DrawClass as FreeLine).data=[]
+          ShapeMap.get(canvas.DrawClass.type)?.draw(canvas.layers);
+          (canvas.DrawClass as FreeLine).data = []
         }
         canvas.context.clearRect(0, 0, 1600, 1600)
         console.log(canvas)
@@ -204,6 +206,12 @@ export const useCanvasStore = defineStore('canvas', {
         canvas.data = []
       })
     },
+    undo() {
+      this.ws.sendRaw('/app/rollback', {}, JSON.stringify({ roomId: roomStore.roomId, sheetId: this.sheetId }))
+    },
+    redo() {
+      this.ws.sendRaw('/app/redo', {}, JSON.stringify({ roomId: roomStore.roomId, sheetId: this.sheetId }))
+    }
   },
   getters: {}
 })
