@@ -54,6 +54,7 @@ class Rectangle extends BaseShape {
  * 自由线条
  */
 class Line extends BaseShape {
+
   constructor (
     BeforePosition: Array<number> = [0, 0],
     AfterPosition: Array<number> = [0, 0]
@@ -142,6 +143,7 @@ class ShapeImg extends BaseShape {
 }
 
 class FreeLine extends BaseShape {
+  data: Array<Point> = []
   constructor (
     BeforePosition: Array<number> = [0, 0],
     AfterPosition: Array<number> = [0, 0]
@@ -150,23 +152,18 @@ class FreeLine extends BaseShape {
     this.type = 'freeLine'
     this.icon = '/canvsShapeImg/rect.png'
   }
-  draw (canvas: Canvas, file?: ImageData) {
-    /**
-     * freeLine 作为图片导出
-     * 因为绘入第二图层为图片
-     */
-    if (file) {
+  draw (canvas: Canvas ) {
       /**
-       * 画入图片
+       * 从data中读取数据
        */
-      canvas.context.putImageData(file, 0, 0)
-    } else {
-      canvas.context.beginPath()
-      canvas.context.moveTo(this.BeforePosition[0], this.BeforePosition[1])
-      canvas.context.lineTo(this.AfterPosition[0], this.AfterPosition[1])
-      canvas.context.stroke()
-      canvas.context.closePath()
-    }
+      for(let i=1;i<this.data.length;i++)
+      {
+        canvas.context.beginPath()
+        canvas.context.moveTo(this.data[i-1].x, this.data[i-1].y)
+        canvas.context.lineTo(this.data[i].x, this.data[i].y)
+        canvas.context.stroke()
+        canvas.context.closePath()
+      }
   }
 }
 class Ellipse extends BaseShape {
