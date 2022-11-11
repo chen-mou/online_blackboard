@@ -41,7 +41,7 @@ public class RoomSettingEntity extends Date {
 
     private boolean now;
 
-    @NotNull
+//    @NotNull
     @JsonFormat(locale = "zh",timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm")
     private java.util.Date startTime;
 

@@ -45,6 +45,7 @@ public class RoomController {
         Date end = setting.getEndTime();
         if(setting.isNow()){
             start = new Date();
+            setting.setStartTime(start);
         }
         if(!setting.isNow() && start.getTime() < new Date().getTime() - 5 * 60 * 10000){
             throw new OperationException(500, "开始时间不能小于当前时间");
