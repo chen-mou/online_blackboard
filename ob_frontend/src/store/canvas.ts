@@ -57,6 +57,8 @@ export const useCanvasStore = defineStore('canvas', {
         canvas = new Canvas({ canvas: 'canvas' })
         canvas.layers = new Canvas({ canvas: 'canvas2' })
         this.canvas = canvas
+          this.canvas.layers.context.globalCompositeOperation ="destination-over"
+
       }
 
       const { x, y } = getElPagePos(

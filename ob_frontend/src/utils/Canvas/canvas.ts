@@ -74,7 +74,6 @@ class Canvas {
     }
     this.context.strokeStyle = this.pen.strokeStyle
     this.context.fillStyle = this.pen.fillStyle
-    this.layers.context.globalCompositeOperation ="destination-over"
     return this
   }
   // init(){
