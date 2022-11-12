@@ -20,9 +20,12 @@ const shapeTypeMap: { [k: string]: string } = {
   line: 'Line',
   freeLine: 'FreeLine',
   FreeLine: 'freeLine',
+  ellipse: 'Ellipse',
+  Ellipse: 'ellipse',
 }
 
 export function shapeToWSShape(shape: any, sheetId: number, roomId: number): any {
+  console.log(shape)
   const data = {
     "shape": {
       "type": shapeTypeMap[shape.type],
