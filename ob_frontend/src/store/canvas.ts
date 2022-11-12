@@ -163,12 +163,12 @@ export const useCanvasStore = defineStore('canvas', {
         }
 
         if (canvas.DrawClass.type !== 'freeLine') {
-          // canvas.layers.data.push({
-          //   type: canvas.DrawClass.type,
-          //   BeforePosition: beforePosition,
-          //   AfterPosition: AfterPosition,
-          //   pen: deepCopy(canvas.pen)
-          // })
+          canvas.layers.data.push({
+            type: canvas.DrawClass.type,
+            BeforePosition: beforePosition,
+            AfterPosition: AfterPosition,
+            pen: deepCopy(canvas.pen)
+          })
           const roomStore = useRoomStore()
           this.ws.sendRaw('/app/draw', {}, JSON.stringify(shapeToWSShape({
             type: canvas.DrawClass.type,
@@ -194,12 +194,12 @@ export const useCanvasStore = defineStore('canvas', {
          */
         changePen(canvas.layers.context, canvas.pen)
         if (canvas.DrawClass.type !== 'freeLine') {
+          console.log(canvas)
           ShapeMap.get(canvas.DrawClass.type)?.draw(canvas.layers)
         } else {
           ShapeMap.get(canvas.DrawClass.type)?.draw(canvas.layers);
           (canvas.DrawClass as FreeLine).data = []
         }
-
 
         canvas.context.clearRect(0, 0, 1600, 1600)
       })
