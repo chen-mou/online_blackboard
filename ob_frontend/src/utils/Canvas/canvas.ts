@@ -136,7 +136,7 @@ class Canvas {
             )
       ) {
         this.context.beginPath()
-        this.context.setLineDash([5, 5])
+        // this.context.setLineDash([5, 5])
         /**
          * 拉入黑名单，重绘
          */
