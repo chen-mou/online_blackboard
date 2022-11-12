@@ -43,7 +43,12 @@ const msgStyle = computed(() => {
     </div>
   </div>
   <p class="message-time" :style="{float:msg.sender === userStore.userId?'right':'left'}">
-    {{ dayjs(msg.time).format('YYYY-MM-DD HH:mm') }}</p>
+    {{ dayjs(msg.time).format('YYYY-MM-DD HH:mm') }}
+    <el-tag type="warning" effect="plain" v-if="msg.getter!==0&&msg.sender===userStore.userId">
+      给{{ msg.getterName }}的私聊
+    </el-tag>
+    <el-tag type="warning" effect="plain" v-if="msg.getter===userStore.userId">给我的私聊</el-tag>
+  </p>
 </template>
 
 <style scoped>
