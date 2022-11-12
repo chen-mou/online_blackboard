@@ -85,6 +85,13 @@ public class RoomModel {
         template.update(update);
     }
 
+    public void updateStatus(String status, long roomId){
+        RoomEntity room = new RoomEntity();
+        room.setStatus(status);
+        room.setId(roomId);
+        roomDbDao.update(room);
+    }
+
     public String createSetting(RoomSettingEntity setting, long userId, long roomId){
         setting.setId(String.valueOf(id.getId("room_setting")));
         setting.setCreatorId(userId);
@@ -148,6 +155,13 @@ public class RoomModel {
                 shapes.forEach(item1 -> shapeModel.delete(item1.getId()));
             });
         });
+    }
+
+    public void deleteDb(long roomId){
+        RoomEntity room = new RoomEntity();
+        room.setId(roomId);
+        room.setStatus("del");
+        roomDbDao.update(room);
     }
 
     public void updateRoomSetting(RoomSettingEntity setting){

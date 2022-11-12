@@ -12,7 +12,12 @@
 打包后的文件执行
 
 ``
-java -jar 打包后的文件名
+java -jar -Dspring.profiles.active=根据你的配置来定 打包后的文件名
 ``
 
 即可以部署项目
+
+
+# 配置项
+
+详情请看application.yml文件

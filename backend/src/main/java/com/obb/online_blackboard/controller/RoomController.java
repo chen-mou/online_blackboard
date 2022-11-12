@@ -62,6 +62,12 @@ public class RoomController {
         return Result.success("创建成功", room);
     }
 
+    @PostMapping("/delete")
+    public Result delete(@UserInfo UserEntity user, @JsonKey long roomId){
+        roomService.delete(roomId, user.getId());
+        return Result.success("删除成功", null);
+    }
+
     @GetMapping("/inRoom")
     public Result inRoom(@RequestParam long userId, @RequestParam long roomId){
         roomService.verifyRoom(roomId, userId);

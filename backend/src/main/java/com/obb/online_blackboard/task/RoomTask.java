@@ -52,10 +52,9 @@ public class RoomTask {
             item.setTimeout(setting.getEndTime().getTime() - setting.getStartTime().getTime() + 3 * 60 * 60 * 1000);
             item.getSheets().add(sheet.getId());
             item.setNowSheet(sheet.getId());
-            item.setStatus("meeting");
             item.setLoaded(1);
         });
-        roomDbDao.updateAll(rooms, 1, "meeting");
+        roomDbDao.updateAll(rooms, 1);
         for(RoomEntity room : rooms){
             roomDao.save(room);
         }
@@ -63,7 +62,14 @@ public class RoomTask {
 
     @Scheduled(cron = "* * */1 * * *")
     public void cleanOverRoom(){
-        ArrayList<RoomEntity> rooms = new ArrayList<>((Collection) roomDao.findAll());
+        Iterable<RoomEntity> iterable = roomDao.findAll();
+        ArrayList<RoomEntity> rooms = new ArrayList<>(){
+            {
+                iterable.forEach(item -> {
+                    add(item);
+                });
+            }
+        };
         roomDbDao.cleanOver(new Date(), rooms);
     }
 

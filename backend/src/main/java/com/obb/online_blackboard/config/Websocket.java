@@ -109,6 +109,9 @@ public class Websocket implements WebSocketMessageBrokerConfigurer {
         RedisTemplate<String, Object> redis = (RedisTemplate<String, Object>) app.getBean("redisTemplate");
         SimpMessagingTemplate template = app.getBean(SimpMessagingTemplate.class);
         Object userId = redis.opsForValue().get("session:" + sha.getSessionId());
+
+        redis.delete("session:" + sha.getSessionId());
+        redis.delete("user_session:" + userId);
         template.convertAndSend("/exchange/room/", Message.def("change_status", new HashMap<>(){
             {
                 put("userId", userId);

@@ -90,7 +90,7 @@ public class RoomService {
         if(r == null) {
             throw new OperationException(404, "目标房间不存在");
         }
-        if(!r.getStatus().equals("meeting")){
+        if(r.getLoaded() == 0 || r.getStatus().equals("over")){
             throw new OperationException(404, "会议未开始或已经结束了");
         }
         RoomSettingEntity setting = roomModel.getRoomSettingByRoomId(roomId);
@@ -106,6 +106,10 @@ public class RoomService {
         user.setNowRoom(roomId);
         if(isAnonymous == 1){
             user.setNickname("匿名用户");
+        }
+        if(r.getStatus().equals("no_start")){
+            roomModel.updateRoom(roomId, "status", "meeting");
+            roomModel.updateStatus("meeting", roomId);
         }
         if(!inRoom(r.getId(), userId)){
             template.convertAndSend("/exchange/room/" + roomId, Message.def("user_join", user));
@@ -177,6 +181,18 @@ public class RoomService {
                     template.convertAndSend("/exchange/room/" + r.getId(), Message.def("change_sheet", sheet));
             }
         }
+    }
+
+    public void delete(long roomId, long userId){
+        RoomEntity r = roomModel.getVerifyRoom(roomId);
+        if(r.getCreatorId() != userId){
+            throw new OperationException(403, "你没有权限删除这个房间");
+        }
+        if(r.getStatus().equals("meeting")){
+            throw new OperationException(500, "会议中,请结束会议后再删除房间");
+        }
+        roomModel.deleteDb(roomId);
+        if(r.getLoaded() == 1){}
     }
 
     public void quit(long userId, long roomId){

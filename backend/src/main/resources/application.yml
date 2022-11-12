@@ -45,7 +45,7 @@ server:
 spring:
   profile: local
 server:
-  uri_pre: http://localhost:18888
+  uri_pre: http://localhost:18888 #文件系统url前缀
   voice:
-    key: LAL_SERVER_KEY
-    url: localhost:18889
+    key: LAL_SERVER_KEY # lal服务器token的key
+    url: localhost:18889 # lal 服务器url
