@@ -140,8 +140,8 @@ class Canvas {
         /**
          * 拉入黑名单，重绘
          */
-        console.log(this.data.length-i-1)
-        this.layers.Blacklist.push(this.data.length-i-1)
+        console.log(i)
+        this.layers.Blacklist.push(i)
         console.log(this)
         this.layers.drawData() 
         this.context.strokeStyle = '#fa0000'

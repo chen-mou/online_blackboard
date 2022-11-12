@@ -109,12 +109,7 @@ export const useCanvasStore = defineStore('canvas', {
         canvas.DrawClass.BeforePosition = beforePosition
         prepareDrawing = true
         showLine = true
-        // if (canvas.DrawClass.type === 'freeLine') {
-        //     (canvas.DrawClass as FreeLine).data.push({
-        //       x:e.pageX - x,
-        //       y:e.pageY - y
-        //     })
-        // }
+        
       })
 
       canvas.canvas.addEventListener('mousemove', e => {
@@ -194,7 +189,6 @@ export const useCanvasStore = defineStore('canvas', {
         if (canvas.DrawClass.type !== 'freeLine') {
           ShapeMap.get(canvas.DrawClass.type)?.draw(canvas.layers)
         } else {
-
           ShapeMap.get(canvas.DrawClass.type)?.draw(canvas.layers);
           (canvas.DrawClass as FreeLine).data = []
         }
