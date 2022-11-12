@@ -2,8 +2,8 @@
     <div class="edit">
         <div style="text-align: center;">
             <svg t="1668279275914" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
-                p-id="2889" width="30" height="30" xmlns:xlink="http://www.w3.org/1999/xlink"
-                style="cursor: pointer;">
+                p-id="2889" width="30" height="30" xmlns:xlink="http://www.w3.org/1999/xlink" style="cursor: pointer; "
+                @click="closeEdit">
                 <path
                     d="M512 960c-247.039484 0-448-200.960516-448-448S264.960516 64 512 64 960 264.960516 960 512 759.039484 960 512 960zM512 128.287273c-211.584464 0-383.712727 172.128262-383.712727 383.712727 0 211.551781 172.128262 383.712727 383.712727 383.712727 211.551781 0 383.712727-172.159226 383.712727-383.712727C895.712727 300.415536 723.551781 128.287273 512 128.287273z"
                     p-id="2890" fill="#319ecc"></path>
@@ -81,7 +81,12 @@ const color = ref<string>(CanvasConfig.PenStrokeStyle)
  * 删除
  */
 
-
+/**
+ * 关闭编辑页面
+ */
+const closeEdit= ()=>{
+    canvas.value.state=false
+}
 </script>
 
 
