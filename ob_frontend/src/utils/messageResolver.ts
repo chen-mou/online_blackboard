@@ -22,6 +22,7 @@ export const userInfoMessageResolver: { [k: string]: (data: any) => void } = {
   'change_sheet': (data: any) => {
     const canvasStore = useCanvasStore()
     canvasStore.canvas.layers.data = []
+    canvasStore.canvas.canvas.height = canvasStore.canvas.canvas.height
     for (const shape of data.data.shapeEntities) {
       canvasStore.canvas.layers.data.push(wsShapeToShape(shape))
     }
@@ -61,6 +62,7 @@ export const roomMessageResolver: { [k: string]: (data: any) => void } = {
   'change_sheet': (data: any) => {
     const canvasStore = useCanvasStore()
     canvasStore.canvas.layers.data = []
+    canvasStore.canvas.canvas.height = canvasStore.canvas.canvas.height
     for (const shape of data.data.shapeEntities) {
       canvasStore.canvas.layers.data.push(wsShapeToShape(shape))
     }
