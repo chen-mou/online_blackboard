@@ -35,10 +35,10 @@ public class Message<T> {
         try {
             this.type = type;
             String str = new ObjectMapper().writeValueAsString(date);
-            if(str.length() > 1000){
-                str = new String(Snappy.compress(str, StandardCharsets.UTF_8));
-                this.isZip = true;
-            }
+//            if(str.length() > 1000){
+//                str = new String(Snappy.compress(str, StandardCharsets.UTF_8));
+//                this.isZip = true;
+//            }
             this.data = str;
         }catch (JsonProcessingException e){
             throw new OperationException(500, "消息序列化出错");
