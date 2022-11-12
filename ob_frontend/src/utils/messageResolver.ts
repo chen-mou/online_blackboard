@@ -9,10 +9,26 @@ export const userInfoMessageResolver: { [k: string]: (data: any) => void } = {
   'room_info': (data: any) => {
     // console.log(data)
     useRoomStore().setSheetIdAndIsShare(data.sheet === 0 ? data.data.nowSheet : data.sheet, data.data.setting.isShare)
+    const canvasStore = useCanvasStore();
+    canvasStore.canvas.layers.data = []
+    for (const shape of data.data.nowSheetEntity.shapeEntities) {
+      canvasStore.canvas.layers.data.push(wsShapeToShape(shape))
+    }
+    canvasStore.sheets = data.data.sheetEntities
   },
   'voice_url': (data: any) => {
     return
   },
+  'change_sheet': (data: any) => {
+    const canvasStore = useCanvasStore()
+    canvasStore.canvas.layers.data = []
+    for (const shape of data.data.shapeEntities) {
+      canvasStore.canvas.layers.data.push(wsShapeToShape(shape))
+    }
+    const roomStore = useRoomStore();
+    console.log(data)
+    roomStore.setSheetIdAndIsShare(data.data.id, roomStore.isShare)
+  }
 }
 
 export const roomMessageResolver: { [k: string]: (data: any) => void } = {
@@ -34,5 +50,8 @@ export const roomMessageResolver: { [k: string]: (data: any) => void } = {
     useCanvasStore().ws.close()
     useUserStore().getUserRooms()
     router.replace('/')
+  },
+  '/create_sheet': (data: any) => {
+    useCanvasStore().sheets.push({ id: data.data.id, name: data.data.name })
   }
 }
