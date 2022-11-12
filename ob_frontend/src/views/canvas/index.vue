@@ -16,6 +16,7 @@ import { useRoomStore } from "@/store/room";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
 import ChatRoom from "@/views/canvas/components/ChatRoom.vue";
+import UserList from "@/views/canvas/components/UserList.vue";
 
 const IsEditShow = ref<boolean>(false)
 const canvasRef = ref(null)
@@ -95,7 +96,9 @@ async function addSheet() {
         <el-tab-pane label="聊天" name="chat">
           <chat-room/>
         </el-tab-pane>
-        <el-tab-pane label="房间用户" name="room">222</el-tab-pane>
+        <el-tab-pane label="房间用户" name="room">
+          <user-list/>
+        </el-tab-pane>
         <el-tab-pane label="房间设置" name="settings">
           <div>
             所有人可编辑
