@@ -13,4 +13,6 @@ public @interface Lock {
 
     String argName() default "";
 
+    int time() default 3;
+
 }

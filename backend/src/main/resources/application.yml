@@ -11,14 +11,17 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: U/kklUMxoX31LSie15kM+A==
     password: nUVSDE/dpoDMUCt44cSJJF0RYIPnoLxmldXgV88A/x4=
-    url: jdbc:mysql://47.112.184.57:3308/blackboard
+    url: jdbc:mysql://47.112.184.57:3308/blackboard?useAffectedRows=true
   jpa:
     hibernate:
       ddl-auto: none
     show-sql: true
 
   redis:
-    host: 47.112.184.57
+    cluster:
+      nodes: 150.158.169.43:6371, 150.158.169.43:6372, 150.158.169.43:6373
+    database: 0
+    password: 1007324849redis...
 
   servlet:
     multipart:

@@ -161,7 +161,8 @@ public class RoomModel {
         RoomEntity room = new RoomEntity();
         room.setId(roomId);
         room.setStatus("del");
-        roomDbDao.update(room);
+        int row = roomDbDao.update(room);
+        System.out.println(row);
     }
 
     public void updateRoomSetting(RoomSettingEntity setting){

@@ -3,10 +3,10 @@ package com.obb.online_blackboard.task;
 import com.obb.online_blackboard.dao.mysql.RoomDbDao;
 import com.obb.online_blackboard.dao.mysql.RoomSettingDao;
 import com.obb.online_blackboard.dao.redis.RoomDao;
-import com.obb.online_blackboard.entity.RoomEntity;
-import com.obb.online_blackboard.entity.RoomSettingEntity;
-import com.obb.online_blackboard.entity.SheetEntity;
+import com.obb.online_blackboard.entity.*;
+import com.obb.online_blackboard.model.RoomModel;
 import com.obb.online_blackboard.model.SheetModel;
+import com.obb.online_blackboard.model.UserModel;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -34,10 +34,16 @@ public class RoomTask {
     RoomDao roomDao;
 
     @Resource
+    RoomModel roomModel;
+
+    @Resource
     SheetModel sheetModel;
 
     @Resource
     RoomDbDao roomDbDao;
+
+    @Resource
+    UserModel userModel;
 
     /**
      * 提前20分钟加载房间
@@ -70,17 +76,24 @@ public class RoomTask {
         }
     }
 
-    @Scheduled(cron = "* * */1 * * *")
+    @Scheduled(cron = "* * */20 * * *")
     public void cleanOverRoom(){
         Iterable<RoomEntity> iterable = roomDao.findAll();
-        ArrayList<RoomEntity> rooms = new ArrayList<>(){
-            {
-                iterable.forEach(item -> {
-                    add(item);
-                });
+        Date now = new Date();
+        iterable.forEach(item -> {
+            if(item == null){
+                return;
             }
-        };
-        roomDbDao.cleanOver(new Date(), rooms);
+            List<UserDataEntity> users = userModel.getUserDataByRoomId(item.getId());
+            if(users.size() == 0 && !item.getStatus().equals("no_start")){
+                if(item.getSetting() == null){
+                    item.setSetting(roomModel.getRoomSettingByRoomId(item.getId()));
+                }
+                if(item.getSetting().getEndTime().getTime() < now.getTime()) {
+                    roomModel.delRoom(item.getId());
+                }
+            }
+        });
     }
 
 }

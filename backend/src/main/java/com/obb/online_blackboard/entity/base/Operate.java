@@ -1,6 +1,7 @@
 package com.obb.online_blackboard.entity.base;
 
 import com.obb.online_blackboard.config.Context;
+import com.obb.online_blackboard.entity.Shapes;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.context.ApplicationContext;
@@ -17,7 +18,7 @@ import java.util.Set;
  */
 public interface Operate {
 
-    void rollback(Set<Long> shapes, long sheetId,long roomId, Save save);
+    void rollback(Set<Long> shapes, long sheetId, long roomId, Save save);
 
     void redo(Set<Long> shapes, long sheetId, long roomId, Save save);
 

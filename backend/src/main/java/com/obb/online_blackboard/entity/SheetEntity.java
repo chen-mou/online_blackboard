@@ -26,7 +26,7 @@ import java.util.*;
  * @logs[0] 2022-10-27 16:54 陈桢梁 创建了SheetEntity.java文件
  */
 @Data
-@RedisHash("sheet")
+@RedisHash("${sheet}")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SheetEntity {
 
@@ -50,10 +50,9 @@ public class SheetEntity {
     public SheetEntity(long id, long roomId) {
         this.id = id;
         this.roomId = roomId;
-        shapes = new HashSet<>();
     }
 
-    private void StackOperation(long userId, Operate op){
+    private void StackOperation(Operate op){
         OperateModel operateModel = Context.getContext().getBean(OperateModel.class);
         Operates ops = operateModel.getById(this.id);
         if(ops == null){
@@ -63,20 +62,20 @@ public class SheetEntity {
         operateModel.save(ops);
     }
 
-    public void addStack(long userId, long shape){
+    public void addStack(long shape){
         shapes.add(shape);
-        StackOperation(userId, new Add(shape));
+        StackOperation(new Add(shape));
     }
 
-    public void delStack(long userId, long shape){
+    public void delStack(long shape){
        shapes.remove(shape);
-        StackOperation(userId, new Delete(shape));
+        StackOperation(new Delete(shape));
     }
 
-    public void modStack(long userId, long from, long to){
+    public void modStack(long from, long to){
         shapes.remove(from);
         shapes.add(to);
-        StackOperation(userId, new Modify(from, to));
+        StackOperation(new Modify(from, to));
     }
 
     public void rollback(Save save){

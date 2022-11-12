@@ -20,7 +20,7 @@ import java.util.Map;
  * @logs[0] 2022-10-27 09:12 陈桢梁 创建了Shape.java文件
  */
 @Data
-@RedisHash("Shape")
+@RedisHash("${Shape}")
 @NoArgsConstructor
 public class Shape implements Special{
 

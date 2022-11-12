@@ -9,15 +9,20 @@ import com.obb.online_blackboard.model.RoomModel;
 import com.obb.online_blackboard.model.ShapeModel;
 import com.obb.online_blackboard.model.SheetModel;
 import com.obb.online_blackboard.model.UserModel;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import tool.annotation.Lock;
 import tool.result.Message;
+import tool.util.id.Id;
 
 import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
+import java.sql.Time;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author 陈桢梁
@@ -42,6 +47,12 @@ public class SheetService {
 
     @Resource
     UserModel userModel;
+
+    @Resource
+    Id id;
+
+    @Resource
+    RedissonClient client;
 
     /**
      * 权限要求
@@ -96,14 +107,19 @@ public class SheetService {
         template.convertAndSend("/exchange/room/" + room.getId(), Message.def("/create_sheet", sheet));
     }
 
-    @Lock(key = "SHEET_WRITE_", argName = "sheetId")
     public void draw(long userId, Shape shape, long roomId, long sheetId){
         verifyCreator(userId, roomId, sheetId);
-        SheetEntity sheet = sheetModel.getSheetById(sheetId);
+        long id = this.id.getId("shape");
+        shape.setId(id);
+        template.convertAndSend("/exchange/room/" + roomId, Message.add(shape, sheetId));
+        RLock rLock = client.getLock("SHEET_WRITE_" + sheetId);
+        rLock.lock(5, TimeUnit.SECONDS);
+        SheetEntity sheet = sheetModel.getSheetByIdBase(sheetId);
         shape.setSheetId(sheetId);
-        shapeModel.createShape(shape);
-        sheet.addStack(userId, shape.getId());
-        sheetModel.updateSheet(sheetId, "shapes", sheet.getShapes());
+        shapeModel.saveShape(shape);
+        sheet.addStack(shape.getId());
+        sheetModel.save(sheet);
+        rLock.unlock();
         template.convertAndSend("/exchange/room/" + roomId, Message.add(shape, sheetId));
     }
 
@@ -129,12 +145,12 @@ public class SheetService {
         verifyCreator(userId, roomId, sheetId);
         long id = shape.getId();
         shape.setSheetId(sheetId);
-        Shape s = shapeModel.createShape(shape);
         SheetEntity sheet = sheetModel.getSheetById(sheetId);
         if(!sheet.getShapes().contains(shape.getId())){
             throw new OperationException(404, "图像不存在");
         }
-        sheet.modStack(userId, id, s.getId());
+        Shape s = shapeModel.createShape(shape);
+        sheet.modStack(id, s.getId());
         sheetModel.save(sheet);
         template.convertAndSend("/exchange/room/" + roomId, Message.del(id, sheetId));
         template.convertAndSend("/exchange/room/" + roomId, Message.add(shape, sheetId));
@@ -148,7 +164,7 @@ public class SheetService {
             return;
         }
         SheetEntity sheet = sheetModel.getSheetByIdBase(sheetId);
-        sheet.delStack(userId, shapeId);
+        sheet.delStack(shapeId);
         sheetModel.save(sheet);
         template.convertAndSend("/exchange/room/" + roomId, Message.del(shapeId, sheetId));
     }

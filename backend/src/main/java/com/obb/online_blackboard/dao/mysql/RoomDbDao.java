@@ -50,7 +50,7 @@ public interface RoomDbDao {
             "creator_name = creator_name " +
             "where id = #{id}" +
             "</script>")
-    void update(RoomEntity room);
+    int update(RoomEntity room);
 
 
     @Update("<script>" +

@@ -98,19 +98,7 @@ public class UserModel {
     }
 
     public List<UserDataEntity> getUserDataByRoomId(long roomId){
-        UserDataEntity userData = new UserDataEntity();
-        userData.setNowRoom(roomId);
-        ExampleMatcher matcher = ExampleMatcher.matching().withIgnoreNullValues();
-        Example<UserDataEntity> example = Example.of(userData, matcher);
-        Iterable<UserDataEntity> data = userDataDao.findAll(example);
-        ArrayList<UserDataEntity> res = new ArrayList<>(){
-            {
-                data.forEach(item -> {
-                    add(item);
-                });
-            }
-        };
-        return res;
+        return userDataDao.getAllByNowRoom(roomId);
     }
 
     public UserDataEntity getUserById(long userId){

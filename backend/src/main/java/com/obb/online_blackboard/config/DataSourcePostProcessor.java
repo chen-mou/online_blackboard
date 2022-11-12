@@ -36,10 +36,10 @@ public class DataSourcePostProcessor implements BeanPostProcessor {
             dataSourceProperties.setUsername(AES.decrypt(dataSourceProperties.getUsername()));
             dataSourceProperties.setPassword(AES.decrypt(dataSourceProperties.getPassword()));
         }
-        if(beanName.equals(REDIS_PREFIX)){
-            RedisProperties redisProperties = (RedisProperties) bean;
-            redisProperties.setPassword(password);
-        }
+//        if(beanName.equals(REDIS_PREFIX)){
+//            RedisProperties redisProperties = (RedisProperties) bean;
+//            redisProperties.setPassword(password);
+//        }
         return BeanPostProcessor.super.postProcessAfterInitialization(bean, beanName);
     }
 }

@@ -24,6 +24,10 @@ import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.stereotype.Component;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 
 /**
  * @author 陈桢梁
@@ -50,22 +54,22 @@ public class Redisson {
     public RedissonClient redissonClient(){
         Config config = new Config();
         //redis服务器地址，多个逗号分隔
-//        RedisProperties.Cluster cluster = properties.getCluster();
-//        List<String> nodes = cluster.getNodes();
-//        Set<String> nodeSet = new HashSet<>();
-//        for (String node : nodes) {
-//            nodeSet.add("redis://" + node);
-//        }
+        RedisProperties.Cluster cluster = properties.getCluster();
+        List<String> nodes = cluster.getNodes();
+        Set<String> nodeSet = new HashSet<>();
+        for (String node : nodes) {
+            nodeSet.add("redis://" + node);
+        }
         //单机
-        config.useSingleServer()
-                .setAddress("redis://" + properties.getHost() + ":" + properties.getPort())
-                .setPassword(properties.getPassword());
+//        config.useSingleServer()
+//                .setAddress("redis://" + properties.getHost() + ":" + properties.getPort())
+//                .setPassword(properties.getPassword());
 //        System.out.println(properties.getHost() + ":" + properties.getPort());
         //集群
-        //config.useClusterServers()
-        //        .setScanInterval(2000)
-        //        .addNodeAddress(nodeSet.toArray(new String[nodeSet.size()]))
-        //        ;
+        config.useClusterServers()
+                .setScanInterval(2000)
+                .addNodeAddress(nodeSet.toArray(new String[nodeSet.size()]))
+                .setPassword(properties.getPassword());
         return org.redisson.Redisson.create(config);
     }
 

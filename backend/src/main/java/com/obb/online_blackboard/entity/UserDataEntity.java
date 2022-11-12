@@ -5,6 +5,7 @@ import com.obb.online_blackboard.entity.base.Date;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
+import org.springframework.data.redis.core.index.Indexed;
 
 /**
  * @author 陈桢梁
@@ -13,7 +14,7 @@ import org.springframework.data.redis.core.RedisHash;
  * @logs[0] 2022-10-27 09:11 陈桢梁 创建了UserDataEntity.java文件
  */
 @Data
-@RedisHash("user_data")
+@RedisHash("${user_data}")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserDataEntity extends Date {
 
@@ -30,6 +31,7 @@ public class UserDataEntity extends Date {
 
     private String status;
 
+    @Indexed
     private Long nowRoom;
 
     private FileEntity entity;

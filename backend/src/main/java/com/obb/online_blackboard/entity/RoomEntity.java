@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
  * @logs[0] 2022-10-27 15:36 陈桢梁 创建了RoomEntity.java文件
  */
 @Data
-@RedisHash("room")
+@RedisHash("${room}")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class RoomEntity {
 
