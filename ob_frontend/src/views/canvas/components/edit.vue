@@ -1,6 +1,6 @@
 <template>
-    <div class="edit">
-        aaaaaaaaa
+    <div class="edit" @mousemove="stopEvents">
+        
     </div>
 </template>
 
@@ -11,7 +11,9 @@ export default defineComponent({
 })
 </script>
 <script lang="ts" setup>
-
+const stopEvents = (e:MouseEvent)=>{
+    e.stopPropagation()
+}
 </script>
 
 <style lang="less" scoped> 
@@ -19,6 +21,12 @@ export default defineComponent({
     position: absolute;
     height: 300px;
     width: 200px;
-    border-radius: 2px;
+    border-radius: 12px;
+    left: 50px;
+    top: 150px;
+    border: 1px solid  #eef1ff;
+    background-color: #eef1ff;
+    box-shadow: 10px 10px 20px 10px #c3cae7; 
+    z-index: 100;
 }
 </style>

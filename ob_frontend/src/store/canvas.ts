@@ -5,7 +5,6 @@ import { changePen, deepCopy } from '@/utils'
 import { useWs } from '@/utils/ws'
 import { IFrame } from '@stomp/stompjs'
 import { ElMessage } from 'element-plus'
-import { Pen, ShapeDataType } from '@/utils/Canvas/type/CanvasType'
 import ShapeMap from '@/utils/Canvas/ShapeMap'
 import { FreeLine } from '@/utils/Canvas/shape'
 import { shapeToWSShape, wsShapeToShape } from "@/utils/convert";
@@ -98,7 +97,6 @@ export const useCanvasStore = defineStore('canvas', {
       )
 
       canvas.canvas.addEventListener('mousedown', e => {
-        canvas.state=false
         /**
          * 拉出黑名单，
          * 重绘layers图层
