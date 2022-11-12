@@ -74,7 +74,7 @@ const exportAsPng = () => {
   const el = document.createElement('a');
   // 设置 href 为图片经过 base64 编码后的字符串，默认为 png 格式
   // 拿到 base64 部分并转成二进制
-  let bytes = atob((canvas.value as Canvas).canvas.toDataURL().split('base64,')[1])
+  let bytes = atob((canvas.value as Canvas).layers.canvas.toDataURL().split('base64,')[1])
   let data = JSON.stringify(canvas.value?.data)
   // 把数据长度（32位int）转成二进制（byte*4）
   let dataLen = int32ToBytes(data.length)
