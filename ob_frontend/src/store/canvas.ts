@@ -14,6 +14,7 @@ import { useRoomStore } from "@/store/room";
 // @ts-ignore
 import snappy from 'snappyjs'
 import { roomMessageResolver, userInfoMessageResolver } from "@/utils/messageResolver";
+import { fi } from 'element-plus/es/locale'
 
 
 export const useCanvasStore = defineStore('canvas', {
@@ -111,7 +112,9 @@ export const useCanvasStore = defineStore('canvas', {
         canvas.DrawClass.BeforePosition = beforePosition
         prepareDrawing = true
         showLine = true
-        
+        if(canvas.DrawClass.type==="freeLine"){
+        ( canvas.DrawClass as FreeLine).data=[]
+        }
       })
 
       canvas.canvas.addEventListener('mousemove', e => {
@@ -145,8 +148,8 @@ export const useCanvasStore = defineStore('canvas', {
               y: e.pageY - y
             })
           }
-
           canvas.DrawClass.draw(canvas)
+
         }
       })
       canvas.canvas.addEventListener('mouseup', e => {
@@ -174,6 +177,7 @@ export const useCanvasStore = defineStore('canvas', {
             pen: deepCopy(canvas.pen)
           }, roomStore.sheetId, roomStore.roomId)))
         } else {
+          console.log((canvas.DrawClass as FreeLine).data)
           canvas.layers.data.push({
             type: canvas.DrawClass.type,
             BeforePosition: beforePosition,
@@ -181,7 +185,7 @@ export const useCanvasStore = defineStore('canvas', {
             pen: deepCopy(canvas.pen),
             data: (canvas.DrawClass as FreeLine).data
           });
-          console.log(canvas.layers)
+          console.log(canvas)
         }
         IsDrawing = false
         /**
@@ -195,6 +199,8 @@ export const useCanvasStore = defineStore('canvas', {
           ShapeMap.get(canvas.DrawClass.type)?.draw(canvas.layers);
           (canvas.DrawClass as FreeLine).data = []
         }
+
+
         canvas.context.clearRect(0, 0, 1600, 1600)
       })
       /**
