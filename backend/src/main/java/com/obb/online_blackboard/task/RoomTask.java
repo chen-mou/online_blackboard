@@ -12,6 +12,10 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -53,8 +57,14 @@ public class RoomTask {
             item.getSheets().add(sheet.getId());
             item.setNowSheet(sheet.getId());
             item.setLoaded(1);
+            try {
+                File file = new File(sheetModel.path + "/room:" + item.getId() + "-sheet:" + sheet.getId() + ".txt");
+                file.createNewFile();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         });
-        roomDbDao.updateAll(rooms, 1);
+          roomDbDao.updateAll(rooms, 1);
         for(RoomEntity room : rooms){
             roomDao.save(room);
         }

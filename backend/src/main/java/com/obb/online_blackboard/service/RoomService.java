@@ -185,6 +185,9 @@ public class RoomService {
 
     public void delete(long roomId, long userId){
         RoomEntity r = roomModel.getVerifyRoom(roomId);
+        if(r == null){
+            throw new OperationException(500, "房间不存在");
+        }
         if(r.getCreatorId() != userId){
             throw new OperationException(403, "你没有权限删除这个房间");
         }
@@ -227,7 +230,8 @@ public class RoomService {
 
     private boolean inRoom(long roomId, long userId){
         UserDataEntity data = userModel.getUserById(userId);
-        return data.getNowRoom().equals(roomId);
+        Long nowRoom = data.getNowRoom();
+        return nowRoom != null && nowRoom == roomId;
     }
 
     private String getVoiceUrl(long roomId, long userId){

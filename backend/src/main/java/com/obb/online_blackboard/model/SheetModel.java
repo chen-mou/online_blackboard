@@ -37,6 +37,8 @@ public class SheetModel {
     @Resource
     Id id;
 
+    public final String path = "./file/report";
+
     public SheetEntity createSheet(String name, long roomId){
         SheetEntity sheetEntity = new SheetEntity(id.getId("sheet"), roomId);
         sheetEntity.setName(name);
@@ -93,6 +95,10 @@ public class SheetModel {
         List<SheetEntity> sheetEntities = sheetDao.findAllByRoomId(roomId);
         sheetEntities.forEach(item -> item.setShapes(null));
         return sheetEntities;
+    }
+
+    public void delete(long sheetId){
+        sheetDao.deleteById(sheetId);
     }
 
 //    public Iterable<SheetEntity> getAllSheetName(){

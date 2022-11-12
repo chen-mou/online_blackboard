@@ -15,6 +15,8 @@ import tool.annotation.Lock;
 import tool.result.Message;
 
 import javax.annotation.Resource;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -82,6 +84,13 @@ public class SheetService {
             throw new OperationException(403, "你不在房间中");
         }
         SheetEntity sheet = sheetModel.createSheet(name, room.getId());
+        File file = new File(sheetModel.path + "/room:" + roomId + "-sheet:" + sheet.getId() + ".txt");
+        try{
+            file.createNewFile();
+        }catch (IOException e){
+            sheetModel.delete(sheet.getId());
+            throw new OperationException(500, "创建画布失败");
+        }
         room.getSheets().add(sheet.getId());
         roomModel.updateRoom(roomId, "sheets", room.getSheets());
         template.convertAndSend("/exchange/room/" + room.getId(), Message.def("/create_sheet", sheet));

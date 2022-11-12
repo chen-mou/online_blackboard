@@ -24,6 +24,23 @@ spring:
     multipart:
       max-file-size: 5MB
 
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: group1
+      enable-auto-commit: false
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: tool.util.kafka.serialize.MessageSerializer
+      max-poll-records: 4
+    producer:
+      retries: 0
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: tool.util.kafka.serialize.MessageSerializer
+      acks: 1
+    listener:
+      ack-mode: manual
+      type: batch
+
 mybatis:
   configuration:
     map-underscore-to-camel-case: true
