@@ -1,17 +1,18 @@
 <template>
-    <div>
+    <div class="pen">
         <div>
-            <div class="grid" >
-                <div style="height: 20px ;width: 20px;border: 1px black solid;"  v-for="item in PenList" :key="item.icon" >
-                    <div :style="{backgroundColor:item.color }"
-                        style="height: 18px;width:18px;margin: 1px;" >
-                    </div>
-                </div>
-                <el-color-picker v-model="penColor  " />
-            </div>
-            <el-slider v-model="penSize" vertical height="60px" :min="1" :max="100"   />
+            <el-icon><MagicStick /></el-icon>
+            <input type="color" v-model="penColor">
+            <span>画笔颜色</span>
         </div>
-
+        <div>
+            <el-icon><StarFilled /></el-icon>
+            <span>边框颜色</span>
+        </div>
+        <div>
+            <el-slider v-model="penSize"  height="60px" :min="1" :max="100" />
+            <span>画笔大小</span>
+        </div>
     </div>
 </template>
 
@@ -24,12 +25,6 @@ export default defineComponent({
 </script>
 
 <script lang="ts" setup>
-const PenList=reactive<Array<any>>([
-    {
-        icon:'a',
-        color:"#000000"
-    }
-])
 let canvas =ref()
 const penColor =ref<string>("a42d2d")
 const penSize =ref<number>(2)
@@ -54,13 +49,30 @@ watch(penSize,(newValue)=>{
 input {
     border: solid 2px gray;
 }
-.grid{
-    height: 70px;
-    width: 200px;
-    border: 1px black solid;
+::v-deep .el-color-picker {
+    position: absolute;
+    left: 20px;
 }
-.el-slider{
-    left: 270px;
-    bottom: 70px;
+.pen {
+  display: flex;
+}
+.pen > * {
+  flex: fit-content;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.pen > *:hover {
+  cursor: pointer;
+  background-color: #dcefff;
+}
+input{
+    position: absolute;
+    opacity: 0;
+}
+.el-icon {
+  font-size: 30px;
+  display: block;
 }
 </style>
