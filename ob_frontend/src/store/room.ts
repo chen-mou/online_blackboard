@@ -14,10 +14,11 @@ export const useRoomStore = defineStore('room', {
     sheetId: 0,
   }),
   actions: {
-    joinRoom(roomId: number, userAnonymous: number) {
+    joinRoom(roomId: number, userAnonymous: number, creatorId: number) {
       // console.log(roomId,userAnonymous)
       this.roomId = roomId
       this.userAnonymous = userAnonymous
+      this.creatorId = creatorId
     },
     async createRoom(data: any) {
       const res = await request({
@@ -75,9 +76,10 @@ export const useRoomStore = defineStore('room', {
       }
       return false
     },
-    setSheetIdAndIsShare(sheetId: number, isShare: number) {
+    setSheetIdAndIsShare(sheetId: number, isShare: number, creatorId: number) {
       this.sheetId = sheetId
       this.isShare = isShare
+      this.creatorId = creatorId
     },
   },
   getters: {}

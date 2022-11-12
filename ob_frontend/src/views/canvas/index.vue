@@ -1,11 +1,3 @@
-<script lang="ts">
-import { defineComponent } from 'vue'
-
-export default defineComponent({
-  name: 'BlackboardCanvas',
-})
-</script>
-
 <script setup lang="ts">
 import edit from "@/views/canvas/components/edit.vue"
 import NavBar from './components/NavBar.vue'
@@ -17,6 +9,7 @@ import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
 import ChatRoom from "@/views/canvas/components/ChatRoom.vue";
 import UserList from "@/views/canvas/components/UserList.vue";
+import { useUserStore } from "@/store/user";
 
 const IsEditShow = ref<boolean>(false)
 const canvasRef = ref(null)
@@ -53,6 +46,15 @@ async function changeShareMode(val: boolean) {
 
 async function endRoom() {
   canvasStore.over()
+  canvasStore.ws.close()
+  router.replace('/')
+
+}
+
+function quitRoom() {
+  canvasStore.ws.sendRaw('/app/quit', {}, JSON.stringify({ roomId: roomStore.roomId }))
+  canvasStore.ws.close()
+  router.replace('/')
 }
 
 async function changeSheet(sheetId: string) {
@@ -72,6 +74,8 @@ async function addSheet() {
   }))
   sheetName.value = ''
 }
+
+const userStore = useUserStore()
 </script>
 <template>
   <div class="main">
@@ -104,7 +108,8 @@ async function addSheet() {
             所有人可编辑
             <el-switch @change="changeShareMode" v-model="shareMode"/>
           </div>
-          <el-button type="danger" @click="endRoom">结束房间</el-button>
+          <el-button type="warning" @click="quitRoom">离开房间</el-button>
+          <el-button type="danger" @click="endRoom" :v-if="roomStore.creatorId===userStore.userId">结束房间</el-button>
         </el-tab-pane>
       </el-tabs>
     </el-drawer>

@@ -8,7 +8,11 @@ import { useUserStore } from "@/store/user";
 export const userInfoMessageResolver: { [k: string]: (data: any) => void } = {
   'room_info': (data: any) => {
     // console.log(data)
-    useRoomStore().setSheetIdAndIsShare(data.sheet === 0 ? data.data.nowSheet : data.sheet, data.data.setting.isShare)
+    useRoomStore().setSheetIdAndIsShare(
+      data.sheet === 0 ? data.data.nowSheet : data.sheet,
+      data.data.setting.isShare,
+      data.data.setting.creatorId
+    )
     const canvasStore = useCanvasStore();
     canvasStore.canvas.layers.data = []
     for (const shape of data.data.nowSheetEntity.shapeEntities) {
@@ -28,7 +32,7 @@ export const userInfoMessageResolver: { [k: string]: (data: any) => void } = {
     }
     const roomStore = useRoomStore();
     console.log(data)
-    roomStore.setSheetIdAndIsShare(data.data.id, roomStore.isShare)
+    roomStore.setSheetIdAndIsShare(data.data.id, roomStore.isShare, roomStore.creatorId)
   },
   'message': (data) => {
     useCanvasStore().messageList.push(data.data)
@@ -71,7 +75,7 @@ export const roomMessageResolver: { [k: string]: (data: any) => void } = {
     }
     const roomStore = useRoomStore();
     console.log(data)
-    roomStore.setSheetIdAndIsShare(data.data.id, roomStore.isShare)
+    roomStore.setSheetIdAndIsShare(data.data.id, roomStore.isShare, roomStore.creatorId)
   },
   'user_join': (data: any) => {
     useCanvasStore().otherUsers.push(data.data)

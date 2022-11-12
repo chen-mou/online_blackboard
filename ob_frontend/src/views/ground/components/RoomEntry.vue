@@ -31,7 +31,7 @@ function copyId() {
 }
 
 async function joinRoom() {
-  roomStore.joinRoom(props.room?.id, 0)
+  roomStore.joinRoom(props.room?.id, 0, props.room?.setting.creatorId)
   await router.replace('/canvas')
 }
 
