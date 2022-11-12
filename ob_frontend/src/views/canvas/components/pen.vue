@@ -1,16 +1,21 @@
 <template>
     <div class="pen">
         <div>
-            <el-icon><MagicStick /></el-icon>
+            <el-icon>
+                <MagicStick />
+            </el-icon>
             <input type="color" v-model="penColor">
             <span>画笔颜色</span>
         </div>
         <div>
-            <el-icon><StarFilled /></el-icon>
+            <el-icon>
+                <StarFilled />
+            </el-icon>
+            <input type="color" v-model="penBorderColor">
             <span>边框颜色</span>
         </div>
         <div>
-            <el-slider v-model="penSize"  height="60px" :min="1" :max="100" />
+            <el-slider v-model="penSize" height="60px" :min="1" :max="100" />
             <span>画笔大小</span>
         </div>
     </div>
@@ -28,12 +33,13 @@ export default defineComponent({
 let canvas =ref()
 const penColor =ref<string>("a42d2d")
 const penSize =ref<number>(2)
+const penBorderColor= ref<string>('#9f9')
 onMounted( ()=>{
 const canvasInjetct =inject("canvas__") as any
     canvas=canvasInjetct
 })
 
-watch(penColor,(newValue,oldValue)=>{
+watch(penColor,(newValue)=>{
     canvas.value.context.strokeStyle=newValue
     console.log(canvas.value.context.strokeStyle)
     canvas.value.pen.strokeStyle=newValue
@@ -43,36 +49,49 @@ watch(penSize,(newValue)=>{
     console.log(canvas.value.context.lineWidth );
     (canvas.value.pen as Pen).linewidth=newValue
 })
+watch(penBorderColor,(newValue)=>{
+    canvas.value.context.fillStyle =newValue
+    console.log(canvas.value.context.lineWidth );
+    (canvas.value.pen as Pen).fillStyle=newValue
+})
 </script>   
 
 <style lang="less" scoped>
 input {
     border: solid 2px gray;
 }
+
 ::v-deep .el-color-picker {
     position: absolute;
     left: 20px;
 }
+
 .pen {
-  display: flex;
+    display: flex;
 }
-.pen > * {
-  flex: fit-content;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+
+.pen>* {
+    flex: fit-content;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
-.pen > *:hover {
-  cursor: pointer;
-  background-color: #dcefff;
+
+.pen>*:hover {
+    cursor: pointer;
+    background-color: #dcefff;
 }
-input{
+
+input {
     position: absolute;
     opacity: 0;
+    height: 60px;
+    width: 60px;
 }
+
 .el-icon {
-  font-size: 30px;
-  display: block;
+    font-size: 30px;
+    display: block;
 }
 </style>
