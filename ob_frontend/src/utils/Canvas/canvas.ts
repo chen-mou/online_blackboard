@@ -24,6 +24,7 @@ class Canvas {
   DrawClass: ShapeClassTypeT // 默认类型为矩形// 默认类型为矩形
   after: any
   pen: Pen
+  Blacklist: Array<number> = []
   layers!: Canvas
   context: CanvasRenderingContext2D
   data: Array<ShapeDataType>
@@ -129,13 +130,16 @@ class Canvas {
       ) {
         this.context.beginPath()
         this.context.setLineDash([5, 5])
-        this.context.strokeStyle = '#fa0000'
-        this.context.rect(
-          this.data[i].BeforePosition[0] - 20,
-          this.data[i].BeforePosition[1] - 20,
-          this.data[i].AfterPosition[0] - this.data[i].BeforePosition[0] + 40,
-          this.data[i].AfterPosition[1] - this.data[i].BeforePosition[1] + 40
-        )
+        /**
+         * 重绘时应读入data状态
+         * 且应该使layers图层屏蔽
+         */
+        this.DrawClass.BeforePosition=this.data[i].BeforePosition
+        this.DrawClass.AfterPosition=this.data[i].AfterPosition
+        /**
+         * 屏蔽layers图层的该元素
+         */
+        ShapeMap.get(this.data[i].type)?.draw(this)
         this.context.stroke()
         this.context.strokeStyle = this.pen?.strokeStyle as any
         this.context.setLineDash([])
