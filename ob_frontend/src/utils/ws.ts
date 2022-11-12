@@ -7,7 +7,7 @@ export function useWs(
   channels: Array<{ id: string, channel: string, callback: (data: IFrame) => void }>,
   onDisconnect: (frame: IFrame) => void
 ) {
-  const client = Stomp.over(() => new Socket('http://47.112.184.57:18888/connect'))
+  const client = Stomp.over(() => new Socket('http://localhost:18888/connect'))
   client.onStompError = onDisconnect
 
   const headers = {
@@ -31,8 +31,8 @@ export function useWs(
     sendRaw(destination: string, headers: { [p: string]: any }, body: string) {
       client.send(destination, headers, body)
     },
-    close() {
-      client.deactivate()
+    async close() {
+      await client.deactivate()
       this.active = false
     },
     active: true,

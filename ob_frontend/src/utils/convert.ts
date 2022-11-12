@@ -46,33 +46,28 @@ export function shapeToWSShape(shape: any, sheetId: number, roomId: number): any
   }
   if (shape.type === 'freeLine') {
     // @ts-ignore
-    data['data'] = shape.data
+    data.shape['data'] = shape.data
   }
-  return {
-    type: 'add',
-    sheet: sheetId,
-    zip: false,
-    data: JSON.stringify(data),
-  }
+  return data
 }
 
 export function wsShapeToShape(wsShape: any): any {
   const data = {
     "id": wsShape.id,
-    "type": shapeTypeMap[wsShape.shape.type],
+    "type": shapeTypeMap[wsShape.type],
     "BeforePosition": [
-      wsShape.shape.start.x,
-      wsShape.shape.start.y,
+      wsShape.start.x,
+      wsShape.start.y,
     ],
     "AfterPosition": [
-      wsShape.shape.end.x,
-      wsShape.shape.end.y,
+      wsShape.end.x,
+      wsShape.end.y,
     ],
     "pen": {
       "icon": "",
-      "linewidth": wsShape.shape.pen.lineWidth,
-      "strokeStyle": wsShape.shape.pen.strokeStyle,
-      "fillStyle": wsShape.shape.pen.fillStyle,
+      "linewidth": wsShape.pen.lineWidth,
+      "strokeStyle": wsShape.pen.strokeStyle,
+      "fillStyle": wsShape.pen.fillStyle,
     }
   }
   if (wsShape.type === 'FreeLine') {
