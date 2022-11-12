@@ -28,6 +28,9 @@ export function useWs(
     send(id: string, data: unknown) {
       client.send((channels.find(e => e.id === id) as any).channel, {}, JSON.stringify(data))
     },
+    sendRaw(destination: string, headers: { [p: string]: any }, body: string) {
+      client.send(destination, headers, body)
+    },
     close() {
       client.deactivate()
       this.active = false

@@ -18,10 +18,12 @@ const shapeTypeMap: { [k: string]: string } = {
   Rect: 'Cube',
   circle: 'Round',
   line: 'line',
+  freeLine: 'FreeLine',
+  FreeLine: 'freeLine',
 }
 
 export function shapeToWSShape(shape: any, sheetId: number, roomId: number): any {
-  return {
+  const data = {
     "shape": {
       "type": shapeTypeMap[shape.type],
       "color": ".",
@@ -42,10 +44,16 @@ export function shapeToWSShape(shape: any, sheetId: number, roomId: number): any
     "sheetId": sheetId,
     "roomId": roomId,
   }
+  if (shape.type === 'freeLine') {
+    // @ts-ignore
+    data['data'] = shape.data
+  }
+  return data
 }
 
 export function wsShapeToShape(wsShape: any): any {
-  return {
+  const data = {
+    "id": wsShape.id,
     "type": shapeTypeMap[wsShape.shape.type],
     "BeforePosition": [
       wsShape.shape.start.x,
@@ -62,4 +70,9 @@ export function wsShapeToShape(wsShape: any): any {
       "fillStyle": wsShape.shape.pen.fillStyle,
     }
   }
+  if (wsShape.type === 'FreeLine') {
+    // @ts-ignore
+    data['data'] = wsShape.data
+  }
+  return data
 }
