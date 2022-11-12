@@ -12,6 +12,6 @@ FROM fabric8/java-alpine-openjdk11-jre
 
 COPY  ./target/online_blackboard-1.0.jar /
 
-ENTRYPOINT ["java","-jar","-Dspring.profiles.active=local","/online_blackboard-1.0.jar"]
+ENTRYPOINT ["java","-jar","-Dspring.profiles.active=dev","/online_blackboard-1.0.jar"]
 
 EXPOSE 18888

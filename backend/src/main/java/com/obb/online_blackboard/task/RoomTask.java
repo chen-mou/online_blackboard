@@ -58,7 +58,7 @@ public class RoomTask {
             item.setNowSheet(sheet.getId());
             item.setLoaded(1);
             try {
-                File file = new File(sheetModel.path + "/room:" + item.getId() + "-sheet:" + sheet.getId() + ".txt");
+                File file = new File(sheetModel.path + "sheet-" + sheet.getId() + ".txt");
                 file.createNewFile();
             } catch (IOException e) {
                 throw new RuntimeException(e);

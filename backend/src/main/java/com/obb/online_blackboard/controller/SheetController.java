@@ -1,12 +1,17 @@
 package com.obb.online_blackboard.controller;
 
+import com.obb.online_blackboard.entity.UserEntity;
 import com.obb.online_blackboard.entity.base.Shape;
 import com.obb.online_blackboard.service.SheetService;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.annotation.SendToUser;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import tool.annotation.JsonKey;
+import tool.annotation.UserInfo;
 import tool.result.Message;
+import tool.result.Result;
 
 import javax.annotation.Resource;
 import java.security.Principal;
@@ -61,4 +66,13 @@ public class SheetController {
                 sheetService.getSheetById(sheetId, roomId, Long.parseLong(p.getName())));
     }
 
+    @GetMapping("/next")
+    public Result next(){
+        return null;
+    }
+
+    @GetMapping("pre")
+    public Result pre(@JsonKey long sheetId, @UserInfo UserEntity user){
+        return null;
+    }
 }

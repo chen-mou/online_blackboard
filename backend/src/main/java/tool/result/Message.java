@@ -2,13 +2,16 @@ package tool.result;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.obb.online_blackboard.config.Context;
 import com.obb.online_blackboard.exception.OperationException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.xerial.snappy.Snappy;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Date;
 
 /**
  * @author 陈桢梁
@@ -51,6 +54,8 @@ public class Message<T> {
     public static <T> Message del(T date, long sheet){
         Message msg = def("delete", date);
         msg.setSheet(sheet);
+//        KafkaTemplate temp = Context.getContext().getBean(KafkaTemplate.class);
+//        temp.send("report", new tool.util.kafka.Message(new Date().getTime(), msg));
         return msg;
     }
 
@@ -62,6 +67,8 @@ public class Message<T> {
     public static <T> Message add(T date, long sheet) {
         Message msg = def("add", date);
         msg.setSheet(sheet);
+//        KafkaTemplate temp = Context.getContext().getBean(KafkaTemplate.class);
+//        temp.send("report", new tool.util.kafka.Message(new Date().getTime(), msg));
         return msg;
     }
 

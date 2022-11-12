@@ -84,7 +84,7 @@ public class SheetService {
             throw new OperationException(403, "你不在房间中");
         }
         SheetEntity sheet = sheetModel.createSheet(name, room.getId());
-        File file = new File(sheetModel.path + "/room:" + roomId + "-sheet:" + sheet.getId() + ".txt");
+        File file = new File(sheetModel.path + "/sheet-" + sheet.getId() + ".txt");
         try{
             file.createNewFile();
         }catch (IOException e){
