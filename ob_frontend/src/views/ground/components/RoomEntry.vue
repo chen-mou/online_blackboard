@@ -107,9 +107,9 @@ async function deleteRoom() {
       </el-button>
     </div>
     <div>
-      <el-tag type="warning" v-if="dayjs().isBefore(room.setting.startTime)">未开始</el-tag>
-      <el-tag type="success" v-if="isOpen">进行中</el-tag>
-      <el-tag type="warning" v-if="dayjs().isAfter(room.setting.endTime)">已结束</el-tag>
+      <el-tag type="warning" v-if="room.status==='no_start'">未开始</el-tag>
+      <el-tag type="success" v-if="room.status==='meeting'">进行中</el-tag>
+      <el-tag type="warning" v-if="room.status==='over'">已结束</el-tag>
     </div>
   </div>
   <el-dialog style="width: 280px;text-align: center;border-radius: 20px" v-model="openDialog"

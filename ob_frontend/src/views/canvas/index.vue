@@ -42,13 +42,31 @@ const shareMode = ref<boolean>(Boolean(roomStore.isShare))
 async function changeShareMode(val: boolean) {
   let message = await roomStore.updateRoom({ roomId: roomStore.roomId, isShare: Number(val) })
   if (message) {
-    ElMessage.error({ message,grouping: true, })
+    ElMessage.error({ message, grouping: true, })
     shareMode.value = !val
   }
 }
 
 async function endRoom() {
   canvasStore.over()
+}
+
+async function changeSheet(sheetId: string) {
+  canvasStore.ws.sendRaw('/app/change_sheet', {}, JSON.stringify({
+    sheetId,
+    roomId: roomStore.roomId,
+  }))
+}
+
+const readyAddSheet = ref(false)
+const sheetName = ref<string>('')
+
+async function addSheet(name: string) {
+  canvasStore.ws.sendRaw('/app/create', {}, JSON.stringify({
+    name: sheetName.value,
+    roomId: roomStore.roomId,
+  }))
+  sheetName.value = ''
 }
 </script>
 <template>
@@ -81,6 +99,23 @@ async function endRoom() {
         </el-tab-pane>
       </el-tabs>
     </el-drawer>
+  </div>
+  <div class="sheets">
+    <div v-for="sheet in canvasStore.sheets" :key="sheet.id" @click="changeSheet(sheet.id)"
+         :class="{'sheet-now':sheet.id===roomStore.sheetId}">{{ sheet.name }}
+    </div>
+    <div style="display: inline-block;position: relative;bottom: 11px;">
+      <div v-show="readyAddSheet" style="display: inline-block">
+        <el-input style="width:150px;" v-model="sheetName" placeholder="new sheet name"/>
+        <el-button @click="readyAddSheet=false;sheetName=''">取消</el-button>
+        <el-button style="margin-left: 0" type="primary" @click="readyAddSheet=false;addSheet()">确定</el-button>
+      </div>
+      <el-button plain @click="readyAddSheet=!readyAddSheet;sheetName=''">
+        <el-icon>
+          <Plus/>
+        </el-icon>
+      </el-button>
+    </div>
   </div>
 </template>
 
@@ -124,5 +159,33 @@ async function endRoom() {
 
 .drawer /deep/ .el-drawer__body {
   padding-top: 10px;
+}
+
+.sheets {
+  position: absolute;
+  bottom: 20px;
+  left: 40px;
+}
+
+.sheets > *:not(:last-child) {
+  max-width: 70px;
+  display: inline-block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 30px;
+  border-radius: 4px;
+  margin-right: 5px;
+  border: 1px solid lightgray;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+.sheets > *:not(:last-child):hover {
+  background-color: #dcefff;
+  cursor: pointer;
+}
+
+.sheet-now {
+  background-color: lightblue;
 }
 </style>

@@ -25,7 +25,8 @@ export const useCanvasStore = defineStore('canvas', {
       close: () => void,
       active: boolean,
     },
-    _otherUsers: [] as any[],
+    otherUsers: [] as any[],
+    sheets: [] as any[],
   }),
   actions: {
     async connect(roomId: number, isAnonymous: number, onDisconnect: (frame: IFrame) => void) {
@@ -65,6 +66,7 @@ export const useCanvasStore = defineStore('canvas', {
       }
       d.data = JSON.parse(d.data)
       userInfoMessageResolver[d.type](d)
+      this.canvas.layers.drawData()
     },
     _wsErrReceive(frame: IFrame) {
       ElMessage.error({
@@ -100,9 +102,9 @@ export const useCanvasStore = defineStore('canvas', {
          * 拉出黑名单，
          * 重绘layers图层
          */
-        canvas.layers.Blacklist=[]
+        canvas.layers.Blacklist = []
         canvas.layers.drawData()
-        canvas.context.clearRect(0,0,1600,1600)
+        canvas.context.clearRect(0, 0, 1600, 1600)
         /**
          * 传入相应的坐标
          */
@@ -111,7 +113,7 @@ export const useCanvasStore = defineStore('canvas', {
         canvas.DrawClass.BeforePosition = beforePosition
         prepareDrawing = true
         showLine = true
-        
+
       })
 
       canvas.canvas.addEventListener('mousemove', e => {
@@ -171,17 +173,25 @@ export const useCanvasStore = defineStore('canvas', {
             type: canvas.DrawClass.type,
             BeforePosition: beforePosition,
             AfterPosition: AfterPosition,
-            pen: deepCopy(canvas.pen)
+            pen: deepCopy(canvas.pen),
           }, roomStore.sheetId, roomStore.roomId)))
         } else {
-          canvas.layers.data.push({
+          // canvas.layers.data.push({
+          //   type: canvas.DrawClass.type,
+          //   BeforePosition: beforePosition,
+          //   AfterPosition: AfterPosition,
+          //   pen: deepCopy(canvas.pen),
+          //   data: (canvas.DrawClass as FreeLine).data
+          // });
+          // console.log(canvas.layers)
+          const roomStore = useRoomStore()
+          this.ws.sendRaw('/app/draw', {}, JSON.stringify(shapeToWSShape({
             type: canvas.DrawClass.type,
             BeforePosition: beforePosition,
             AfterPosition: AfterPosition,
             pen: deepCopy(canvas.pen),
             data: (canvas.DrawClass as FreeLine).data
-          });
-          console.log(canvas.layers)
+          }, roomStore.sheetId, roomStore.roomId)))
         }
         IsDrawing = false
         /**

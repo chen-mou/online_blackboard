@@ -17,7 +17,7 @@ const shapeTypeMap: { [k: string]: string } = {
   Line: 'line',
   Rect: 'Cube',
   circle: 'Round',
-  line: 'line',
+  line: 'Line',
   freeLine: 'FreeLine',
   FreeLine: 'freeLine',
 }
