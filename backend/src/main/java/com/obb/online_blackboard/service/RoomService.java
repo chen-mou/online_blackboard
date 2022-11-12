@@ -167,6 +167,9 @@ public class RoomService {
 
     public void updateSetting(RoomSettingEntity setting, long userId){
         RoomEntity r = roomModel.getRoomById(setting.getRoomId());
+        if(r == null){
+            throw new OperationException(404, "房间不存在");
+        }
         if(r.getCreatorId() != userId){
             throw new OperationException(403, "只有创建者才能修改设置");
         }

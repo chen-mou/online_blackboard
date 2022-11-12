@@ -81,6 +81,9 @@ public class RoomController {
 
     @PostMapping("/update_setting")
     public Result UpdateSetting(@RequestBody RoomSettingEntity setting, @UserInfo UserEntity user){
+        if(setting.getRoomId() == 0){
+            throw new OperationException(500, "缺少房间ID");
+        }
         roomService.updateSetting(setting, user.getId());
         return Result.success("修改成功", setting);
     }
