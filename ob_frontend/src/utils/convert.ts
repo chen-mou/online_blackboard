@@ -48,7 +48,12 @@ export function shapeToWSShape(shape: any, sheetId: number, roomId: number): any
     // @ts-ignore
     data['data'] = shape.data
   }
-  return data
+  return {
+    type: 'add',
+    sheet: sheetId,
+    zip: false,
+    data: JSON.stringify(data),
+  }
 }
 
 export function wsShapeToShape(wsShape: any): any {
