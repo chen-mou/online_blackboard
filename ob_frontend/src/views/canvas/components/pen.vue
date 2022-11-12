@@ -89,7 +89,9 @@ input {
     height: 60px;
     width: 60px;
 }
-
+input:hover{
+    cursor: pointer;
+}
 .el-icon {
     font-size: 30px;
     display: block;

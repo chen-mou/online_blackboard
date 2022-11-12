@@ -14,6 +14,7 @@ import { useRoomStore } from "@/store/room";
 // @ts-ignore
 import snappy from 'snappyjs'
 import { roomMessageResolver, userInfoMessageResolver } from "@/utils/messageResolver";
+import { fi } from 'element-plus/es/locale'
 
 
 export const useCanvasStore = defineStore('canvas', {
@@ -114,6 +115,9 @@ export const useCanvasStore = defineStore('canvas', {
         prepareDrawing = true
         showLine = true
 
+        if(canvas.DrawClass.type==="freeLine"){
+        ( canvas.DrawClass as FreeLine).data=[]
+        }
       })
 
       canvas.canvas.addEventListener('mousemove', e => {
@@ -147,8 +151,8 @@ export const useCanvasStore = defineStore('canvas', {
               y: e.pageY - y
             })
           }
-
           canvas.DrawClass.draw(canvas)
+
         }
       })
       canvas.canvas.addEventListener('mouseup', e => {
