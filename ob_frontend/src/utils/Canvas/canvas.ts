@@ -55,10 +55,9 @@ class Canvas {
     this.context = this.canvas.getContext('2d') as CanvasRenderingContext2D // 画布的上下文
     this.context.strokeStyle = this.pen.strokeStyle
     this.context.fillStyle = this.pen.fillStyle
-
   }
   reload (): Canvas {
-    const { canvas, target, after, data = [], list = null } = this.options 
+    const { canvas, target, after, data = [], list = null } = this.options
     this.canvas =
       (document.getElementById(canvas) as HTMLCanvasElement) ||
       (canvas as HTMLCanvasElement)
@@ -80,25 +79,33 @@ class Canvas {
   // init(){
 
   // }
-  drawData () {
+   drawData () {
     const pen = deepCopy(this.pen)
     this.canvas.height = this.canvas.height + 0
     for (let i = 0; i < this.data.length; i++) {
+      /**
+       * exlude
+       */
+      for(const k  of this.Blacklist){
+          if(k===i) i++
+      }
+      if(i===this.data.length){
+        return
+      }
       if (this.data[i].type === 'freeLine') {
-        ShapeMap.get(this.data[i].type)?.draw(this,this.data[i].data)
+        ShapeMap.get(this.data[i].type)?.draw(this, this.data[i].data)
       } else {
-            const { strokeStyle, fillStyle,linewidth} = this.data[i].pen as Pen
-            this.context.strokeStyle = strokeStyle
-            this.context.fillStyle = fillStyle
-            this.context.lineWidth=linewidth
-            ShapeMap.get(this.data[i].type)!.BeforePosition = this.data[
-              i
-            ].BeforePosition
-            ShapeMap.get(this.data[i].type)!.AfterPosition = this.data[
-              i
-            ].AfterPosition
-            ShapeMap.get(this.data[i].type)?.draw(this)
-        
+        const { strokeStyle, fillStyle, linewidth } = this.data[i].pen as Pen
+        this.context.strokeStyle = strokeStyle
+        this.context.fillStyle = fillStyle
+        this.context.lineWidth = linewidth
+        ShapeMap.get(this.data[i].type)!.BeforePosition = this.data[
+          i
+        ].BeforePosition
+        ShapeMap.get(this.data[i].type)!.AfterPosition = this.data[
+          i
+        ].AfterPosition
+        ShapeMap.get(this.data[i].type)?.draw(this)
       }
     }
     this.context.strokeStyle = pen?.strokeStyle as any
@@ -130,14 +137,17 @@ class Canvas {
       ) {
         this.context.beginPath()
         this.context.setLineDash([5, 5])
+        /**
+         * 拉入黑名单，重绘
+         */
+        console.log(this.data.length-i-1)
+        this.layers.Blacklist.push(this.data.length-i-1)
+        console.log(this)
+        this.layers.drawData() 
         this.context.strokeStyle = '#fa0000'
-        this.context.rect(
-          this.data[i].BeforePosition[0] - 20,
-          this.data[i].BeforePosition[1] - 20,
-          this.data[i].AfterPosition[0] - this.data[i].BeforePosition[0] + 40,
-          this.data[i].AfterPosition[1] - this.data[i].BeforePosition[1] + 40
-        )
-        this.context.stroke()
+        this.DrawClass.BeforePosition = this.data[i].BeforePosition
+        this.DrawClass.AfterPosition = this.data[i].AfterPosition
+        ShapeMap.get(this.data[i].type)?.draw(this)
         this.context.strokeStyle = this.pen?.strokeStyle as any
         this.context.setLineDash([])
         return
