@@ -15,7 +15,9 @@ import { useCanvasStore } from "@/store/canvas";
 import { useRoomStore } from "@/store/room";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
-const IsEditShow =ref<boolean>(false)
+import ChatRoom from "@/views/canvas/components/ChatRoom.vue";
+
+const IsEditShow = ref<boolean>(false)
 const canvasRef = ref(null)
 const canvasProvide = ref<Canvas>()
 const canvasStore = useCanvasStore();
@@ -36,7 +38,7 @@ canvasStore.connect(roomStore.roomId, roomStore.userAnonymous, (frame) => {
 })
 
 
-const drawer = ref(false)
+const drawer = ref(true)
 const activeName = ref<'chat' | 'room' | 'settings'>('chat')
 const shareMode = ref<boolean>(Boolean(roomStore.isShare))
 
@@ -90,7 +92,9 @@ async function addSheet() {
       direction="rtl"
     >
       <el-tabs v-model="activeName">
-        <el-tab-pane label="聊天" name="chat">111</el-tab-pane>
+        <el-tab-pane label="聊天" name="chat">
+          <chat-room/>
+        </el-tab-pane>
         <el-tab-pane label="房间用户" name="room">222</el-tab-pane>
         <el-tab-pane label="房间设置" name="settings">
           <div>
@@ -104,7 +108,7 @@ async function addSheet() {
   </div>
   <div class="sheets">
     <div v-for="sheet in canvasStore.sheets" :key="sheet.id" @click="changeSheet(sheet.id)"
-        :class="{'sheet-now':sheet.id===roomStore.sheetId}">{{ sheet.name }}
+         :class="{'sheet-now':sheet.id===roomStore.sheetId}">{{ sheet.name }}
     </div>
     <div style="display: inline-block;position: relative;bottom: 11px;">
       <div v-show="readyAddSheet" style="display: inline-block">
@@ -161,6 +165,10 @@ async function addSheet() {
 
 .drawer /deep/ .el-drawer__body {
   padding-top: 10px;
+}
+
+.drawer /deep/ .el-drawer {
+  width: 463px !important;
 }
 
 .sheets {

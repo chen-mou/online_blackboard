@@ -28,6 +28,7 @@ export const useCanvasStore = defineStore('canvas', {
     },
     otherUsers: [] as any[],
     sheets: [] as any[],
+    messageList: [] as any[],
   }),
   actions: {
     async connect(roomId: number, isAnonymous: number, onDisconnect: (frame: IFrame) => void) {
@@ -225,7 +226,7 @@ export const useCanvasStore = defineStore('canvas', {
         /**
          * 判断点是否在data的图形里面在的话拿出那一个图形并绘制
          */
-        canvas.state=true
+        canvas.state = true
         canvas.data = canvas.layers.data
         canvas.drawControlBorder(e.pageX - x, e.pageY - y)
         canvas.data = []

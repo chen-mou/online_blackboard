@@ -30,6 +30,9 @@ export const userInfoMessageResolver: { [k: string]: (data: any) => void } = {
     console.log(data)
     roomStore.setSheetIdAndIsShare(data.data.id, roomStore.isShare)
   },
+  'message': (data) => {
+    useCanvasStore().messageList.push(data.data)
+  }
 }
 
 export const roomMessageResolver: { [k: string]: (data: any) => void } = {
@@ -70,4 +73,10 @@ export const roomMessageResolver: { [k: string]: (data: any) => void } = {
     console.log(data)
     roomStore.setSheetIdAndIsShare(data.data.id, roomStore.isShare)
   },
+  'user_join': (data: any) => {
+    useCanvasStore().otherUsers.push(data.data)
+  },
+  'message': (data) => {
+    useCanvasStore().messageList.push(data.data)
+  }
 }

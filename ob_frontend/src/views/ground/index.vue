@@ -80,10 +80,6 @@ export default defineComponent({
         await this.userStore.getUserRooms()
       }
     },
-    testyasuo() {
-      axios.post('/user/getResult',
-        { value: snappy.compress(new TextEncoder().encode('123456789012345678901234567890123456789012345678901234567890')).toString() })
-    }
   },
 })
 </script>
@@ -134,9 +130,7 @@ export default defineComponent({
     </div>
   </div>
   <div class="my-room">
-    <p>我的房间
-      <el-button @click="testyasuo">压缩测试</el-button>
-    </p>
+    <p>我的房间</p>
     <div style="margin-top: 20px"
          v-show="userStore.myRooms.filter((r)=>dayjs().isBefore(r.setting.endTime)).length===0">还没有创建房间哦
     </div>
