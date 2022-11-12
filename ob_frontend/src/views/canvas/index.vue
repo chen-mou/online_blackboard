@@ -62,7 +62,7 @@ async function changeSheet(sheetId: string) {
 const readyAddSheet = ref(false)
 const sheetName = ref<string>('')
 
-async function addSheet(name: string) {
+async function addSheet() {
   canvasStore.ws.sendRaw('/app/create', {}, JSON.stringify({
     name: sheetName.value,
     roomId: roomStore.roomId,
