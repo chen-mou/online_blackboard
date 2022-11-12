@@ -77,6 +77,10 @@ export const roomMessageResolver: { [k: string]: (data: any) => void } = {
     useCanvasStore().otherUsers.push(data.data)
   },
   'message': (data) => {
-    useCanvasStore().messageList.push(data.data)
+    const canvasStore = useCanvasStore();
+    canvasStore.messageList.push(data.data)
+    if (canvasStore.messageList.length > 30) {
+      canvasStore.messageList.shift()
+    }
   }
 }

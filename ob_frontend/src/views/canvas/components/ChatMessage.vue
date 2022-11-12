@@ -54,7 +54,7 @@ const msgStyle = computed(() => {
   word-wrap: break-word;
   padding: 5px;
   border-radius: 5px;
-  user-select: auto;
+  user-select: text;
 }
 
 .chat-message__out {
