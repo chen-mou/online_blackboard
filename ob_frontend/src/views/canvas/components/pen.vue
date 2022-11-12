@@ -12,7 +12,7 @@
                 <StarFilled />
             </el-icon>
             <input type="color" v-model="penBorderColor">
-            <span>边框颜色</span>
+            <span>填充颜色</span>
         </div>
         <div>
             <el-slider v-model="penSize" height="60px" :min="1" :max="100" />

@@ -36,7 +36,7 @@ class Rectangle extends BaseShape {
   draw (canvas: Canvas) {
     if (this.BeforePosition && this.AfterPosition) {
       canvas.context.beginPath()
-      canvas.context.fillRect(
+      canvas.context.rect(
         this.BeforePosition[0],
         this.BeforePosition[1],
         this.AfterPosition[0] - this.BeforePosition[0],
