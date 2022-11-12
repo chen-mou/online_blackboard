@@ -33,10 +33,10 @@
     </div>
     <div>
       <svg t="1667916145025" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
-           p-id="3130" xmlns:xlink="http://www.w3.org/1999/xlink" width="40" height="35">
+           p-id="3130" xmlns:xlink="http://www.w3.org/1999/xlink" width="40" height="35" @click="changeDrawClass">
         <path
           d="M898.56 432.64c10.24-10.24 10.24-25.6 0-35.84l-238.08-230.4c-10.24-10.24-25.6-10.24-35.84 0L125.44 680.96c-10.24 10.24-10.24 25.6 0 35.84l99.84 97.28 53.76 51.2h576c15.36 0 25.6-10.24 25.6-25.6s-10.24-25.6-25.6-25.6H529.92l368.64-381.44zM179.2 698.88l248.32-258.56 202.24 194.56-171.52 179.2h-161.28L179.2 698.88z"
-          fill="#515151" p-id="3131"></path>
+          fill="#515151" p-id="3131" ></path>
       </svg>
       <span>橡皮</span>
     </div>
@@ -134,6 +134,13 @@ const undo = () => {
 
 const redo = () => {
   canvasStore.redo()
+}
+
+/**
+ * 橡皮
+ */
+const changeDrawClass=()=>{
+    console.log("还没写")
 }
 </script>
 
