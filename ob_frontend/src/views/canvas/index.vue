@@ -7,6 +7,7 @@ export default defineComponent({
 </script>
 
 <script setup lang="ts">
+import edit from "@/views/canvas/components/edit.vue"
 import NavBar from './components/NavBar.vue'
 import { onMounted, ref, reactive, provide, onBeforeUnmount } from 'vue'
 import Canvas from '@/utils/Canvas/canvas'
@@ -14,7 +15,7 @@ import { useCanvasStore } from "@/store/canvas";
 import { useRoomStore } from "@/store/room";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
-
+const IsEditShow =ref<boolean>(false)
 const canvasRef = ref(null)
 const canvasProvide = ref<Canvas>()
 const canvasStore = useCanvasStore();
@@ -50,10 +51,15 @@ async function changeShareMode(val: boolean) {
 async function endRoom() {
   canvasStore.over()
 }
+/**
+ * 控制是否显示编辑
+ */
+
 </script>
 <template>
   <div class="main">
     <nav-bar></nav-bar>
+    <edit v-show="canvasProvide?.state"></edit>
     <canvas id="canvas2" ref="canvas2Ref" width="1600" height="800"></canvas>
     <canvas id="canvas" ref="canvasRef" width="1600" height="800"></canvas>
 

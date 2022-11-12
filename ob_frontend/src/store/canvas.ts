@@ -14,7 +14,6 @@ import { useRoomStore } from "@/store/room";
 // @ts-ignore
 import snappy from 'snappyjs'
 import { roomMessageResolver, userInfoMessageResolver } from "@/utils/messageResolver";
-import { fi } from 'element-plus/es/locale'
 
 
 export const useCanvasStore = defineStore('canvas', {
@@ -97,6 +96,7 @@ export const useCanvasStore = defineStore('canvas', {
       )
 
       canvas.canvas.addEventListener('mousedown', e => {
+        canvas.state=false
         /**
          * 拉出黑名单，
          * 重绘layers图层
@@ -163,12 +163,12 @@ export const useCanvasStore = defineStore('canvas', {
         }
 
         if (canvas.DrawClass.type !== 'freeLine') {
-          // canvas.layers.data.push({
-          //   type: canvas.DrawClass.type,
-          //   BeforePosition: beforePosition,
-          //   AfterPosition: AfterPosition,
-          //   pen: deepCopy(canvas.pen)
-          // })
+          canvas.layers.data.push({
+            type: canvas.DrawClass.type,
+            BeforePosition: beforePosition,
+            AfterPosition: AfterPosition,
+            pen: deepCopy(canvas.pen)
+          })
           const roomStore = useRoomStore()
           this.ws.sendRaw('/app/draw', {}, JSON.stringify(shapeToWSShape({
             type: canvas.DrawClass.type,
@@ -210,6 +210,7 @@ export const useCanvasStore = defineStore('canvas', {
         /**
          * 判断点是否在data的图形里面在的话拿出那一个图形并绘制
          */
+        canvas.state=true
         canvas.data = canvas.layers.data
         canvas.drawControlBorder(e.pageX - x, e.pageY - y)
         canvas.data = []

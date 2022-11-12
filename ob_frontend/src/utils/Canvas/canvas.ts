@@ -24,6 +24,7 @@ class Canvas {
   DrawClass: ShapeClassTypeT // 默认类型为矩形// 默认类型为矩形
   after: any
   pen: Pen
+  state: boolean
   Blacklist: Array<number> = []
   layers!: Canvas
   context: CanvasRenderingContext2D
@@ -42,7 +43,7 @@ class Canvas {
     this.after = after
     this.data = data
     this.DrawClass = ShapeMap.get('line') as ShapeClassTypeT // 画布的层
-
+    this.state=false
     this.pen = {
       icon: '',
       linewidth: 1,
