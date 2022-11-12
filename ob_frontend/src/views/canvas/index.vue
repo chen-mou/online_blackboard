@@ -7,6 +7,7 @@ export default defineComponent({
 </script>
 
 <script setup lang="ts">
+import edit from "@/views/canvas/components/edit.vue"
 import NavBar from './components/NavBar.vue'
 import { onMounted, ref, reactive, provide, onBeforeUnmount } from 'vue'
 import Canvas from '@/utils/Canvas/canvas'
@@ -14,7 +15,7 @@ import { useCanvasStore } from "@/store/canvas";
 import { useRoomStore } from "@/store/room";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
-
+const IsEditShow =ref<boolean>(false)
 const canvasRef = ref(null)
 const canvasProvide = ref<Canvas>()
 const canvasStore = useCanvasStore();
@@ -72,6 +73,7 @@ async function addSheet() {
 <template>
   <div class="main">
     <nav-bar></nav-bar>
+    <edit v-show="canvasProvide?.state"></edit>
     <canvas id="canvas2" ref="canvas2Ref" width="1600" height="800"></canvas>
     <canvas id="canvas" ref="canvasRef" width="1600" height="800"></canvas>
 
@@ -102,7 +104,7 @@ async function addSheet() {
   </div>
   <div class="sheets">
     <div v-for="sheet in canvasStore.sheets" :key="sheet.id" @click="changeSheet(sheet.id)"
-         :class="{'sheet-now':sheet.id===roomStore.sheetId}">{{ sheet.name }}
+        :class="{'sheet-now':sheet.id===roomStore.sheetId}">{{ sheet.name }}
     </div>
     <div style="display: inline-block;position: relative;bottom: 11px;">
       <div v-show="readyAddSheet" style="display: inline-block">

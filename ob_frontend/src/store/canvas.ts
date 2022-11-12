@@ -5,7 +5,6 @@ import { changePen, deepCopy } from '@/utils'
 import { useWs } from '@/utils/ws'
 import { IFrame } from '@stomp/stompjs'
 import { ElMessage } from 'element-plus'
-import { Pen, ShapeDataType } from '@/utils/Canvas/type/CanvasType'
 import ShapeMap from '@/utils/Canvas/ShapeMap'
 import { FreeLine } from '@/utils/Canvas/shape'
 import { shapeToWSShape, wsShapeToShape } from "@/utils/convert";
@@ -226,6 +225,7 @@ export const useCanvasStore = defineStore('canvas', {
         /**
          * 判断点是否在data的图形里面在的话拿出那一个图形并绘制
          */
+        canvas.state=true
         canvas.data = canvas.layers.data
         canvas.drawControlBorder(e.pageX - x, e.pageY - y)
         canvas.data = []
