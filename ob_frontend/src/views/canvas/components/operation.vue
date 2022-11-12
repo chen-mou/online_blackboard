@@ -65,6 +65,7 @@ const cleanCanvas = () => {
     canvas.value.layers.data = []
     // canvas.value?.drawData()
     canvas.value.layers.drawData()
+    canvas.value.context.clearRect(0,0,1600,1600)
   }
 }
 /**
@@ -109,9 +110,9 @@ const importPng = (e: any) => {
     try {
       // 转成对象
       let data = JSON.parse(bytes)
-      canvas.value?.data.push(...data)
+      canvas.value?.layers.data.push(...data)
       console.log(data)
-      canvas.value?.drawData()
+      canvas.value?.layers.drawData()
       console.log('ok')
     } catch (e) {
       console.log('图片格式出错！')
