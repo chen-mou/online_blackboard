@@ -24,6 +24,7 @@ class Canvas {
   DrawClass: ShapeClassTypeT // 默认类型为矩形// 默认类型为矩形
   after: any
   pen: Pen
+  Blacklist: Array<number> = []
   layers!: Canvas
   context: CanvasRenderingContext2D
   data: Array<ShapeDataType>
