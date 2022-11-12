@@ -97,6 +97,13 @@ export const useCanvasStore = defineStore('canvas', {
 
       canvas.canvas.addEventListener('mousedown', e => {
         /**
+         * 拉出黑名单，
+         * 重绘layers图层
+         */
+        canvas.layers.Blacklist=[]
+        canvas.layers.drawData()
+        canvas.context.clearRect(0,0,1600,1600)
+        /**
          * 传入相应的坐标
          */
         console.log(canvas.context.strokeStyle)
@@ -104,12 +111,7 @@ export const useCanvasStore = defineStore('canvas', {
         canvas.DrawClass.BeforePosition = beforePosition
         prepareDrawing = true
         showLine = true
-        // if (canvas.DrawClass.type === 'freeLine') {
-        //     (canvas.DrawClass as FreeLine).data.push({
-        //       x:e.pageX - x,
-        //       y:e.pageY - y
-        //     })
-        // }
+        
       })
 
       canvas.canvas.addEventListener('mousemove', e => {
@@ -190,7 +192,6 @@ export const useCanvasStore = defineStore('canvas', {
         if (canvas.DrawClass.type !== 'freeLine') {
           ShapeMap.get(canvas.DrawClass.type)?.draw(canvas.layers)
         } else {
-
           ShapeMap.get(canvas.DrawClass.type)?.draw(canvas.layers);
           (canvas.DrawClass as FreeLine).data = []
         }
@@ -203,7 +204,6 @@ export const useCanvasStore = defineStore('canvas', {
         /**
          * 判断点是否在data的图形里面在的话拿出那一个图形并绘制
          */
-        console.log(canvas.layers)
         canvas.data = canvas.layers.data
         canvas.drawControlBorder(e.pageX - x, e.pageY - y)
         canvas.data = []
