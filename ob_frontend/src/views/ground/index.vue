@@ -5,6 +5,10 @@ import { ElMessage } from "element-plus";
 import { useRoomStore } from "@/store/room";
 import dayjs from "dayjs";
 import RoomEntry from './components/RoomEntry.vue'
+import request from "@/utils/request";
+// @ts-ignore
+import snappy from 'snappyjs'
+import axios from "axios";
 
 export default defineComponent({
   name: "BlackboardGround",
@@ -76,6 +80,10 @@ export default defineComponent({
         await this.userStore.getUserRooms()
       }
     },
+    testyasuo() {
+      axios.post('/user/getResult',
+        { value: snappy.compress(new TextEncoder().encode('123456789012345678901234567890123456789012345678901234567890')).toString() })
+    }
   },
 })
 </script>
@@ -126,8 +134,12 @@ export default defineComponent({
     </div>
   </div>
   <div class="my-room">
-    <p>我的房间</p>
-    <div style="margin-top: 20px" v-show="userStore.myRooms.filter((r)=>dayjs().isBefore(r.setting.endTime)).length===0">还没有创建房间哦</div>
+    <p>我的房间
+      <el-button @click="testyasuo">压缩测试</el-button>
+    </p>
+    <div style="margin-top: 20px"
+         v-show="userStore.myRooms.filter((r)=>dayjs().isBefore(r.setting.endTime)).length===0">还没有创建房间哦
+    </div>
     <div>
       <RoomEntry
         v-for="room in userStore.myRooms.filter((r)=>dayjs().isBefore(r.setting.endTime))"

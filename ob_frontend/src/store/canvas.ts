@@ -15,6 +15,7 @@ import { useRoomStore } from "@/store/room";
 import snappy from 'snappyjs'
 import { roomMessageResolver, userInfoMessageResolver } from "@/utils/messageResolver";
 import { fi } from 'element-plus/es/locale'
+import { throttleCall } from "@/utils/functions";
 
 
 export const useCanvasStore = defineStore('canvas', {
@@ -115,11 +116,17 @@ export const useCanvasStore = defineStore('canvas', {
         prepareDrawing = true
         showLine = true
 
-        if(canvas.DrawClass.type==="freeLine"){
-        ( canvas.DrawClass as FreeLine).data=[]
+        if (canvas.DrawClass.type === "freeLine") {
+          (canvas.DrawClass as FreeLine).data = []
         }
       })
 
+      const addFreelineData = throttleCall((e) => {
+        (canvas.DrawClass as FreeLine).data.push({
+          x: e.pageX - x,
+          y: e.pageY - y
+        })
+      })
       canvas.canvas.addEventListener('mousemove', e => {
         AfterPosition = [e.pageX - x, e.pageY - y]
         // 距离超过一定值就开始画
@@ -146,10 +153,11 @@ export const useCanvasStore = defineStore('canvas', {
             /**
              * 存入data
              */
-            (canvas.DrawClass as FreeLine).data.push({
-              x: e.pageX - x,
-              y: e.pageY - y
-            })
+            // (canvas.DrawClass as FreeLine).data.push({
+            //   x: e.pageX - x,
+            //   y: e.pageY - y
+            // })
+            addFreelineData(e)
           }
           canvas.DrawClass.draw(canvas)
 

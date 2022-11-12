@@ -25,7 +25,7 @@ const shapeTypeMap: { [k: string]: string } = {
 }
 
 export function shapeToWSShape(shape: any, sheetId: number, roomId: number): any {
-  console.log(shape)
+  // console.log(shape)
   const data = {
     "shape": {
       "type": shapeTypeMap[shape.type],

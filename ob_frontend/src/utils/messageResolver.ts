@@ -28,7 +28,7 @@ export const userInfoMessageResolver: { [k: string]: (data: any) => void } = {
     const roomStore = useRoomStore();
     console.log(data)
     roomStore.setSheetIdAndIsShare(data.data.id, roomStore.isShare)
-  }
+  },
 }
 
 export const roomMessageResolver: { [k: string]: (data: any) => void } = {
@@ -36,8 +36,12 @@ export const roomMessageResolver: { [k: string]: (data: any) => void } = {
     if (data.sheet !== useRoomStore().sheetId) {
       return
     }
-    console.log(data.data)
-    useCanvasStore().canvas.layers.data.push(wsShapeToShape(data.data))
+    const canvasStore = useCanvasStore();
+    // @ts-ignore
+    if (canvasStore.canvas.layers.data.findIndex((i) => i.id === data.data.id) > -1) {
+      return
+    }
+    canvasStore.canvas.layers.data.push(wsShapeToShape(data.data))
   },
   'delete': (data: any) => {
     if (data.sheet !== useRoomStore().sheetId) {
@@ -53,5 +57,15 @@ export const roomMessageResolver: { [k: string]: (data: any) => void } = {
   },
   '/create_sheet': (data: any) => {
     useCanvasStore().sheets.push({ id: data.data.id, name: data.data.name })
-  }
+  },
+  'change_sheet': (data: any) => {
+    const canvasStore = useCanvasStore()
+    canvasStore.canvas.layers.data = []
+    for (const shape of data.data.shapeEntities) {
+      canvasStore.canvas.layers.data.push(wsShapeToShape(shape))
+    }
+    const roomStore = useRoomStore();
+    console.log(data)
+    roomStore.setSheetIdAndIsShare(data.data.id, roomStore.isShare)
+  },
 }

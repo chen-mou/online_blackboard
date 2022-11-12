@@ -35,7 +35,7 @@ canvasStore.connect(roomStore.roomId, roomStore.userAnonymous, (frame) => {
 })
 
 
-const drawer = ref(true)
+const drawer = ref(false)
 const activeName = ref<'chat' | 'room' | 'settings'>('chat')
 const shareMode = ref<boolean>(Boolean(roomStore.isShare))
 
@@ -61,7 +61,7 @@ async function changeSheet(sheetId: string) {
 const readyAddSheet = ref(false)
 const sheetName = ref<string>('')
 
-async function addSheet(name: string) {
+async function addSheet() {
   canvasStore.ws.sendRaw('/app/create', {}, JSON.stringify({
     name: sheetName.value,
     roomId: roomStore.roomId,

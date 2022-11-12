@@ -7,7 +7,7 @@ export function useWs(
   channels: Array<{ id: string, channel: string, callback: (data: IFrame) => void }>,
   onDisconnect: (frame: IFrame) => void
 ) {
-  const client = Stomp.over(() => new Socket('http://47.112.184.57:18888/connect'))
+  const client = Stomp.over(() => new Socket('http://192.168.1.106:18888/connect'))
   client.onStompError = onDisconnect
 
   const headers = {
