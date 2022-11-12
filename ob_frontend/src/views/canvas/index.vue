@@ -25,18 +25,31 @@ onMounted(() => {
 })
 provide("canvas__", canvasProvide)
 const roomStore = useRoomStore()
-if (!canvasStore.ws.active) {
-  canvasStore.connect(roomStore.roomId, roomStore.userAnonymous, (frame) => {
-    console.log('ws disconnected:', frame)
-    ElMessage.error({
-      message: frame.headers.message
-    })
-    router.replace('/')
+
+canvasStore.connect(roomStore.roomId, roomStore.userAnonymous, (frame) => {
+  ElMessage.error({
+    message: frame.headers.message,
+    grouping: true,
   })
+  router.replace('/')
+})
+
+
+const drawer = ref(true)
+const activeName = ref<'chat' | 'room' | 'settings'>('chat')
+const shareMode = ref<boolean>(Boolean(roomStore.isShare))
+
+async function changeShareMode(val: boolean) {
+  let message = await roomStore.updateRoom({ roomId: roomStore.roomId, isShare: Number(val) })
+  if (message) {
+    ElMessage.error({ message,grouping: true, })
+    shareMode.value = !val
+  }
 }
-/**
- * 绑定mouse事件
- */
+
+async function endRoom() {
+  canvasStore.over()
+}
 </script>
 <template>
   <div class="main">
@@ -44,6 +57,30 @@ if (!canvasStore.ws.active) {
     <canvas id="canvas2" ref="canvas2Ref" width="1600" height="800"></canvas>
     <canvas id="canvas" ref="canvasRef" width="1600" height="800"></canvas>
 
+  </div>
+  <div class="drawer-button" @click="drawer=true">
+    <el-icon>
+      <DArrowLeft/>
+    </el-icon>
+  </div>
+  <div class="drawer">
+    <el-drawer
+      v-model="drawer"
+      title="房间信息"
+      direction="rtl"
+    >
+      <el-tabs v-model="activeName">
+        <el-tab-pane label="聊天" name="chat">111</el-tab-pane>
+        <el-tab-pane label="房间用户" name="room">222</el-tab-pane>
+        <el-tab-pane label="房间设置" name="settings">
+          <div>
+            所有人可编辑
+            <el-switch @change="changeShareMode" v-model="shareMode"/>
+          </div>
+          <el-button type="danger" @click="endRoom">结束房间</el-button>
+        </el-tab-pane>
+      </el-tabs>
+    </el-drawer>
   </div>
 </template>
 
@@ -70,5 +107,22 @@ if (!canvasStore.ws.active) {
   position: absolute;
   top: 70px;
   left: 0px;
+}
+
+.drawer-button {
+  height: 50px;
+  width: 30px;
+  position: absolute;
+  right: 0;
+  border: 1px solid lightgray;
+  cursor: pointer;
+}
+
+.drawer /deep/ .el-drawer__header {
+  margin-bottom: 0;
+}
+
+.drawer /deep/ .el-drawer__body {
+  padding-top: 10px;
 }
 </style>

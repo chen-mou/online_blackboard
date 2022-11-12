@@ -10,7 +10,7 @@ const props = defineProps({
   room: Object
 })
 const isOpen = computed(() => {
-  return !dayjs().isBetween(props.room?.setting.startTime, props.room?.setting.endTime)
+  return dayjs().isBetween(props.room?.setting.startTime, props.room?.setting.endTime)
 })
 
 const roomStore = useRoomStore()
@@ -31,7 +31,7 @@ function copyId() {
 }
 
 async function joinRoom() {
-  roomStore.joinRoom(props.room?.id, props.room?.setting.allowAnonymous)
+  roomStore.joinRoom(props.room?.id, 0)
   await router.replace('/canvas')
 }
 
@@ -46,7 +46,8 @@ async function editRoom() {
   let msg = await roomStore.updateRoom(data)
   if (msg) {
     ElMessage.error({
-      message: msg
+      message: msg,
+      grouping: true,
     })
   } else {
     openDialog.value = false
@@ -68,8 +69,14 @@ const changeSth = computed(() => {
 
 const openDialog = ref(false)
 
-function deleteRoom() {
-  roomStore.deleteRoom(props.room?.id)
+async function deleteRoom() {
+  let message = await roomStore.deleteRoom(props.room?.id)
+  if (message) {
+    ElMessage.error({ message, grouping: true, })
+  } else {
+    openDialog.value = false
+    userStore.getUserRooms()
+  }
 }
 </script>
 
@@ -86,8 +93,8 @@ function deleteRoom() {
         display: -webkit-box;">
         {{ room.setting.name }}</p>
       <div style="position: absolute;right: 0;top: 0;">
-        <el-button @click="copyId" :disabled="isOpen">复制房间号</el-button>
-        <el-button @click="joinRoom" type="primary" :disabled="isOpen">进入房间</el-button>
+        <el-button @click="copyId" :disabled="!isOpen">复制房间号</el-button>
+        <el-button @click="joinRoom" type="primary" :disabled="!isOpen">进入房间</el-button>
       </div>
     </div>
     <div>
@@ -98,6 +105,11 @@ function deleteRoom() {
           <Setting/>
         </el-icon>
       </el-button>
+    </div>
+    <div>
+      <el-tag type="warning" v-if="dayjs().isBefore(room.setting.startTime)">未开始</el-tag>
+      <el-tag type="success" v-if="isOpen">进行中</el-tag>
+      <el-tag type="warning" v-if="dayjs().isAfter(room.setting.endTime)">已结束</el-tag>
     </div>
   </div>
   <el-dialog style="width: 280px;text-align: center;border-radius: 20px" v-model="openDialog"
@@ -117,8 +129,8 @@ function deleteRoom() {
       <el-checkbox style="position: relative;top:5px;margin-right: 10px" label="开启匿名" v-model="allowAnonymous"/>
       <el-button type="primary" :disabled="!changeSth" @click="editRoom">确定</el-button>
     </div>
-    <div>
-      <el-button type="danger" style="margin-top: 10px" @click="deleteRoom">删除房间</el-button>
+    <div style="margin-top: 10px">
+      <el-button type="danger" @click="deleteRoom" :disabled="room.status==='meeting'">删除房间</el-button>
     </div>
   </el-dialog>
 </template>

@@ -116,7 +116,8 @@ const importPng = (e: any) => {
     } catch (e) {
       console.log('图片格式出错！')
       ElMessage.error({
-        message: '图片格式出错！'
+        message: '图片格式出错！',
+        grouping: true,
       })
     }
   }

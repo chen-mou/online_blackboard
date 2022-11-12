@@ -11,6 +11,7 @@ export const useRoomStore = defineStore('room', {
     endTime: '',
     allowAnonymous: 0,
     userAnonymous: 0,
+    sheetId: 0,
   }),
   actions: {
     joinRoom(roomId: number, userAnonymous: number) {
@@ -63,9 +64,21 @@ export const useRoomStore = defineStore('room', {
       }
       return false
     },
-    deleteRoom(roomId: number) {
-      return
-    }
+    async deleteRoom(roomId: number) {
+      const res = await request({
+        data: { roomId },
+        url: '/room/delete',
+        method: 'post',
+      })
+      if (res.code != 200) {
+        return res.msg
+      }
+      return false
+    },
+    setSheetIdAndIsShare(sheetId: number, isShare: number) {
+      this.sheetId = sheetId
+      this.isShare = isShare
+    },
   },
   getters: {}
 })

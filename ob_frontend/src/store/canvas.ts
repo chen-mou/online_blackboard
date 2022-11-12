@@ -8,14 +8,13 @@ import { ElMessage } from 'element-plus'
 import { Pen, ShapeDataType } from '@/utils/Canvas/type/CanvasType'
 import ShapeMap from '@/utils/Canvas/ShapeMap'
 import { FreeLine } from '@/utils/Canvas/shape'
-import { roomMessageResolver, userInfoMessageResolver } from "@/utils/messageResolver";
 import { shapeToWSShape, wsShapeToShape } from "@/utils/convert";
 import { useRoomStore } from "@/store/room";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import snappy from 'snappyjs'
+import { roomMessageResolver, userInfoMessageResolver } from "@/utils/messageResolver";
 
-const roomStore = useRoomStore();
 
 export const useCanvasStore = defineStore('canvas', {
   state: () => ({
@@ -27,10 +26,12 @@ export const useCanvasStore = defineStore('canvas', {
       active: boolean,
     },
     _otherUsers: [] as any[],
-    sheetId: 0,
   }),
   actions: {
-    connect(roomId: number, isAnonymous: number, onDisconnect: (frame: IFrame) => void) {
+    async connect(roomId: number, isAnonymous: number, onDisconnect: (frame: IFrame) => void) {
+      if (this.ws.active) {
+        await this.ws.close()
+      }
       this.ws = useWs(roomId, isAnonymous, [{
         id: 'room',
         channel: `/exchange/room/${roomId}`,
@@ -54,7 +55,7 @@ export const useCanvasStore = defineStore('canvas', {
         d.data = snappy.uncompress(new TextEncoder().encode(d.data)).toString()
       }
       d.data = JSON.parse(d.data)
-      roomMessageResolver[d.type](this, d)
+      roomMessageResolver[d.type](d)
       this.canvas.layers.drawData()
     },
     _wsUserReceive(frame: IFrame) {
@@ -63,11 +64,12 @@ export const useCanvasStore = defineStore('canvas', {
         d.data = snappy.uncompress(new TextEncoder().encode(d.data)).toString()
       }
       d.data = JSON.parse(d.data)
-      userInfoMessageResolver[d.type](this, d)
+      userInfoMessageResolver[d.type](d)
     },
     _wsErrReceive(frame: IFrame) {
       ElMessage.error({
-        message: frame.body
+        message: frame.body,
+        grouping: true,
       })
     },
     initCanvas() {
@@ -156,18 +158,19 @@ export const useCanvasStore = defineStore('canvas', {
         }
 
         if (canvas.DrawClass.type !== 'freeLine') {
-          canvas.layers.data.push({
+          // canvas.layers.data.push({
+          //   type: canvas.DrawClass.type,
+          //   BeforePosition: beforePosition,
+          //   AfterPosition: AfterPosition,
+          //   pen: deepCopy(canvas.pen)
+          // })
+          const roomStore = useRoomStore()
+          this.ws.sendRaw('/app/draw', {}, JSON.stringify(shapeToWSShape({
             type: canvas.DrawClass.type,
             BeforePosition: beforePosition,
             AfterPosition: AfterPosition,
             pen: deepCopy(canvas.pen)
-          })
-          this.ws.send('room', shapeToWSShape({
-            type: canvas.DrawClass.type,
-            BeforePosition: beforePosition,
-            AfterPosition: AfterPosition,
-            pen: deepCopy(canvas.pen)
-          }, this.sheetId, roomStore.roomId))
+          }, roomStore.sheetId, roomStore.roomId)))
         } else {
           canvas.layers.data.push({
             type: canvas.DrawClass.type,
@@ -207,11 +210,20 @@ export const useCanvasStore = defineStore('canvas', {
       })
     },
     undo() {
-      this.ws.sendRaw('/app/rollback', {}, JSON.stringify({ roomId: roomStore.roomId, sheetId: this.sheetId }))
+      this.ws.sendRaw('/app/rollback', {}, JSON.stringify({
+        roomId: useRoomStore().roomId,
+        sheetId: useRoomStore().sheetId
+      }))
     },
     redo() {
-      this.ws.sendRaw('/app/redo', {}, JSON.stringify({ roomId: roomStore.roomId, sheetId: this.sheetId }))
-    }
+      this.ws.sendRaw('/app/redo', {}, JSON.stringify({
+        roomId: useRoomStore().roomId,
+        sheetId: useRoomStore().sheetId
+      }))
+    },
+    over() {
+      this.ws.sendRaw('/app/over', {}, JSON.stringify({ roomId: useRoomStore().roomId }))
+    },
   },
   getters: {}
 })
