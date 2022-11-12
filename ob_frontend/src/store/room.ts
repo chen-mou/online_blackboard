@@ -62,6 +62,9 @@ export const useRoomStore = defineStore('room', {
         return res.msg
       }
       return false
+    },
+    deleteRoom(roomId: number) {
+      return
     }
   },
   getters: {}
