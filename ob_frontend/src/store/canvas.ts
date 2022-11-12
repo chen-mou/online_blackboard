@@ -156,12 +156,12 @@ export const useCanvasStore = defineStore('canvas', {
         }
 
         if (canvas.DrawClass.type !== 'freeLine') {
-          // canvas.layers.data.push({
-          //   type: canvas.DrawClass.type,
-          //   BeforePosition: beforePosition,
-          //   AfterPosition: AfterPosition,
-          //   pen: deepCopy(canvas.pen)
-          // })
+          canvas.layers.data.push({
+            type: canvas.DrawClass.type,
+            BeforePosition: beforePosition,
+            AfterPosition: AfterPosition,
+            pen: deepCopy(canvas.pen)
+          })
           this.ws.send('room', shapeToWSShape({
             type: canvas.DrawClass.type,
             BeforePosition: beforePosition,
@@ -176,7 +176,7 @@ export const useCanvasStore = defineStore('canvas', {
             pen: deepCopy(canvas.pen),
             data: (canvas.DrawClass as FreeLine).data
           });
-
+          console.log(canvas.layers)
         }
         IsDrawing = false
         /**
@@ -192,7 +192,6 @@ export const useCanvasStore = defineStore('canvas', {
           (canvas.DrawClass as FreeLine).data = []
         }
         canvas.context.clearRect(0, 0, 1600, 1600)
-        console.log(canvas)
       })
       /**
        * 监听双击事件可选中和可拖动
@@ -201,6 +200,7 @@ export const useCanvasStore = defineStore('canvas', {
         /**
          * 判断点是否在data的图形里面在的话拿出那一个图形并绘制
          */
+        console.log(canvas.layers)
         canvas.data = canvas.layers.data
         canvas.drawControlBorder(e.pageX - x, e.pageY - y)
         canvas.data = []
