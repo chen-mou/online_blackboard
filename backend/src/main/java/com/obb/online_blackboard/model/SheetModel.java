@@ -61,7 +61,7 @@ public class SheetModel {
         if(sheet == null){
             return null;
         }
-        List<Shape> shapes = shapeModel.getShapeByShapesId(new ArrayList<>(sheet.getShapes()));
+        List<Shape> shapes = shapeModel.getBySheetId(sheet.getId());
         sheet.setShapeEntities(shapes);
 //        sheet.setUseStack(null);
 //        sheet.setUserIndex(null);
@@ -93,7 +93,6 @@ public class SheetModel {
 
     public List<SheetEntity> getAllByRoomId(long roomId){
         List<SheetEntity> sheetEntities = sheetDao.findAllByRoomId(roomId);
-        sheetEntities.forEach(item -> item.setShapes(null));
         return sheetEntities;
     }
 

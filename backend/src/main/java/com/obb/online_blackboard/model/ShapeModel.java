@@ -29,6 +29,8 @@ public class ShapeModel {
     @Resource
     Id id;
 
+    @Resource
+    RedisKeyValueTemplate redisKeyValueTemplate;
 
     @Resource
     RedisKeyValueTemplate template;
@@ -44,7 +46,7 @@ public class ShapeModel {
     }
 
     public List<Shape> getBySheetId(long sheetId){
-        return shapeDao.findBySheetId(sheetId);
+        return shapeDao.findBySheetIdAndUsing(sheetId, 1);
     }
 
     public List<Shape> getShapeByShapesId(List<Long> shapesId){
@@ -78,4 +80,10 @@ public class ShapeModel {
         template.update(update);
     }
 
+
+    public void updateUsing(boolean using, long shapeId){
+        PartialUpdate<Shape> update = new PartialUpdate<>(shapeId, Shape.class).
+                set("using", using ? 0: 1);
+        redisKeyValueTemplate.update(update);
+    }
 }

@@ -40,7 +40,6 @@ public class SheetEntity {
 
     //操作栈,只最多保存三十个操作
 
-    private Set<Long> shapes;
 
 
     @Transient
@@ -50,7 +49,6 @@ public class SheetEntity {
     public SheetEntity(long id, long roomId) {
         this.id = id;
         this.roomId = roomId;
-        this.shapes = new HashSet<>();
     }
 
     private void StackOperation(Operate op){
@@ -64,22 +62,18 @@ public class SheetEntity {
     }
 
     public void addStack(long shape){
-        shapes.add(shape);
         StackOperation(new Add(shape));
     }
 
     public void delStack(long shape){
-       shapes.remove(shape);
         StackOperation(new Delete(shape));
     }
 
     public void modStack(long from, long to){
-        shapes.remove(from);
-        shapes.add(to);
         StackOperation(new Modify(from, to));
     }
 
-    public void rollback(Save save){
+    public void rollback(){
         OperateModel operateModel = Context.getContext().getBean(OperateModel.class);
         Operates ops = operateModel.getById(this.id);
         Operate op;
@@ -91,11 +85,11 @@ public class SheetEntity {
         }catch (OperationException e){
             throw new OperationException(500, "无法撤销了");
         }
-        op.rollback(shapes, this.id,roomId, save);
+        op.rollback(this.id,roomId);
         operateModel.save(ops);
     }
 
-    public void redo(Save save){
+    public void redo(){
         OperateModel operateModel = Context.getContext().getBean(OperateModel.class);
         Operates ops = operateModel.getById(this.id);
         Operate op;
@@ -107,7 +101,7 @@ public class SheetEntity {
         }catch (OperationException e){
             throw new OperationException(500, "无法重做了");
         }
-        op.redo(shapes, this.id,roomId, save);
+        op.redo(this.id,roomId);
         operateModel.save(ops);
     }
 

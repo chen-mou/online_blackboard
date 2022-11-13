@@ -34,6 +34,9 @@ public class Shape implements Special{
     @Indexed
     protected long sheetId;
 
+    @Indexed
+    protected boolean using;
+
     protected int index;
 
     protected Point start;

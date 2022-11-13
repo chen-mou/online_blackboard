@@ -20,7 +20,6 @@ import tool.util.id.Id;
 import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
-import java.sql.Time;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -114,11 +113,11 @@ public class SheetService {
         template.convertAndSend("/exchange/room/" + roomId, Message.add(shape, sheetId));
         RLock rLock = client.getLock("SHEET_WRITE_" + sheetId);
         rLock.lock(5, TimeUnit.SECONDS);
-        SheetEntity sheet = sheetModel.getSheetByIdBase(sheetId);
+        SheetEntity sheet = new SheetEntity(sheetId, roomId);
         shape.setSheetId(sheetId);
+        shape.setUsing(true);
         shapeModel.saveShape(shape);
         sheet.addStack(shape.getId());
-        sheetModel.save(sheet);
         rLock.unlock();
         template.convertAndSend("/exchange/room/" + roomId, Message.add(shape, sheetId));
     }
@@ -127,16 +126,14 @@ public class SheetService {
     public void rollback(long userId, long roomId, long sheetId){
         verifyCreator(userId, roomId, sheetId);
         SheetEntity sheet = sheetModel.getSheetById(sheetId);
-        sheet.rollback(() -> sheetModel.save(sheet));
+        sheet.rollback();
     }
 
     @Lock(key = "SHEET_WRITE_", argName = "sheetId")
     public void redo(long userId, long roomId, long sheetId) {
         verifyCreator(userId, roomId, sheetId);
-        SheetEntity sheet = sheetModel.getSheetById(sheetId);
-        sheet.redo(() -> {
-            sheetModel.save(sheet);
-        });
+        SheetEntity sheet = new SheetEntity(sheetId, roomId);
+        sheet.redo();
 
     }
 
@@ -145,13 +142,17 @@ public class SheetService {
         verifyCreator(userId, roomId, sheetId);
         long id = shape.getId();
         shape.setSheetId(sheetId);
-        SheetEntity sheet = sheetModel.getSheetById(sheetId);
-        if(!sheet.getShapes().contains(shape.getId())){
+        SheetEntity sheet = new SheetEntity(sheetId, roomId);
+        if(!shapeModel.getById(shape.getId()).isUsing()){
             throw new OperationException(404, "图像不存在");
         }
         Shape s = shapeModel.createShape(shape);
+        Shape s1 = shapeModel.getById(id);
         sheet.modStack(id, s.getId());
-        sheetModel.save(sheet);
+        s.setUsing(true);
+        s1.setUsing(false);
+        shapeModel.saveShape(s);
+        shapeModel.saveShape(s1);
         template.convertAndSend("/exchange/room/" + roomId, Message.del(id, sheetId));
         template.convertAndSend("/exchange/room/" + roomId, Message.add(shape, sheetId));
     }
@@ -163,9 +164,11 @@ public class SheetService {
         if(s == null){
             return;
         }
-        SheetEntity sheet = sheetModel.getSheetByIdBase(sheetId);
+        SheetEntity sheet = new SheetEntity(sheetId, roomId);
         sheet.delStack(shapeId);
-        sheetModel.save(sheet);
+        Shape shape = shapeModel.getById(shapeId);
+        shape.setUsing(false);
+        shapeModel.saveShape(shape);
         template.convertAndSend("/exchange/room/" + roomId, Message.del(shapeId, sheetId));
     }
 
