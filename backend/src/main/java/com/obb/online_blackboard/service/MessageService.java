@@ -52,6 +52,9 @@ public class MessageService {
             message.setGetterName(getterEntity.getNickname());
             template.convertAndSendToUser(String.valueOf(getterEntity.getUserId()),
                     "/queue/info", Message.def("message", message));
+
+            template.convertAndSendToUser(String.valueOf(senderEntity.getUserId()),
+                    "/queue/info", Message.def("message", message));
         }
 
     }

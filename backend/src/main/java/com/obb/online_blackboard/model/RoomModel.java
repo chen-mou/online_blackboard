@@ -173,7 +173,8 @@ public class RoomModel {
     }
 
     public List<RoomEntity> getByCreator(long userId){
-        return roomDbDao.getRoomByCreatorId(userId);
+        List<RoomEntity> rooms = roomDbDao.getRoomByCreatorId(userId);
+        return rooms;
     }
 
 }
