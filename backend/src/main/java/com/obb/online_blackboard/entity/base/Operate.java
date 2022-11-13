@@ -1,13 +1,5 @@
 package com.obb.online_blackboard.entity.base;
 
-import com.obb.online_blackboard.config.Context;
-import com.obb.online_blackboard.entity.Shapes;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import org.springframework.context.ApplicationContext;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.redis.core.RedisHash;
-
 import java.util.Set;
 
 /**
