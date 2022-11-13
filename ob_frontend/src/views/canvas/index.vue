@@ -81,7 +81,7 @@ const userStore = useUserStore()
 <template>
   <div class="main">
     <nav-bar></nav-bar>
-    <edit v-show="canvasProvide?.state"></edit>
+    <edit v-if="canvasProvide?.state"></edit>
     <canvas id="canvas2" ref="canvas2Ref" width="1600" height="800"></canvas>
     <canvas id="canvas" ref="canvasRef" width="1600" height="800"></canvas>
 

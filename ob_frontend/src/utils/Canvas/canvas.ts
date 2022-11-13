@@ -1,4 +1,6 @@
 // 生成一份object的key的类型，并将非 T 继承类型的key的值类型置为 never
+import login from "@/views/login/index.vue";
+
 type ExtractType<O, T> = { [K in keyof O]: O[K] extends T ? O[K] : unknown }
 // 组合两个 object 的类型
 type Diff<T extends string, U> = ({ [X in T]: X } &
@@ -141,9 +143,10 @@ class Canvas {
         /**
          * 拉入黑名单，重绘
          */
+        console.log(this.data[i])
         this.layers.Blacklist.push(this.data[i].id as any)
         console.log(this)
-        this.layers.drawData() 
+        this.layers.drawData()
         this.context.strokeStyle = '#fa0000'
         this.DrawClass.BeforePosition = this.data[i].BeforePosition
         this.DrawClass.AfterPosition = this.data[i].AfterPosition

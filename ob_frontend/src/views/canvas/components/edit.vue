@@ -116,9 +116,16 @@ const deleteShape=()=>{
         {
             console.log("pkoo")
             /**
-             * 修改pen后绘入第一图层      
+             * 修改pen后绘入第一图层      [i].id
+             * splice(useCanvasStore().canvas.layers.data.findIndex(e => e.id === data.data), 1)
              */
-            
+            ;(canvas.value as Canvas).layers.data.splice(i,1)
+            canvas.value?.layers.drawData()
+            canvas.value?.drawData()
+            //@ts-ignore
+            canvas.value.layers.Blacklist=[]
+            //@ts-ignore
+            canvas.value.state=false
             break
         }
     }
