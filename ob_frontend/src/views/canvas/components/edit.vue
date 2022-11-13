@@ -45,6 +45,7 @@
 </template>
 
 <script lang="ts">
+import Canvas from '@/utils/Canvas/canvas';
 import CanvasConfig from '@/utils/Canvas/config';
 import { defineComponent, inject, onMounted, ref, watch  } from 'vue';
 export default defineComponent({
@@ -52,7 +53,7 @@ export default defineComponent({
 })
 </script>
 <script lang="ts" setup>
-let canvas =ref()
+let canvas =ref<Canvas>()
 onMounted( ()=>{
 const canvasInjetct =inject("canvas__") as any
     canvas=canvasInjetct
@@ -62,10 +63,23 @@ const canvasInjetct =inject("canvas__") as any
  */
 const width = ref<number>(1)
 watch(width,(newValue:number)=>{
-    console.log("改变")
     /**
      * 拿到选中并修改
      */
+    
+    for(let i= 0 ;i<(canvas.value as Canvas).layers.data.length;i++ ){
+        if((canvas.value as Canvas).layers.data[i].id===canvas!.value?.layers.Blacklist[0])
+        {
+            console.log("pkoo")
+            /**
+             * 修改pen后绘入第一图层      
+             */
+
+            canvas.value!.layers.data[i].pen!.linewidth=newValue
+            canvas.value!.layers.drawData()
+            break
+        }
+    }
 })
 /**
  * 颜色
@@ -85,7 +99,7 @@ const color = ref<string>(CanvasConfig.PenStrokeStyle)
  * 关闭编辑页面
  */
 const closeEdit= ()=>{
-    canvas.value.state=false
+    canvas.value!.state=false
 }
 </script>
 

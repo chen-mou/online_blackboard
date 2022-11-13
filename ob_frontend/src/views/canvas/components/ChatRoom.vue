@@ -23,7 +23,7 @@ function send() {
 <template>
   <div>
     <div class="chat-list">
-      <chat-message v-for="item of canvasStore.messageList" :key="item.id" :msg="item" @privateChat="(v)=>{target=v}"/>
+      <chat-message v-for="item of canvasStore.messageList" :key="item.id" :msg="item" @privateChat="(v: number)=>{target=v}"/>
     </div>
     <div style="position: fixed;bottom: 20px;width: 420px">
       <el-input
