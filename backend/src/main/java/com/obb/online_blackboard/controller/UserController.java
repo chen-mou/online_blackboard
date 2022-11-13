@@ -3,7 +3,6 @@ package com.obb.online_blackboard.controller;
 import com.obb.online_blackboard.entity.UserDataEntity;
 import com.obb.online_blackboard.entity.UserEntity;
 import com.obb.online_blackboard.service.UserService;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +15,6 @@ import tool.util.JWT;
 import tool.util.ParamError;
 
 import javax.annotation.Resource;
-import javax.validation.Valid;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;

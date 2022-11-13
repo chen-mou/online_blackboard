@@ -5,7 +5,6 @@ import com.obb.online_blackboard.entity.RoomSettingEntity;
 import com.obb.online_blackboard.entity.UserEntity;
 import com.obb.online_blackboard.exception.OperationException;
 import com.obb.online_blackboard.service.RoomService;
-import com.obb.online_blackboard.service.SheetService;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.validation.Errors;
