@@ -212,9 +212,9 @@ export const useCanvasStore = defineStore('canvas', {
          */
         changePen(canvas.layers.context, canvas.pen)
         if (canvas.DrawClass.type !== 'freeLine') {
-          ShapeMap.get(canvas.DrawClass.type)?.draw(canvas.layers)
+          // ShapeMap.get(canvas.DrawClass.type)?.draw(canvas.layers)
         } else {
-          ShapeMap.get(canvas.DrawClass.type)?.draw(canvas.layers);
+          // ShapeMap.get(canvas.DrawClass.type)?.draw(canvas.layers);
           (canvas.DrawClass as FreeLine).data = []
         }
         canvas.context.clearRect(0, 0, 1600, 1600)
