@@ -69,7 +69,7 @@ const canvasInjetct =inject("canvas__") as any
  * 初始化
  */
 
-watch(canvas.value,()=>{
+watch(canvas.value,width,color,()=>{
     for(let i= 0 ;i<(canvas.value as Canvas).layers.data.length;i++ ){
         if((canvas.value as Canvas).layers.data[i].id===canvas!.value?.layers.Blacklist[0])
         {
