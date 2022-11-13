@@ -1,8 +1,11 @@
 <template>
     <div class="shape" @click="HandleSelect">
         <!-- 遍历icon及形状 -->
-        <div v-for="item in ShapeMap" :key="item[1].type">
-            <img :src="item[1].icon" :name="item[1].type">
+        <div v-for="item in (ShapeMap as any)" :key="item[1].type">
+            <div>
+                <img :src="item[1].icon" :name="item[1].type">
+                <span>{{item[1].type}}</span>
+            </div>
         </div>
     </div>
 </template>
@@ -45,5 +48,24 @@ const HandleSelect=(e:MouseEvent)=>{
     display: flex;
     border-left: 1px solid rgb(211, 201, 201);
     border-right: 1px solid rgb(211, 201, 201);
+    display: flex;
 }
+img{
+    height: 30px;
+    width: 30px;
+}
+
+.shape>* {
+  flex: fit-content;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.shape>*:hover {
+  cursor: pointer;
+  background-color: #dcefff;
+}
+
 </style>

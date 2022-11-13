@@ -61,7 +61,7 @@ class Line extends BaseShape {
   ) {
     super(BeforePosition, AfterPosition)
     this.type = 'line'
-    this.icon = '/canvsShapeImg/rect.png'
+    this.icon = '/canvsShapeImg/line.png'
   }
 
   draw (canvas: Canvas) {
@@ -78,7 +78,7 @@ class Circle extends BaseShape {
   ) {
     super(BeforePosition, AfterPosition)
     this.type = 'circle'
-    this.icon = '/canvsShapeImg/rect.png'
+    this.icon = '/canvsShapeImg/circle.png'
   }
 
   draw (canvas: Canvas) {
@@ -108,6 +108,7 @@ class ShapeImg extends BaseShape {
   ) {
     super(BeforePosition, AfterPosition)
     this.type = 'img'
+    this.icon = '/canvsShapeImg/img.png'
   }
   draw (canvas: Canvas, file?: any) {
     if (window.FileReader) {
@@ -150,7 +151,7 @@ class FreeLine extends BaseShape {
   ) {
     super(BeforePosition, AfterPosition)
     this.type = 'freeLine'
-    this.icon = '/canvsShapeImg/rect.png'
+    this.icon = '/canvsShapeImg/freeline.png'
   }
   draw (canvas: Canvas ,data?:Array<Point>) {
       /**
@@ -177,7 +178,7 @@ class Ellipse extends BaseShape {
   ) {
     super(BeforePosition, AfterPosition)
     this.type = 'ellipse'
-    this.icon = '/canvsShapeImg/rect.png'
+    this.icon = '/canvsShapeImg/ellipse.png'
   }
   draw (canvas: Canvas) {
     canvas.context.beginPath()
