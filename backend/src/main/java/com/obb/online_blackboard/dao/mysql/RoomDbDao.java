@@ -18,10 +18,10 @@ import java.util.List;
 @Mapper
 public interface RoomDbDao {
 
-    @Insert("insert into room value(#{id}, #{creatorId}, #{creatorName}, #{name}, #{status}, #{loaded})")
+    @Insert("insert into room value(#{id}, #{creatorId}, #{creatorName}, #{status}, #{loaded})")
     int insert(RoomEntity room);
 
-    @Select("select * from room where creator_id = #{creatorId}")
+    @Select("select * from room where creator_id = #{creatorId} and status != 'del'")
     @Results({
             @Result(column = "id", property = "id"),
             @Result(column = "id", property = "setting",
@@ -29,30 +29,28 @@ public interface RoomDbDao {
     })
     List<RoomEntity> getRoomByCreatorId(long creatorId);
 
-    @Select("select * from room where id = #{id}")
+    @Select("select * from room where id = #{id} and status != 'del'")
     RoomEntity getRoomById(long room);
 
     @Update("<script>" +
                 "update room set " +
-                    "loaded = #{loaded}, " +
-                    "status = #{status} " +
+                    "loaded = #{loaded} " +
                     "where id in(" +
                         "<foreach collection='rooms' item='item' separator=','>" +
                             "#{item.id}" +
                         "</foreach>" +
                     ")" +
             "</script>")
-    void updateAll(@Param("rooms") List<RoomEntity> rooms, int loaded, String status);
+    void updateAll(@Param("rooms") List<RoomEntity> rooms, int loaded);
 
     @Update("<script>" +
             "update room set " +
             "<if test = 'loaded != null'>loaded = #{loaded},</if> " +
-            "<if test = 'name != null'>name = #{name},</if> " +
             "<if test = 'status != null'>status = #{status},</if> " +
             "creator_name = creator_name " +
             "where id = #{id}" +
             "</script>")
-    void update(RoomEntity room);
+    int update(RoomEntity room);
 
 
     @Update("<script>" +

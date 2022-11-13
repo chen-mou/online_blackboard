@@ -5,6 +5,8 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.QueryByExampleExecutor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * @author 陈桢梁
  * @desc UserDateDao.java
@@ -13,4 +15,7 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface UserDataDao extends QueryByExampleExecutor<UserDataEntity>,CrudRepository<UserDataEntity, Long> {
+
+    List<UserDataEntity> getAllByNowRoom(long nowRoom);
+
 }

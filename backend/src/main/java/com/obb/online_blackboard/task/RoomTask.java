@@ -3,15 +3,19 @@ package com.obb.online_blackboard.task;
 import com.obb.online_blackboard.dao.mysql.RoomDbDao;
 import com.obb.online_blackboard.dao.mysql.RoomSettingDao;
 import com.obb.online_blackboard.dao.redis.RoomDao;
-import com.obb.online_blackboard.entity.RoomEntity;
-import com.obb.online_blackboard.entity.RoomSettingEntity;
-import com.obb.online_blackboard.entity.SheetEntity;
+import com.obb.online_blackboard.entity.*;
+import com.obb.online_blackboard.model.RoomModel;
 import com.obb.online_blackboard.model.SheetModel;
+import com.obb.online_blackboard.model.UserModel;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -30,10 +34,16 @@ public class RoomTask {
     RoomDao roomDao;
 
     @Resource
+    RoomModel roomModel;
+
+    @Resource
     SheetModel sheetModel;
 
     @Resource
     RoomDbDao roomDbDao;
+
+    @Resource
+    UserModel userModel;
 
     /**
      * 提前20分钟加载房间
@@ -52,19 +62,38 @@ public class RoomTask {
             item.setTimeout(setting.getEndTime().getTime() - setting.getStartTime().getTime() + 3 * 60 * 60 * 1000);
             item.getSheets().add(sheet.getId());
             item.setNowSheet(sheet.getId());
-            item.setStatus("meeting");
             item.setLoaded(1);
+            try {
+                File file = new File(sheetModel.path + "sheet-" + sheet.getId() + ".txt");
+                file.createNewFile();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         });
-        roomDbDao.updateAll(rooms, 1, "meeting");
+          roomDbDao.updateAll(rooms, 1);
         for(RoomEntity room : rooms){
             roomDao.save(room);
         }
     }
 
-    @Scheduled(cron = "* * */1 * * *")
+    @Scheduled(cron = "* * */20 * * *")
     public void cleanOverRoom(){
-        ArrayList<RoomEntity> rooms = new ArrayList<>((Collection) roomDao.findAll());
-        roomDbDao.cleanOver(new Date(), rooms);
+        Iterable<RoomEntity> iterable = roomDao.findAll();
+        Date now = new Date();
+        iterable.forEach(item -> {
+            if(item == null){
+                return;
+            }
+            List<UserDataEntity> users = userModel.getUserDataByRoomId(item.getId());
+            if(users.size() == 0 && !item.getStatus().equals("no_start")){
+                if(item.getSetting() == null){
+                    item.setSetting(roomModel.getRoomSettingByRoomId(item.getId()));
+                }
+                if(item.getSetting().getEndTime().getTime() < now.getTime()) {
+                    roomModel.delRoom(item.getId());
+                }
+            }
+        });
     }
 
 }

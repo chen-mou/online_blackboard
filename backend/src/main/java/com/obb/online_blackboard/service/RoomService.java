@@ -9,6 +9,7 @@ import com.obb.online_blackboard.exception.OperationException;
 import com.obb.online_blackboard.model.RoomModel;
 import com.obb.online_blackboard.model.SheetModel;
 import com.obb.online_blackboard.model.UserModel;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -17,10 +18,12 @@ import org.springframework.web.server.WebSession;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.handler.ConcurrentWebSocketSessionDecorator;
 import tool.result.Message;
+import tool.util.JWT;
 import tool.util.WebSocketSession;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -51,6 +54,23 @@ public class RoomService {
     @Resource
     SimpMessagingTemplate template;
 
+    @Value("${server.voice.key}")
+    String VOICE_KEY;
+
+    @Value("${server.voice.url}")
+    String baseURL;
+
+    public void verifyRoom(long roomId, long userId){
+        RoomEntity r = roomModel.getRoomById(roomId);
+        if(!r.getStatus().equals("meeting")){
+            throw new OperationException(500, "会议未开始或已结束");
+        }
+        UserDataEntity user = userModel.getUserById(userId);
+        if(user.getNowRoom() != roomId){
+            throw new OperationException(500, "你不在当前房间内");
+        }
+    }
+
     @Transactional
     public RoomEntity createRoom(RoomSettingEntity setting, long userId){
         RoomEntity room = new RoomEntity();
@@ -58,19 +78,19 @@ public class RoomService {
         room.setCreatorId(userId);
         room.setCreatorName(user.getNickname());
         //创建并获取房间ID
-        String roomId = roomModel.createRoom(room);
+        long roomId = roomModel.createRoom(room);
 
         roomModel.createSetting(setting, userId, roomId);
         room.setSetting(setting);
         return room;
     }
 
-    public RoomEntity joinRoom(String roomId, long userId, int isAnonymous){
+    public RoomEntity joinRoom(long roomId, long userId, int isAnonymous){
         RoomEntity r = roomModel.getRoomById(roomId);
         if(r == null) {
             throw new OperationException(404, "目标房间不存在");
         }
-        if(!r.getStatus().equals("meeting")){
+        if(r.getLoaded() == 0 || r.getStatus().equals("over")){
             throw new OperationException(404, "会议未开始或已经结束了");
         }
         RoomSettingEntity setting = roomModel.getRoomSettingByRoomId(roomId);
@@ -84,17 +104,21 @@ public class RoomService {
         user.setIsAnonymous(isAnonymous);
         user.setStatus("online");
         user.setNowRoom(roomId);
-        userModel.saveData(user);
         if(isAnonymous == 1){
             user.setNickname("匿名用户");
+        }
+        if(r.getStatus().equals("no_start")){
+            roomModel.updateRoom(roomId, "status", "meeting");
+            roomModel.updateStatus("meeting", roomId);
         }
         if(!inRoom(r.getId(), userId)){
             template.convertAndSend("/exchange/room/" + roomId, Message.def("user_join", user));
         }
+        userModel.saveData(user);
         return r;
     }
 
-    public void over(String roomId, long userId){
+    public void over(long roomId, long userId){
         RoomEntity room = roomModel.getRoomById(roomId);
         if(!room.getStatus().equals("meeting")){
             throw new OperationException(404, "会议未开始或已经结束");
@@ -114,7 +138,7 @@ public class RoomService {
 
     }
 
-    public RoomEntity roomInfo(long userId, String roomId){
+    public RoomEntity roomInfo(long userId, long roomId){
         RoomEntity r = roomModel.getRoomById(roomId);
         if(r == null) {
             throw new OperationException(404, "目标房间不存在");
@@ -125,8 +149,16 @@ public class RoomService {
         if(!inRoom(r.getId(), userId)){
             throw new OperationException(403, "不在房间中不能获取房间信息");
         }
+//        String url = getVoiceUrl(roomId, userId);
         template.convertAndSendToUser(String.valueOf(userId), "/queue/info", Message.def("room_info", r));
+//        template.convertAndSendToUser(String.valueOf(userId), "/queue/info", Message.def("voice_url", url));
         return r;
+    }
+
+    public List<UserDataEntity> getRoomUser(long userId){
+        UserDataEntity userData = userModel.getUserById(userId);
+        List<UserDataEntity> roomUser = userModel.getUserDataByRoomId(userData.getNowRoom());
+        return roomUser;
     }
 
     public List<RoomEntity> getUserRoom(long userId){
@@ -135,6 +167,9 @@ public class RoomService {
 
     public void updateSetting(RoomSettingEntity setting, long userId){
         RoomEntity r = roomModel.getRoomById(setting.getRoomId());
+        if(r == null){
+            throw new OperationException(404, "房间不存在");
+        }
         if(r.getCreatorId() != userId){
             throw new OperationException(403, "只有创建者才能修改设置");
         }
@@ -151,7 +186,22 @@ public class RoomService {
         }
     }
 
-    public void quit(long userId, String roomId){
+    public void delete(long roomId, long userId){
+        RoomEntity r = roomModel.getVerifyRoom(roomId);
+        if(r == null){
+            throw new OperationException(500, "房间不存在");
+        }
+        if(r.getCreatorId() != userId){
+            throw new OperationException(403, "你没有权限删除这个房间");
+        }
+        if(r.getStatus().equals("meeting")){
+            throw new OperationException(500, "会议中,请结束会议后再删除房间");
+        }
+        roomModel.deleteDb(roomId);
+        if(r.getLoaded() == 1){}
+    }
+
+    public void quit(long userId, long roomId){
         if(!inRoom(roomId, userId)){
             throw new OperationException(403, "你不在这个房间中");
         }
@@ -162,6 +212,10 @@ public class RoomService {
             closeSession(userId);
             template.convertAndSend("/exchange/room/" + roomId, Message.def("user_quit", userId));
         }
+    }
+
+    public RoomSettingEntity getSettingByRoomId(long roomId){
+        return roomModel.getRoomSettingByRoomId(roomId);
     }
 
     public void closeSession(long userId){
@@ -181,9 +235,20 @@ public class RoomService {
         redis.delete("session:" + sessionID);
     }
 
-    private boolean inRoom(String roomId, long userId){
+    private boolean inRoom(long roomId, long userId){
         UserDataEntity data = userModel.getUserById(userId);
-        return data.getNowRoom().equals(roomId);
+        Long nowRoom = data.getNowRoom();
+        return nowRoom != null && nowRoom == roomId;
+    }
+
+    private String getVoiceUrl(long roomId, long userId){
+        String token = JWT.encode(new HashMap<>(){
+            {
+                put("roomId", String.valueOf(roomId));
+                put("userId", String.valueOf(userId));
+            }
+        }, "", VOICE_KEY);
+        return baseURL + "/live/" + roomId+"?token=" + token;
     }
 
 }

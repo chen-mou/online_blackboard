@@ -96,7 +96,7 @@ public class MessageInterceptor implements ChannelInterceptor {
             String session = accessor.getSessionId();
             redis.opsForValue().set("session:" + session, userId);
             redis.opsForValue().set("user_session:" + userId, session);
-            r.joinRoom(roomId.get(0), Long.parseLong(userId), anonymous);
+            r.joinRoom(Long.parseLong(roomId.get(0)), Long.parseLong(userId), anonymous);
             return message;
         }
         return message;

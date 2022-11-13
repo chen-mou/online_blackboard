@@ -21,5 +21,7 @@ public interface ShapeDao extends CrudRepository<Shape, Long>, QueryByExampleExe
 
     List<Shape> findBySheetId(long sheetId);
 
+    List<Shape> findBySheetIdAndUsing(long sheetId, int using);
+
 
 }

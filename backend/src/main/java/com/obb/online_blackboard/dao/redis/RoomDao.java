@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
  * @logs[0] 2022-10-27 17:28 陈桢梁 创建了RoomDao.java文件
  */
 @Repository
-public interface RoomDao extends CrudRepository<RoomEntity, String> {
+public interface RoomDao extends CrudRepository<RoomEntity, Long> {
 
     RoomEntity findRoomEntityById(String roomId);
 }

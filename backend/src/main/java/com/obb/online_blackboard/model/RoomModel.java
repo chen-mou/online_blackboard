@@ -68,8 +68,8 @@ public class RoomModel {
 
     private final String SETTING_LOCK = "setting_lock:";
 
-    public String createRoom(RoomEntity room){
-        room.setId(String.valueOf(id.getId("room")));
+    public long createRoom(RoomEntity room){
+        room.setId(id.getId("room"));
         room.setStatus("no_start");
         room.setLoaded(0);
         roomDbDao.insert(room);
@@ -80,12 +80,19 @@ public class RoomModel {
         roomDao.save(room);
     }
 
-    public void updateRoom(String roomId, String key, Object value){
+    public void updateRoom(long roomId, String key, Object value){
         PartialUpdate<RoomEntity> update = new PartialUpdate<>(roomId, RoomEntity.class).set(key, value);
         template.update(update);
     }
 
-    public String createSetting(RoomSettingEntity setting, long userId, String roomId){
+    public void updateStatus(String status, long roomId){
+        RoomEntity room = new RoomEntity();
+        room.setStatus(status);
+        room.setId(roomId);
+        roomDbDao.update(room);
+    }
+
+    public String createSetting(RoomSettingEntity setting, long userId, long roomId){
         setting.setId(String.valueOf(id.getId("room_setting")));
         setting.setCreatorId(userId);
         setting.setRoomId(roomId);
@@ -98,41 +105,41 @@ public class RoomModel {
         return setting.getId();
     }
 
-    public RoomEntity getVerifyRoom(String roomId){
+    public RoomEntity getVerifyRoom(long roomId){
         Optional<RoomEntity> optional = roomDao.findById(roomId);
         RoomEntity r;
         if(optional.isEmpty()){
-            r = roomDbDao.getRoomById(Long.parseLong(roomId));
+            r = roomDbDao.getRoomById(roomId);
         }else{
             r = optional.get();
-            r.setSetting(roomSettingDao.getByRoomId(Long.parseLong(roomId)));
+            r.setSetting(roomSettingDao.getByRoomId(roomId));
         }
         return r;
     }
 
-    public RoomEntity getRoomById(String roomId){
+    public RoomEntity getRoomById(long roomId){
         Optional<RoomEntity> optional = roomDao.findById(roomId);
         RoomEntity r;
         if(optional.isEmpty()){
-            r = roomDbDao.getRoomById(Long.parseLong(roomId));
+            r = roomDbDao.getRoomById(roomId);
         }else{
             r = optional.get();
             SheetEntity nowSheet = sheetModel.getSheetById(r.getNowSheet());
             List<SheetEntity> sheetEntities = sheetModel.getAllByRoomId(roomId);
             r.setNowSheetEntity(nowSheet);
             r.setSheetEntities(sheetEntities);
-            r.setSetting(roomSettingDao.getByRoomId(Long.parseLong(roomId)));
+            r.setSetting(roomSettingDao.getByRoomId(roomId));
         }
         return r;
     }
 
-    public RoomSettingEntity getRoomSettingByRoomId(String roomId){
+    public RoomSettingEntity getRoomSettingByRoomId(long roomId){
         return lock.getLock(SETTING_KEY + roomId,
                 SETTING_LOCK + roomId,
-                () -> roomSettingDao.getByRoomId(Long.parseLong(roomId)),3);
+                () -> roomSettingDao.getByRoomId(roomId),3);
     }
 
-    public void delRoom(String roomId){
+    public void delRoom(long roomId){
         List<UserDataEntity> users = userModel.getUserDataByRoomId(roomId);
         RoomEntity room = new RoomEntity();
         room.setId(roomId);
@@ -150,6 +157,14 @@ public class RoomModel {
         });
     }
 
+    public void deleteDb(long roomId){
+        RoomEntity room = new RoomEntity();
+        room.setId(roomId);
+        room.setStatus("del");
+        int row = roomDbDao.update(room);
+        System.out.println(row);
+    }
+
     public void updateRoomSetting(RoomSettingEntity setting){
         String key = SETTING_KEY + setting.getRoomId();
         redisTemplate.delete(key);
@@ -158,7 +173,8 @@ public class RoomModel {
     }
 
     public List<RoomEntity> getByCreator(long userId){
-        return roomDbDao.getRoomByCreatorId(userId);
+        List<RoomEntity> rooms = roomDbDao.getRoomByCreatorId(userId);
+        return rooms;
     }
 
 }

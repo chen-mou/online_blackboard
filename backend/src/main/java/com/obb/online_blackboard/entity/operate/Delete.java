@@ -5,6 +5,7 @@ import com.obb.online_blackboard.dao.redis.ShapeDao;
 import com.obb.online_blackboard.entity.base.Operate;
 import com.obb.online_blackboard.entity.base.Save;
 import com.obb.online_blackboard.entity.base.Shape;
+import com.obb.online_blackboard.model.ShapeModel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.context.ApplicationContext;
@@ -26,21 +27,28 @@ public class Delete implements Operate {
 
     long shapeId;
     @Override
-    public void rollback(Set<Long> shapes, long sheetId,String roomId, Save save) {
-        shapes.add(shapeId);
+    public void rollback(long sheetId,long roomId) {
         ApplicationContext app = Context.getContext();
         SimpMessagingTemplate s = app.getBean(SimpMessagingTemplate.class);
-        ShapeDao shapeDao = app.getBean(ShapeDao.class);
-        Optional<Shape> shape = shapeDao.findById(shapeId);
-        save.save();
-        s.convertAndSend("/exchange/room/" + roomId, Message.add(shape.get(), sheetId));
+        ShapeModel shapeDao = app.getBean(ShapeModel.class);
+        Shape shape = shapeDao.getById(shapeId);
+        shape.setUsing(true);
+        shapeDao.saveShape(shape);
+        s.convertAndSend("/exchange/room/" + roomId, Message.add(shape, sheetId));
     }
 
     @Override
-    public void redo(Set<Long> shapes, long sheetId, String roomId, Save save) {
-        shapes.remove(shapeId);
-        SimpMessagingTemplate s = Context.getContext().getBean(SimpMessagingTemplate.class);
-        save.save();
-        s.convertAndSend("/exchange/room/" + roomId, Message.add(shapeId, sheetId));
+    public void redo(long sheetId, long roomId) {
+        ApplicationContext app = Context.getContext();
+        SimpMessagingTemplate s = app.getBean(SimpMessagingTemplate.class);
+
+        ShapeModel shapeModel = app.getBean(ShapeModel.class);
+        Shape shape = shapeModel.getById(shapeId);
+        shape.setUsing(false);
+        shapeModel.saveShape(shape);
+        /**
+         * 应该要保存了再将消息发送出去，其他地方同理
+         */
+        s.convertAndSend("/exchange/room/" + roomId, Message.del(shapeId, sheetId));
     }
 }

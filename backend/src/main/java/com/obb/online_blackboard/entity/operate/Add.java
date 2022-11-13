@@ -26,25 +26,28 @@ public class Add implements Operate {
     private long shapeId;
 
     @Override
-    public void rollback(Set<Long> shapes, long sheetId,String roomId, Save save) {
-        shapes.remove(shapeId);
-        SimpMessagingTemplate s = Context.getContext().getBean(SimpMessagingTemplate.class);
+    public void rollback(long sheetId,long roomId) {
+        ApplicationContext app = Context.getContext();
+        SimpMessagingTemplate s = app.getBean(SimpMessagingTemplate.class);
 
+        ShapeModel shapeModel = app.getBean(ShapeModel.class);
+        Shape shape = shapeModel.getById(shapeId);
+        shape.setUsing(false);
+        shapeModel.saveShape(shape);
         /**
          * 应该要保存了再将消息发送出去，其他地方同理
          */
-        save.save();
         s.convertAndSend("/exchange/room/" + roomId, Message.del(shapeId, sheetId));
     }
 
     @Override
-    public void redo(Set<Long> shapes, long sheetId,String roomId, Save save) {
-        shapes.add(shapeId);
+    public void redo(long sheetId,long roomId) {
         ApplicationContext app = Context.getContext();
         SimpMessagingTemplate s = app.getBean(SimpMessagingTemplate.class);
         ShapeModel shapeDao = app.getBean(ShapeModel.class);
         Shape shape = shapeDao.getById(shapeId);
-        save.save();
+        shape.setUsing(true);
+        shapeDao.saveShape(shape);
         s.convertAndSend("/exchange/room/" + roomId, Message.add(shape, sheetId));
     }
 }

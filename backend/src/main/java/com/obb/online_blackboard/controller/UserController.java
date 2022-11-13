@@ -3,10 +3,11 @@ package com.obb.online_blackboard.controller;
 import com.obb.online_blackboard.entity.UserDataEntity;
 import com.obb.online_blackboard.entity.UserEntity;
 import com.obb.online_blackboard.service.UserService;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.xerial.snappy.Snappy;
+import tool.annotation.JsonKey;
 import tool.annotation.NotNeedLogin;
 import tool.annotation.UserInfo;
 import tool.result.Result;
@@ -14,7 +15,8 @@ import tool.util.JWT;
 import tool.util.ParamError;
 
 import javax.annotation.Resource;
-import javax.validation.Valid;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 
 /**
@@ -78,8 +80,17 @@ public class UserController {
     }
 
     @PostMapping("/nickname")
-    public Result updateNickname(@RequestBody UserDataEntity userData) {
-        userService.updateNickname(userData.getNickname());
+    public Result update(@RequestBody UserDataEntity userData, @UserInfo UserEntity user) {
+        userService.updateNickname(userData.getNickname(), userData.getAvatar(), user.getId());
         return Result.success("修改成功", null);
     }
+
+    @PostMapping("/getResult")
+    public Result get(@JsonKey String value) throws IOException {
+        byte[] val = Snappy.uncompress(value.getBytes(StandardCharsets.UTF_8));
+        String msg = new String(val);
+        System.out.println(msg);
+        return Result.success("成功", msg);
+    }
+
 }

@@ -16,7 +16,7 @@ import java.util.List;
  * @logs[0] 2022-11-05 13:46 陈桢梁 创建了Operates.java文件
  */
 @Data
-@RedisHash("operates")
+@RedisHash("${operates}")
 public class Operates {
 
     @Id

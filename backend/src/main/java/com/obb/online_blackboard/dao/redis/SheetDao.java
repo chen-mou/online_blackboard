@@ -21,5 +21,5 @@ public interface SheetDao extends CrudRepository<SheetEntity, Long>, QueryByExam
 
     List<SheetEntity> findSheetEntitiesByRoomId(String roomId);
 
-    List<SheetEntity> findAllByRoomId(String roomId);
+    List<SheetEntity> findAllByRoomId(long roomId);
 }

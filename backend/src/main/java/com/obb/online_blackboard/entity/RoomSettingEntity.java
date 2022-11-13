@@ -1,6 +1,7 @@
 package com.obb.online_blackboard.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.obb.online_blackboard.entity.base.Date;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
@@ -17,11 +18,12 @@ import javax.validation.constraints.NotNull;
  * @logs[0] 2022-10-27 15:27 陈桢梁 创建了RoomEntity.java文件
  */
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class RoomSettingEntity extends Date {
 
     private String id;
 
-    private String roomId;
+    private long roomId;
 
     private long creatorId;
 
@@ -37,7 +39,9 @@ public class RoomSettingEntity extends Date {
     @Min(value = 0)
     private Integer allowAnonymous;
 
-    @NotNull
+    private boolean now;
+
+//    @NotNull
     @JsonFormat(locale = "zh",timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm")
     private java.util.Date startTime;
 

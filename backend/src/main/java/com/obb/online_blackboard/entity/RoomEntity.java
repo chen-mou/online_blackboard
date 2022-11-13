@@ -1,13 +1,12 @@
 package com.obb.online_blackboard.entity;
 
-import com.obb.online_blackboard.entity.base.Shape;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.TimeToLive;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -20,11 +19,12 @@ import java.util.concurrent.TimeUnit;
  * @logs[0] 2022-10-27 15:36 陈桢梁 创建了RoomEntity.java文件
  */
 @Data
-@RedisHash("room")
+@RedisHash("${room}")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class RoomEntity {
 
     @Id
-    private String id;
+    private long id;
 
     private long creatorId;
 

@@ -1,5 +1,7 @@
 package com.obb.online_blackboard.entity.base;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.obb.online_blackboard.exception.OperationException;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,9 +20,11 @@ import java.util.Map;
  * @logs[0] 2022-10-27 09:12 陈桢梁 创建了Shape.java文件
  */
 @Data
-@RedisHash("Shape")
+@RedisHash("${Shape}")
 @NoArgsConstructor
 public class Shape implements Special{
+
+
 
     @Id
     private long id;
@@ -30,27 +34,19 @@ public class Shape implements Special{
     @Indexed
     protected long sheetId;
 
-    protected String color;
+    @Indexed
+    protected boolean using;
 
     protected int index;
 
-    protected int x;
+    protected Point start;
 
-    protected int y;
-
-    protected double lineWidth;
+    protected Point end;
 
     protected long userId;
 
-    public Shape(Shape s){
-        this.type = s.type;
-        this.sheetId = s.sheetId;
-        this.color = s.color;
-        this.index = s.index;
-        this.x = s.x;
-        this.y = s.y;
-        this.lineWidth = s.lineWidth;
-    }
+    protected Pen pen;
+
 
     public Shape(Map<String, Object> map) {
         Class clazz = this.getClass().getSuperclass();
@@ -62,21 +58,29 @@ public class Shape implements Special{
             String name = field.getName();
             if(map.containsKey(name)){
                 try{
-                    field.setAccessible(true);
-                    field.set(this, map.get(name));
+                    ObjectMapper om = new ObjectMapper();
+                    String json = om.writeValueAsString(map.get(name));
+                    switch(name){
+                        case "start":
+                            this.start = om.readValue(json, Point.class);
+                            break;
+                        case "end":
+                            this.end = om.readValue(json, Point.class);
+                            break;
+                        case "pen":
+                            this.pen = om.readValue(json, Pen.class);
+                            break;
+                        default:
+                            field.setAccessible(true);
+                            field.set(this, map.get(name));
+                    }
                 }catch (IllegalAccessException e){
                     throw new OperationException(500, "类型无法设置");
+                } catch (JsonProcessingException e) {
+                    throw new OperationException(500, "json解析失败");
                 }
             }
         }
-    }
-
-    public void setLineWidth(double lineWidth){
-        this.lineWidth = lineWidth;
-    }
-
-    public void setColor(String color){
-        this.color = color;
     }
 
     @Override

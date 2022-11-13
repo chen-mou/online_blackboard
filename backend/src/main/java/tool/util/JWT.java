@@ -34,17 +34,22 @@ public class JWT {
      * @return
      */
     public static String encode(Map<String, String> date){
+        String token = encode(date, ISSUER, SECRET);
+        RedisTemplate redis = (RedisTemplate) Context.getContext().getBean("redisTemplate");
+        redis.opsForValue().set("token:" + date.get("userId"), token, 1, TimeUnit.DAYS);
+        return token;
+    }
+
+    public static String encode(Map<String, String> date, String issuer, String secret){
         try {
-            Algorithm algorithm = Algorithm.HMAC256(SECRET);
+            Algorithm algorithm = Algorithm.HMAC256(secret);
             JWTCreator.Builder builder = com.auth0.jwt.JWT.create()
-                    .withIssuer(ISSUER)
+                    .withIssuer(issuer)
                     //设置过期时间为1天
                     .withExpiresAt(DateUtils.addDays(new Date(), 1));
             date.forEach(builder::withClaim);
 
             String token = builder.sign(algorithm);
-            RedisTemplate redis = (RedisTemplate) Context.getContext().getBean("redisTemplate");
-            redis.opsForValue().set("token:" + date.get("userId"), token, 1, TimeUnit.DAYS);
             return token;
         } catch (IllegalArgumentException  e) {
             throw new OperationException(500, "生成token失败");

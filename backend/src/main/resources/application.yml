@@ -11,18 +11,38 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: U/kklUMxoX31LSie15kM+A==
     password: nUVSDE/dpoDMUCt44cSJJF0RYIPnoLxmldXgV88A/x4=
-    url: jdbc:mysql://47.112.184.57:3308/blackboard
+    url: jdbc:mysql://47.112.184.57:3308/blackboard?useAffectedRows=true
   jpa:
     hibernate:
       ddl-auto: none
     show-sql: true
 
   redis:
-    host: 47.112.184.57
+    cluster:
+      nodes: 150.158.169.43:6371, 150.158.169.43:6372, 150.158.169.43:6373
+    database: 0
+    password: 1007324849redis...
 
   servlet:
     multipart:
       max-file-size: 5MB
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: group1
+      enable-auto-commit: false
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: tool.util.kafka.serialize.MessageSerializer
+      max-poll-records: 4
+    producer:
+      retries: 0
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: tool.util.kafka.serialize.MessageSerializer
+      acks: 1
+    listener:
+      ack-mode: manual
+      type: batch
 
 mybatis:
   configuration:
@@ -35,12 +55,17 @@ spring:
   profile: dev
 
 server:
-  uri_pre: http://47.112.184.57
-
+  uri_pre: http://47.112.184.57:18888
+  voice:
+    key: LAL_SERVER_KEY
+    url: 47.112.184.57:18889
 ---
 
 
 spring:
   profile: local
 server:
-  uri_pre: http://localhost:18888
+  uri_pre: http://localhost:18888 #文件系统url前缀
+  voice:
+    key: LAL_SERVER_KEY # lal服务器token的key
+    url: localhost:18889 # lal 服务器url

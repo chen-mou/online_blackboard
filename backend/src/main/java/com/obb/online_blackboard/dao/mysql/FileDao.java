@@ -25,12 +25,15 @@ public interface FileDao {
     void insertRole(FileRoleEntity fileRoleEntity);
 
     @Select("select file_id where uploader = #{userId} and type = #{type}")
-    @Results({
+    @Results(id = "file", value = {
             @Result(column = "file_id", property = "fileId"),
             @Result(column = "file_id", property = "file",
                     one = @One(select = "com.obb.online_blackboard.dao.mysql.FileDao.getByFileId"))
     })
     List<FileEntity> getByUploader(long userId, String type);
+
+    @Select("select file_id from file_role where type = #{type} and user_id = #{userId} and file_id = #{file_id} limit 1")
+    FileRoleEntity userRoleFile(String type, long userId, long fileId);
 
     @Select("select * from file where id = #{fileId}")
     FileEntity getByFileId(long fileId);

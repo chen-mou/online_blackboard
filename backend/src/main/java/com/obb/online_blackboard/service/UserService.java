@@ -64,7 +64,7 @@ public class UserService {
         return userModel.getDataById(userId);
     }
 
-    public void updateNickname(String newName) {
-        userModel.updateNickname(newName);
+    public void updateNickname(String newName, Integer avatar, long userId) {
+        userModel.updateNickname(newName, avatar, userId);
     }
 }

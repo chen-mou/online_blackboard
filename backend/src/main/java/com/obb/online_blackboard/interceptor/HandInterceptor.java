@@ -77,7 +77,7 @@ public class HandInterceptor implements HandshakeInterceptor {
             authBan((HttpServletResponse) response, "token有误");
             return false;
         }
-        RoomEntity room = r.joinRoom(roomId.get(0), userId, Integer.parseInt(isAnonymous.get(0)));
+        RoomEntity room = r.joinRoom(Long.parseLong(roomId.get(0)), userId, Integer.parseInt(isAnonymous.get(0)));
         ObjectMapper om = new ObjectMapper();
         attributes.put("CurrentUser", userId);
         response.getBody().write(om.writeValueAsBytes(room));

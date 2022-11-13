@@ -3,6 +3,7 @@ package com.obb.online_blackboard.entity.shape;
 import com.obb.online_blackboard.entity.base.Shape;
 import com.obb.online_blackboard.exception.OperationException;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.lang.reflect.Field;
 import java.util.Map;
@@ -14,6 +15,7 @@ import java.util.Map;
  * @logs[0] 2022-11-05 15:56 陈桢梁 创建了Text.java文件
  */
 @Data
+@NoArgsConstructor
 public class Text extends Shape {
 
     private String main;
