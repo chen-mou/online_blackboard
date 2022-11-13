@@ -1,7 +1,7 @@
 <template>
-    <div class="shape" @click="HandleSelect">
+    <div class="shape" >
         <!-- 遍历icon及形状 -->
-        <div v-for="item in (ShapeMap as any)" :key="item[1].type" :name="item[1].type">
+        <div v-for="item in (ShapeMap as any)" :key="item[1].type" @click="HandleSelect(item[1].type)">
           <img style="display: block" :src="item[1].icon" >
           <p style="display: block;width: 100%">{{item[1].type}}</p>
         </div>
@@ -29,11 +29,11 @@ canvas=canvasInjetct
 /**
  * 处理选中图形的事件
  */
-const HandleSelect=(e:MouseEvent)=>{
+const HandleSelect=(type:string)=>{
     /**(e.target as any).name as string
      * 事件代理触发的回调
      */
-    (canvas.value as Canvas).DrawClass=ShapeMap.get((e.target as any).name as string) as ShapeClassTypeT
+    (canvas.value as Canvas).DrawClass=ShapeMap.get(type) as ShapeClassTypeT
     console.log((canvas.value as Canvas).DrawClass)
 }
 
