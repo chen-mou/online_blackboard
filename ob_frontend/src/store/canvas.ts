@@ -101,6 +101,7 @@ export const useCanvasStore = defineStore('canvas', {
       )
 
       canvas.canvas.addEventListener('mousedown', e => {
+        canvas.state=false
         /**
          * 拉出黑名单，
          * 重绘layers图层
