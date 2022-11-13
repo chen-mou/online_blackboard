@@ -1,6 +1,6 @@
 import axios, { AxiosRequestConfig } from 'axios'
 
-export default function request(config: AxiosRequestConfig) {
+export default async function request(config: AxiosRequestConfig) {
   const instance = axios.create({
     baseURL: '/api',
     timeout: 5000,
@@ -11,17 +11,16 @@ export default function request(config: AxiosRequestConfig) {
       return res.data
     },
     err => {
-      console.error(err)
+      return err.response.data
     }
   )
 
-  if (config.data != null) {
-    const data = new FormData
-    for (const key of Object.keys(config.data)) {
-      data.append(key, config.data[key])
-    }
-    config.data = data
+  config.data = JSON.stringify(config.data)
+
+  config.headers = {
+    token: localStorage.getItem('token'),
+    'Content-Type': 'application/json;charset=utf8',
   }
 
-  return instance(config)
+  return (await instance(config)) as any
 }

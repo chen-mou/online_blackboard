@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
+import { useUserStore } from "@/store/user";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -23,6 +24,19 @@ const routes: Array<RouteRecordRaw> = [
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes
+})
+
+router.beforeEach(async (to) => {
+  const userStore = useUserStore();
+  if (
+    // 检查用户是否已登录
+    !userStore.hasLogin &&
+    to.name !== 'login' &&
+    !(await userStore.getUserData())
+  ) {
+    // 将用户重定向到登录页面
+    return { name: 'login' }
+  }
 })
 
 export default router
