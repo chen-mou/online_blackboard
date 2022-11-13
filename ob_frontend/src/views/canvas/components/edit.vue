@@ -47,6 +47,7 @@
 <script lang="ts">
 import Canvas from '@/utils/Canvas/canvas';
 import CanvasConfig from '@/utils/Canvas/config';
+import ShapeMap from '@/utils/Canvas/ShapeMap';
 import { defineComponent, inject, onMounted, ref, watch  } from 'vue';
 export default defineComponent({
     name:"edit"
@@ -74,9 +75,10 @@ watch(width,(newValue:number)=>{
             /**
              * 修改pen后绘入第一图层      
              */
-
+             canvas.value!.DrawClass.BeforePosition = canvas.value!.layers.data[i].BeforePosition
+             canvas.value!.DrawClass.AfterPosition = canvas.value!.layers.data[i].AfterPosition
             canvas.value!.layers.data[i].pen!.linewidth=newValue
-            canvas.value!.layers.drawData()
+            ShapeMap.get(canvas.value!.layers.data[i].type)?.draw(canvas.value as Canvas)
             break
         }
     }
@@ -90,6 +92,20 @@ const color = ref<string>(CanvasConfig.PenStrokeStyle)
     /**
      * 拿到选中并修改
      */
+     for(let i= 0 ;i<(canvas.value as Canvas).layers.data.length;i++ ){
+        if((canvas.value as Canvas).layers.data[i].id===canvas!.value?.layers.Blacklist[0])
+        {
+            console.log("pkoo")
+            /**
+             * 修改pen后绘入第一图层      
+             */
+             canvas.value!.DrawClass.BeforePosition = canvas.value!.layers.data[i].BeforePosition
+             canvas.value!.DrawClass.AfterPosition = canvas.value!.layers.data[i].AfterPosition
+            canvas.value!.layers.data[i].pen!.strokeStyle   =newValue
+            ShapeMap.get(canvas.value!.layers.data[i].type)?.draw(canvas.value as Canvas)
+            break
+        }
+    }
 })
 /**
  * 删除
