@@ -3,6 +3,7 @@
  */
 
 export type ShapeDataType ={
+    id?: number
     type:string
     BeforePosition:Array<number> // mousedown position
     AfterPosition:Array<number>// mouseup position

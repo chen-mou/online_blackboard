@@ -88,7 +88,7 @@ class Canvas {
        * exlude
        */
       for(const k  of this.Blacklist){
-          if(k===i) i++
+          if(this.data[i].id===k) i++
       }
       if(i===this.data.length){
         return
@@ -141,8 +141,7 @@ class Canvas {
         /**
          * 拉入黑名单，重绘
          */
-        console.log(i)
-        this.layers.Blacklist.push(i)
+        this.layers.Blacklist.push(this.data[i].id as any)
         console.log(this)
         this.layers.drawData() 
         this.context.strokeStyle = '#fa0000'
