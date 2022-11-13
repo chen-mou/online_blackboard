@@ -55,73 +55,66 @@ export default defineComponent({
 </script>
 <script lang="ts" setup>
 let canvas =ref<Canvas>()
+const width = ref<number>(1)
+const Memberindex=ref<number>(1)
+const color = ref<string>(CanvasConfig.PenStrokeStyle)
+
+
 onMounted( ()=>{
 const canvasInjetct =inject("canvas__") as any
     canvas=canvasInjetct
 })
+
+/**
+ * 初始化
+ */
+
+ for(let i= 0 ;i<(canvas.value as Canvas).layers.data.length;i++ ){
+        if((canvas.value as Canvas).layers.data[i].id===canvas!.value?.layers.Blacklist[0])
+        {
+            Memberindex.value=i
+            break
+        }
+    }
+width.value=(canvas.value as Canvas).layers.data[Memberindex.value].pen!.linewidth
+color.value=(canvas.value as Canvas).layers.data[Memberindex.value].pen!.strokeStyle as string 
+
+
 /**
  * 宽度
  */
-const width = ref<number>(1)
 watch(width,(newValue:number)=>{
     /**
      * 拿到选中并修改
      */
-    
-    for(let i= 0 ;i<(canvas.value as Canvas).layers.data.length;i++ ){
-        if((canvas.value as Canvas).layers.data[i].id===canvas!.value?.layers.Blacklist[0])
-        {
-            console.log("pkoo")
-            /**
+   /**
              * 修改pen后绘入第一图层      
              */
-             canvas.value!.DrawClass.BeforePosition = canvas.value!.layers.data[i].BeforePosition
-             canvas.value!.DrawClass.AfterPosition = canvas.value!.layers.data[i].AfterPosition
-            canvas.value!.layers.data[i].pen!.linewidth=newValue
-            ShapeMap.get(canvas.value!.layers.data[i].type)?.draw(canvas.value as Canvas)
-            break
-        }
-    }
+            canvas.value!.DrawClass.BeforePosition = canvas.value!.layers.data[Memberindex.value].BeforePosition
+            canvas.value!.DrawClass.AfterPosition = canvas.value!.layers.data[Memberindex.value].AfterPosition
+            canvas.value!.layers.data[Memberindex.value].pen!.linewidth=newValue
+            ShapeMap.get(canvas.value!.layers.data[Memberindex.value].type)?.draw(canvas.value as Canvas)
 })
 /**
  * 颜色
  */
-const color = ref<string>(CanvasConfig.PenStrokeStyle)
     watch(color,(newValue:string)=>{
     console.log("改变")
     /**
      * 拿到选中并修改
      */
-     for(let i= 0 ;i<(canvas.value as Canvas).layers.data.length;i++ ){
-        if((canvas.value as Canvas).layers.data[i].id===canvas!.value?.layers.Blacklist[0])
-        {
-            console.log("pkoo")
-            /**
-             * 修改pen后绘入第一图层      
-             */
-             canvas.value!.DrawClass.BeforePosition = canvas.value!.layers.data[i].BeforePosition
-             canvas.value!.DrawClass.AfterPosition = canvas.value!.layers.data[i].AfterPosition
-            canvas.value!.layers.data[i].pen!.strokeStyle   =newValue
-            ShapeMap.get(canvas.value!.layers.data[i].type)?.draw(canvas.value as Canvas)
-            break
-        }
-    }
+
+            canvas.value!.DrawClass.BeforePosition = canvas.value!.layers.data[Memberindex.value].BeforePosition
+            canvas.value!.DrawClass.AfterPosition = canvas.value!.layers.data[Memberindex.value].AfterPosition
+            canvas.value!.layers.data[Memberindex.value].pen!.strokeStyle   =newValue
+            ShapeMap.get(canvas.value!.layers.data[Memberindex.value].type)?.draw(canvas.value as Canvas)
+
 })
 /**
  * 删除
  */
 const deleteShape=()=>{
-    for(let i= 0 ;i<(canvas.value as Canvas).layers.data.length;i++ ){
-        if((canvas.value as Canvas).layers.data[i].id===canvas!.value?.layers.Blacklist[0])
-        {
-            console.log("pkoo")
-            /**
-             * 修改pen后绘入第一图层      
-             */
-            
-            break
-        }
-    }
+    console.log("删除了")
 }
 /**
  * 关闭编辑页面
@@ -130,11 +123,6 @@ const closeEdit= ()=>{
     canvas.value!.state=false
 }
 </script>
-
-
-
-
-
 
 <style lang="less" scoped>
 .edit {
