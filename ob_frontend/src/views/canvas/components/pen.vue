@@ -40,7 +40,7 @@
             <input type="color" v-model="penBorderColor">
             <span>填充颜色</span>
         </div>
-        <div>
+        <div style="padding-left: 20px;padding-right: 20px">
             <el-slider v-model="penSize" height="60px" :min="1" :max="100" />
             <span>画笔大小</span>
         </div>
@@ -97,7 +97,7 @@ input {
 }
 
 .pen>* {
-    flex: fit-content;
+    flex: 1;
     display: flex;
     flex-direction: column;
     justify-content: center;

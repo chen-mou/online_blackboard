@@ -2,10 +2,8 @@
     <div class="shape" @click="HandleSelect">
         <!-- 遍历icon及形状 -->
         <div v-for="item in (ShapeMap as any)" :key="item[1].type">
-            <div>
-                <img :src="item[1].icon" :name="item[1].type">
-                <span>{{item[1].type}}</span>
-            </div>
+          <img style="display: block" :src="item[1].icon" :name="item[1].type">
+          <p style="display: block;width: 100%">{{item[1].type}}</p>
         </div>
     </div>
 </template>
@@ -37,7 +35,7 @@ const HandleSelect=(e:MouseEvent)=>{
      */
     (canvas.value as Canvas).DrawClass=ShapeMap.get((e.target as any).name as string) as ShapeClassTypeT
     console.log((canvas.value as Canvas).DrawClass)
-} 
+}
 
 
 </script>
@@ -48,7 +46,6 @@ const HandleSelect=(e:MouseEvent)=>{
     display: flex;
     border-left: 1px solid rgb(211, 201, 201);
     border-right: 1px solid rgb(211, 201, 201);
-    display: flex;
 }
 img{
     height: 30px;
@@ -56,11 +53,12 @@ img{
 }
 
 .shape>* {
-  flex: fit-content;
+  flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  text-align: center;
 }
 
 .shape>*:hover {
