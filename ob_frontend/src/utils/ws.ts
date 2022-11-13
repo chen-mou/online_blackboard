@@ -22,6 +22,7 @@ export function useWs(
         client.subscribe(channel, callback)
       }
       client.send('/app/room_info', {}, JSON.stringify({ roomId }))
+      client.send('/app/users', {}, '')
     },
   )
   return {

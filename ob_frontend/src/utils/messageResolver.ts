@@ -36,7 +36,12 @@ export const userInfoMessageResolver: { [k: string]: (data: any) => void } = {
   },
   'message': (data) => {
     useCanvasStore().messageList.push(data.data)
-  }
+  },
+  'users': (data: any) => {
+    const canvasStore = useCanvasStore();
+    canvasStore.otherUsers.splice(0, canvasStore.otherUsers.length)
+    canvasStore.otherUsers.push(...data.data)
+  },
 }
 
 export const roomMessageResolver: { [k: string]: (data: any) => void } = {
