@@ -77,7 +77,7 @@ const canvasInjetct =inject("canvas__") as any
         }
     }
 width.value=(canvas.value as Canvas).layers.data[Memberindex.value].pen!.linewidth
-color.value=(canvas.value as Canvas).layers.data[Memberindex.value].pen!.strokeStyle as string 
+color.value=(canvas.value as Canvas).layers.data[Memberindex.value].pen!.strokeStyle as string
 
 
 /**
@@ -88,7 +88,7 @@ watch(width,(newValue:number)=>{
      * 拿到选中并修改
      */
    /**
-             * 修改pen后绘入第一图层      
+             * 修改pen后绘入第一图层
              */
             canvas.value!.DrawClass.BeforePosition = canvas.value!.layers.data[Memberindex.value].BeforePosition
             canvas.value!.DrawClass.AfterPosition = canvas.value!.layers.data[Memberindex.value].AfterPosition
@@ -114,7 +114,24 @@ watch(width,(newValue:number)=>{
  * 删除
  */
 const deleteShape=()=>{
-    console.log("删除了")
+    for(let i= 0 ;i<(canvas.value as Canvas).layers.data.length;i++ ){
+        if((canvas.value as Canvas).layers.data[i].id===canvas!.value?.layers.Blacklist[0])
+        {
+            console.log("pkoo")
+            /**
+             * 修改pen后绘入第一图层      [i].id
+             * splice(useCanvasStore().canvas.layers.data.findIndex(e => e.id === data.data), 1)
+             */
+            ;(canvas.value as Canvas).layers.data.splice(i,1)
+            canvas.value?.layers.drawData()
+            canvas.value?.drawData()
+            //@ts-ignore
+            canvas.value.layers.Blacklist=[]
+            //@ts-ignore
+            canvas.value.state=false
+            break
+        }
+    }
 }
 /**
  * 关闭编辑页面
