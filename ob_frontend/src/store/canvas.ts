@@ -51,6 +51,7 @@ export const useCanvasStore = defineStore('canvas', {
         onDisconnect(frame)
         this.ws.active = false
       })
+      this.messageList = []
     },
     _wsRoomReceive(frame: IFrame) {
       const d = JSON.parse(frame.body)

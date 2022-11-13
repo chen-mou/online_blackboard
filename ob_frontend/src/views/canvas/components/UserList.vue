@@ -2,6 +2,10 @@
 import { useCanvasStore } from "@/store/canvas";
 
 const canvasStore = useCanvasStore()
+
+function refreshUserList() {
+  canvasStore.ws.sendRaw('/app/users', {}, '')
+}
 </script>
 
 <template>
@@ -15,6 +19,9 @@ const canvasStore = useCanvasStore()
   </div>
   <div v-show="canvasStore.otherUsers.length===0">
     当前没有其他用户哦
+  </div>
+  <div>
+    <el-button @click="refreshUserList" plain>刷新用户列表</el-button>
   </div>
 </template>
 

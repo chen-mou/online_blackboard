@@ -54,6 +54,7 @@ async function endRoom() {
 function quitRoom() {
   canvasStore.ws.sendRaw('/app/quit', {}, JSON.stringify({ roomId: roomStore.roomId }))
   canvasStore.ws.close()
+  roomStore.joinRoom(0, 0, 0)
   router.replace('/')
 }
 
@@ -109,7 +110,7 @@ const userStore = useUserStore()
             <el-switch @change="changeShareMode" v-model="shareMode"/>
           </div>
           <el-button type="warning" @click="quitRoom">离开房间</el-button>
-          <el-button type="danger" @click="endRoom" :v-if="roomStore.creatorId===userStore.userId">结束房间</el-button>
+          <el-button type="danger" @click="endRoom" v-if="roomStore.creatorId===userStore.userId">结束房间</el-button>
         </el-tab-pane>
       </el-tabs>
     </el-drawer>
@@ -189,6 +190,7 @@ const userStore = useUserStore()
   max-width: 70px;
   display: inline-block;
   overflow: hidden;
+  white-space: nowrap;
   text-overflow: ellipsis;
   line-height: 30px;
   border-radius: 4px;

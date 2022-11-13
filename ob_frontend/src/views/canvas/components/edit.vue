@@ -67,19 +67,19 @@ watch(width,(newValue:number)=>{
      * 拿到选中并修改
      */
     
-    for(let i= 0 ;i<(canvas.value as Canvas).layers.data.length;i++ ){
-        if((canvas.value as Canvas).layers.data[i].id===canvas!.value?.layers.Blacklist[0])
-        {
-            console.log("pkoo")
-            /**
-             * 修改pen后绘入第一图层      
-             */
-
-            canvas.value!.layers.data[i].pen!.linewidth=newValue
-            canvas.value!.layers.drawData()
-            break
-        }
-    }
+    // for(let i= 0 ;i<(canvas.value as Canvas).layers.data.length;i++ ){
+    //     if((canvas.value as Canvas).layers.data[i].id===canvas!.value?.layers.Blacklist[0])
+    //     {
+    //         console.log("pkoo")
+    //         /**
+    //          * 修改pen后绘入第一图层
+    //          */
+    //
+    //         canvas.value!.layers.data[i].pen!.linewidth=newValue
+    //         canvas.value!.layers.drawData()
+    //         break
+    //     }
+    // }
 })
 /**
  * 颜色
