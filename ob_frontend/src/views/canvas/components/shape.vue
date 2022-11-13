@@ -1,8 +1,8 @@
 <template>
     <div class="shape" @click="HandleSelect">
         <!-- 遍历icon及形状 -->
-        <div v-for="item in (ShapeMap as any)" :key="item[1].type">
-          <img style="display: block" :src="item[1].icon" :name="item[1].type">
+        <div v-for="item in (ShapeMap as any)" :key="item[1].type" :name="item[1].type">
+          <img style="display: block" :src="item[1].icon" >
           <p style="display: block;width: 100%">{{item[1].type}}</p>
         </div>
     </div>

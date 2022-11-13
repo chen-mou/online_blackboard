@@ -23,7 +23,7 @@
             </span>
             <input type="color" v-model="color">
         </div>
-        <div>
+        <div @click="deleteShape">
             <span>
                 delete
             </span>
@@ -110,7 +110,19 @@ const color = ref<string>(CanvasConfig.PenStrokeStyle)
 /**
  * 删除
  */
-
+const deleteShape=()=>{
+    for(let i= 0 ;i<(canvas.value as Canvas).layers.data.length;i++ ){
+        if((canvas.value as Canvas).layers.data[i].id===canvas!.value?.layers.Blacklist[0])
+        {
+            console.log("pkoo")
+            /**
+             * 修改pen后绘入第一图层      
+             */
+            
+            break
+        }
+    }
+}
 /**
  * 关闭编辑页面
  */
