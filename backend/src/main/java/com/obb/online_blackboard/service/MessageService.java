@@ -34,7 +34,7 @@ public class MessageService {
 
     public void send(long sender, MessageEntity message){
         message.setSender(sender);
-        UserDataEntity senderEntity = userModel.getDataById(sender);
+        UserDataEntity senderEntity = userModel.getUserById(sender);
         message.setSenderName(senderEntity.getNickname());
         message.setTime(new Date());
         long roomId = senderEntity.getNowRoom();
@@ -46,9 +46,9 @@ public class MessageService {
             message.setMsg("[url=" + fileEntity.getUri() + "]");
         }
         if(message.isBroadcast()){
-            template.convertAndSend("/exchage/room/" + roomId, Message.def("message", message));
+            template.convertAndSend("/exchange/room/" + roomId, Message.def("message", message));
         }else{
-            UserDataEntity getterEntity = userModel.getDataById(message.getGetter());
+            UserDataEntity getterEntity = userModel.getUserById(message.getGetter());
             message.setGetterName(getterEntity.getNickname());
             template.convertAndSendToUser(String.valueOf(getterEntity.getUserId()),
                     "/queue/info", Message.def("message", message));

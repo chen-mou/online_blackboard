@@ -214,6 +214,10 @@ public class RoomService {
         }
     }
 
+    public RoomSettingEntity getSettingByRoomId(long roomId){
+        return roomModel.getRoomSettingByRoomId(roomId);
+    }
+
     public void closeSession(long userId){
         String sessionID = (String)redis.opsForValue().get("user_session:" + userId);
         ConcurrentWebSocketSessionDecorator session = WebSocketSession.getSession(sessionID);

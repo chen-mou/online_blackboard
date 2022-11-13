@@ -1,9 +1,14 @@
 package com.obb.online_blackboard.controller;
 
+import com.obb.online_blackboard.entity.RoomSettingEntity;
+import com.obb.online_blackboard.entity.SheetEntity;
 import com.obb.online_blackboard.entity.UserEntity;
 import com.obb.online_blackboard.entity.base.Shape;
+import com.obb.online_blackboard.exception.OperationException;
+import com.obb.online_blackboard.service.RoomService;
 import com.obb.online_blackboard.service.SheetService;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,6 +32,12 @@ public class SheetController {
 
     @Resource
     SheetService sheetService;
+
+    @Resource
+    RoomService roomService;
+
+    @Resource
+    SimpMessagingTemplate template;
 
     @MessageMapping("/create")
     public void create(Principal principal, @JsonKey String name, @JsonKey long roomId){
@@ -60,10 +71,18 @@ public class SheetController {
 
 
     @MessageMapping("/change_sheet")
-    @SendToUser("/queue/info")
-    public Message changeSheet(Principal p, @JsonKey long sheetId, @JsonKey long roomId){
-        return Message.def("change_sheet",
-                sheetService.getSheetById(sheetId, roomId, Long.parseLong(p.getName())));
+    public void changeSheet(Principal p, @JsonKey long sheetId, @JsonKey long roomId){
+        RoomSettingEntity roomSettingEntity = roomService.getSettingByRoomId(roomId);
+        long userId = Long.parseLong(p.getName());
+        SheetEntity sheet = sheetService.getSheetById(sheetId, roomId, userId);
+        if(roomSettingEntity.getIsShare() == 0){
+            if(roomSettingEntity.getCreatorId() != userId){
+                throw new OperationException(403, "你不能切换页面");
+            }
+            template.convertAndSend("/exchange/room/" + roomId, Message.def("change_sheet", sheet));
+        }else{
+            template.convertAndSendToUser(p.getName(), "/queue/info", Message.def("change_sheet", sheet));
+        }
     }
 
     @GetMapping("/next")

@@ -50,6 +50,7 @@ public class SheetEntity {
     public SheetEntity(long id, long roomId) {
         this.id = id;
         this.roomId = roomId;
+        this.shapes = new HashSet<>();
     }
 
     private void StackOperation(Operate op){
