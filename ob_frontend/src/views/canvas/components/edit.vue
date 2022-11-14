@@ -54,7 +54,7 @@ export default defineComponent({
 })
 </script>
 <script lang="ts" setup>
-let canvas =ref<Canvas>()
+let canvas =ref()
 const width = ref<number>(1)
 const Memberindex=ref<number>(1)
 const color = ref<string>(CanvasConfig.PenStrokeStyle)
@@ -69,7 +69,8 @@ const canvasInjetct =inject("canvas__") as any
  * 初始化
  */
 
- for(let i= 0 ;i<(canvas.value as Canvas).layers.data.length;i++ ){
+watch(canvas.value,width,color,()=>{
+    for(let i= 0 ;i<(canvas.value as Canvas).layers.data.length;i++ ){
         if((canvas.value as Canvas).layers.data[i].id===canvas!.value?.layers.Blacklist[0])
         {
             Memberindex.value=i
@@ -78,8 +79,7 @@ const canvasInjetct =inject("canvas__") as any
     }
 width.value=(canvas.value as Canvas).layers.data[Memberindex.value].pen!.linewidth
 color.value=(canvas.value as Canvas).layers.data[Memberindex.value].pen!.strokeStyle as string
-
-
+})
 /**
  * 宽度
  */

@@ -77,6 +77,7 @@ async function addSheet() {
 }
 
 const userStore = useUserStore()
+console.log(canvasProvide.value?.state)
 </script>
 <template>
   <div class="main">
