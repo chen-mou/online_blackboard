@@ -69,14 +69,8 @@ const canvasInjetct =inject("canvas__") as any
  * 初始化
  */
 
-watch(canvas.value,width,color,()=>{
-    for(let i= 0 ;i<(canvas.value as Canvas).layers.data.length;i++ ){
-        if((canvas.value as Canvas).layers.data[i].id===canvas!.value?.layers.Blacklist[0])
-        {
-            Memberindex.value=i
-            break
-        }
-    }
+watch(canvas.value,()=>{
+
 width.value=(canvas.value as Canvas).layers.data[Memberindex.value].pen!.linewidth
 color.value=(canvas.value as Canvas).layers.data[Memberindex.value].pen!.strokeStyle as string
 })
@@ -87,7 +81,15 @@ watch(width,(newValue:number)=>{
     /**
      * 拿到选中并修改
      */
+     for(let i= 0 ;i<(canvas.value as Canvas).layers.data.length;i++ ){
+        if((canvas.value as Canvas).layers.data[i].id===canvas!.value?.layers.Blacklist[0])
+        {
+            Memberindex.value=i
+            break
+        }
+    }
    /**
+    * 
              * 修改pen后绘入第一图层
              */
             canvas.value!.DrawClass.BeforePosition = canvas.value!.layers.data[Memberindex.value].BeforePosition
@@ -99,6 +101,13 @@ watch(width,(newValue:number)=>{
  * 颜色
  */
     watch(color,(newValue:string)=>{
+        for(let i= 0 ;i<(canvas.value as Canvas).layers.data.length;i++ ){
+        if((canvas.value as Canvas).layers.data[i].id===canvas!.value?.layers.Blacklist[0])
+        {
+            Memberindex.value=i
+            break
+        }
+    }
     console.log("改变")
     /**
      * 拿到选中并修改
